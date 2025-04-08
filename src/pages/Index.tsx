@@ -13,14 +13,14 @@ const Index = () => {
       description: "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
       performance: "+32.5%",
       timeframe: "1 Year",
-      color: "from-meow-paw to-meow-siamese"
+      color: "from-meow-paw to-meow-tabby"
     },
     {
       name: "Paw Grid Trading",
       description: "Automated trading across price ranges. Pounce on opportunities with calculated moves, just like a cat hunting.",
       performance: "+24.8%",
       timeframe: "1 Year",
-      color: "from-meow-tabby to-meow-ginger"
+      color: "from-meow-paw to-meow-tabby"
     }
   ];
 
@@ -31,12 +31,12 @@ const Index = () => {
       description: "Start trading with the precision of a cat's paw. No complex setup required."
     },
     {
-      icon: <BarChart2 className="w-6 h-6 text-meow-siamese" />,
+      icon: <BarChart2 className="w-6 h-6 text-meow-paw" />,
       title: "Performance Preview",
       description: "See how strategies would have performed, as calculated as a cat's hunting strategy."
     },
     {
-      icon: <ShieldCheck className="w-6 h-6 text-meow-tabby" />,
+      icon: <ShieldCheck className="w-6 h-6 text-meow-paw" />,
       title: "Mock Trading",
       description: "Practice with virtual funds, just like a kitten learning to hunt."
     }
@@ -158,7 +158,8 @@ const Index = () => {
           
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-              <div className="hidden md:block absolute top-1/2 left-[calc(16.67%-16px)] right-[calc(16.67%-16px)] h-1 bg-meow-paw/20 -translate-y-1/2 z-0"></div>
+              {/* The horizontal line that connects the steps */}
+              <div className="hidden md:block absolute top-6 left-0 right-0 h-1 bg-meow-paw/20 z-0"></div>
               
               {[
                 { number: 1, title: "Choose a Strategy", description: "Browse our one-click trading strategies and select one that matches your goals." },

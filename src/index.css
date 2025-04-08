@@ -82,7 +82,7 @@
   }
   
   .gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-meow-paw to-meow-siamese;
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-meow-paw to-meow-tabby;
   }
   
   .button-glow {
@@ -90,6 +90,6 @@
   }
   
   .button-glow::after {
-    @apply content-[''] absolute inset-0 bg-gradient-to-r from-meow-paw to-meow-siamese bg-[length:200%_100%] animate-pulse-glow opacity-70 blur-xl -z-10;
+    @apply content-[''] absolute inset-0 bg-gradient-to-r from-meow-paw to-meow-tabby bg-[length:200%_100%] animate-pulse-glow opacity-70 blur-xl -z-10;
   }
 }

@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Cat
 } from 'lucide-react';
 
 type AppLayoutProps = {
@@ -63,10 +64,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200 bg-white">
         <div className="p-6 border-b border-slate-200">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-crypto-blue to-crypto-purple flex items-center justify-center">
-              <span className="text-white font-bold text-xl">C</span>
+            <div className="bg-gradient-to-br from-meow-paw to-meow-tabby p-2 rounded-xl">
+              <Cat className="w-8 h-8 text-meow-whisker" />
             </div>
-            <span className="text-2xl font-bold gradient-text">CryptoClick</span>
+            <span className="text-2xl font-bold gradient-text">MeowTrade</span>
           </Link>
         </div>
         
@@ -78,7 +79,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                   to={item.path} 
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     location.pathname === item.path ? 
-                    'bg-slate-100 text-crypto-blue' : 
+                    'bg-slate-100 text-meow-paw' : 
                     'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -113,10 +114,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-crypto-blue to-crypto-purple flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
+              <div className="bg-gradient-to-br from-meow-paw to-meow-tabby p-2 rounded-full">
+                <Cat className="w-6 h-6 text-meow-whisker" />
               </div>
-              <span className="text-xl font-bold gradient-text">CryptoClick</span>
+              <span className="text-xl font-bold gradient-text">MeowTrade</span>
             </Link>
           </div>
           
@@ -132,10 +133,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
             <div className="flex justify-between items-center p-4 border-b border-slate-200">
               <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-crypto-blue to-crypto-purple flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">C</span>
+                <div className="bg-gradient-to-br from-meow-paw to-meow-tabby p-2 rounded-full">
+                  <Cat className="w-6 h-6 text-meow-whisker" />
                 </div>
-                <span className="text-xl font-bold gradient-text">CryptoClick</span>
+                <span className="text-xl font-bold gradient-text">MeowTrade</span>
               </Link>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -153,7 +154,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                       to={item.path} 
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === item.path ? 
-                        'bg-slate-100 text-crypto-blue' : 
+                        'bg-slate-100 text-meow-paw' : 
                         'text-slate-600 hover:bg-slate-50'
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
