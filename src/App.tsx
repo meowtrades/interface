@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Strategies from "./pages/Strategies";
 import MockTrades from "./pages/MockTrades";
+import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/app/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/app/strategies" element={<RequireAuth><Strategies /></RequireAuth>} />
           <Route path="/app/mock-trades" element={<RequireAuth><MockTrades /></RequireAuth>} />
+          <Route path="/app/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
           
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
