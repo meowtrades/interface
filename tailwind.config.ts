@@ -64,22 +64,22 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         crypto: {
-          'blue': '#4682B4',
-          'green': '#2E8B57',
-          'red': '#CD5C5C',
-          'gray': '#708090',
-          'dark': '#2F4F4F',
-          'light': '#F0F8FF'
+          'blue': '#1A56DB',
+          'green': '#10B981',
+          'red': '#EF4444',
+          'gray': '#64748B',
+          'dark': '#1E293B',
+          'light': '#F8FAFC'
         },
         meow: {
-          'whisker': '#F5F1E8',
-          'paw': '#D6A06B',
-          'tabby': '#D2691E',
-          'siamese': '#84A7C9',
-          'midnight': '#2C3E50',
-          'cream': '#FDF6E3',
-          'ginger': '#E67E22',
-          'charcoal': '#34495E'
+          'whisker': '#FFFFFF',
+          'paw': '#2563EB',
+          'tabby': '#1E40AF',
+          'siamese': '#C7D2FE',
+          'midnight': '#1E293B',
+          'cream': '#F9FAFB',
+          'ginger': '#3B82F6',
+          'charcoal': '#334155'
         }
       },
       borderRadius: {
@@ -107,8 +107,8 @@ export default {
           }
         },
         'pulse-glow': {
-          '0%, 100%': { opacity: '1', boxShadow: '0 0 15px rgba(214, 160, 107, 0.2)' },
-          '50%': { opacity: '0.7', boxShadow: '0 0 25px rgba(214, 160, 107, 0.6)' }
+          '0%, 100%': { opacity: '1', boxShadow: '0 0 15px rgba(37, 99, 235, 0.2)' },
+          '50%': { opacity: '0.7', boxShadow: '0 0 25px rgba(37, 99, 235, 0.6)' }
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0)' },
