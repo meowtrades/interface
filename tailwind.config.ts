@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -71,12 +72,14 @@ export default {
           'light': '#F0F8FF'
         },
         meow: {
-          'whisker': '#F3EDE3',
-          'paw': '#8B4513',
+          'whisker': '#F5F1E8',
+          'paw': '#D6A06B',
           'tabby': '#D2691E',
-          'siamese': '#4682B4',
-          'midnight': '#191970',
-          'cream': '#FFF5E1'
+          'siamese': '#84A7C9',
+          'midnight': '#2C3E50',
+          'cream': '#FDF6E3',
+          'ginger': '#E67E22',
+          'charcoal': '#34495E'
         }
       },
       borderRadius: {
@@ -104,15 +107,20 @@ export default {
           }
         },
         'pulse-glow': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.7', boxShadow: '0 0 20px rgba(59, 130, 246, 0.6)' }
+          '0%, 100%': { opacity: '1', boxShadow: '0 0 15px rgba(214, 160, 107, 0.2)' },
+          '50%': { opacity: '0.7', boxShadow: '0 0 25px rgba(214, 160, 107, 0.6)' }
+        },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
-        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 3s ease-in-out infinite'
       }
     }
   },
