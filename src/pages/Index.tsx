@@ -1,67 +1,67 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart2, MousePointerClick, ShieldCheck } from 'lucide-react';
+import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Cat, PawPrint } from 'lucide-react';
 
 const Index = () => {
   const strategyCards = [
     {
-      name: "Smart DCA",
-      description: "Dollar-cost averaging enhanced by market timing algorithms. Buy more when prices dip, less when prices rise.",
+      name: "Whisker DCA",
+      description: "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
       performance: "+32.5%",
       timeframe: "1 Year",
-      color: "from-blue-500 to-indigo-600"
+      color: "from-meow-paw to-meow-siamese"
     },
     {
-      name: "Grid Trading",
-      description: "Automated buy-low, sell-high across a price range. Profit from market volatility with pre-set buy and sell orders.",
+      name: "Paw Grid Trading",
+      description: "Automated trading across price ranges. Pounce on opportunities with calculated moves, just like a cat hunting.",
       performance: "+24.8%",
       timeframe: "1 Year",
-      color: "from-purple-500 to-pink-600"
+      color: "from-meow-tabby to-meow-midnight"
     }
   ];
 
   const features = [
     {
-      icon: <MousePointerClick className="w-6 h-6 text-crypto-blue" />,
+      icon: <MousePointerClick className="w-6 h-6 text-meow-paw" />,
       title: "One-Click Trading",
-      description: "Start trading with just one click. No complex setup required."
+      description: "Start trading with the precision of a cat's paw. No complex setup required."
     },
     {
-      icon: <BarChart2 className="w-6 h-6 text-crypto-purple" />,
+      icon: <BarChart2 className="w-6 h-6 text-meow-siamese" />,
       title: "Performance Preview",
-      description: "See how strategies would have performed before you invest."
+      description: "See how strategies would have performed, as calculated as a cat's hunting strategy."
     },
     {
-      icon: <ShieldCheck className="w-6 h-6 text-crypto-green" />,
+      icon: <ShieldCheck className="w-6 h-6 text-meow-tabby" />,
       title: "Mock Trading",
-      description: "Practice with virtual funds before risking your own money."
+      description: "Practice with virtual funds, just like a kitten learning to hunt."
     }
   ];
 
   const testimonials = [
     {
-      quote: "I never understood crypto trading until I found CryptoClick. Now I'm investing confidently with one click.",
+      quote: "Trading used to be as confusing as a ball of yarn. MeowTrade made it as simple as a cat's nap.",
       name: "Sarah L.",
-      role: "Retail Investor"
+      role: "Crypto Novice"
     },
     {
-      quote: "The mock trading feature helped me understand different strategies before I put my real money in.",
+      quote: "The mock trading feature helped me understand strategies without risking my actual catnip fund.",
       name: "Michael T.",
-      role: "New Crypto Trader"
+      role: "Cautious Investor"
     },
     {
-      quote: "Grid trading used to be way too complex for me. CryptoClick made it accessible and profitable.",
+      quote: "Grid trading felt complicated, but MeowTrade made it as smooth as a cat's whisker.",
       name: "Aisha K.",
       role: "Passive Investor"
     }
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-meow-cream">
       <Navbar />
       
       {/* Hero Section */}
@@ -69,22 +69,23 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="gradient-text">One-Click</span> Trading <br />
-              <span className="text-crypto-gray">Without the Complexity</span>
+              <span className="gradient-text">MeowTrade</span>: <br />
+              <span className="text-meow-paw">Trading as Smooth as a Cat's Purr</span>
             </h1>
-            <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto">
-              Tap into proven trading strategies with a single click. See historical performance, simulate trades, and grow your crypto wealth effortlessly.
+            <p className="text-lg text-meow-midnight/70 mb-10 max-w-2xl mx-auto">
+              Tap into crypto strategies with the calculated precision of a feline. See historical performance, simulate trades, and grow your wealth effortlessly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/app">
-                <Button className="bg-gradient-to-r from-crypto-blue to-crypto-purple hover:opacity-90 text-white button-glow px-8 py-6 text-lg rounded-xl">
+                <Button className="bg-gradient-to-r from-meow-paw to-meow-siamese hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl">
                   Launch App
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <PawPrint className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/strategies">
-                <Button variant="outline" className="px-8 py-6 text-lg rounded-xl border-slate-300">
+                <Button variant="outline" className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight">
                   Explore Strategies
+                  <Cat className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </div>
