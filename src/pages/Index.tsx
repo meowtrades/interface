@@ -1,5 +1,4 @@
-
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -7,6 +6,15 @@ import Footer from '@/components/Footer';
 import { Cat, PawPrint } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  const handleStartStrategy = () => {
+    // Store info in localStorage that we're coming from landing page
+    localStorage.setItem('showStrategyPopup', 'true');
+    // Navigate to dashboard
+    navigate('/app/dashboard');
+  };
+
   const strategyCards = [
     {
       name: "Whisker DCA",
@@ -76,12 +84,13 @@ const Index = () => {
               Tap into crypto strategies with the calculated precision of a feline. See historical performance, simulate trades, and grow your wealth effortlessly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/app">
-                <Button className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all">
-                  Launch App
-                  <PawPrint className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              <Button 
+                onClick={handleStartStrategy}
+                className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
+              >
+                Launch App
+                <PawPrint className="ml-2 h-5 w-5" />
+              </Button>
               <Link to="/strategies">
                 <Button variant="outline" className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-whisker/50 transition-colors">
                   Explore Strategies
@@ -119,7 +128,13 @@ const Index = () => {
                         <span className="text-meow-charcoal/50 text-sm">Performance Chart</span>
                       </div>
                     </div>
-                    <Button size="sm" className="w-full bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white">Start Strategy</Button>
+                    <Button 
+                      size="sm" 
+                      onClick={handleStartStrategy}
+                      className="w-full bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white"
+                    >
+                      Start Strategy
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -159,7 +174,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
               {/* The horizontal line that connects the steps */}
-              <div className="hidden md:block absolute top-6 left-0 right-0 h-1 bg-meow-paw/20 z-0"></div>
+              <div className="hidden md:block absolute top-6 left-[10%] right-[10%] h-1 bg-meow-paw/20 z-0 w-[80%]"></div>
               
               {[
                 { number: 1, title: "Choose a Strategy", description: "Browse our one-click trading strategies and select one that matches your goals." },
@@ -207,12 +222,13 @@ const Index = () => {
           <p className="max-w-2xl mx-auto mb-10 text-white/90">
             Join thousands of investors who are growing their crypto wealth with one-click strategies.
           </p>
-          <Link to="/app">
-            <Button className="bg-white text-meow-paw hover:bg-white/90 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
-              Launch App Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <Button 
+            onClick={handleStartStrategy}
+            className="bg-white text-meow-paw hover:bg-white/90 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            Launch App Now
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </section>
       

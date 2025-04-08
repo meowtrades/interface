@@ -5,6 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, ArrowRight, BarChart2, Zap } from 'lucide-react';
+import StrategyPopup from '@/components/StrategyPopup';
 
 const Dashboard = () => {
   const [totalValue, setTotalValue] = useState(0);
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const [totalProfit, setTotalProfit] = useState(0);
   const [activeStrategies, setActiveStrategies] = useState(0);
   const [mockTrades, setMockTrades] = useState(0);
+  const [showStrategyPopup, setShowStrategyPopup] = useState(false);
   
   useEffect(() => {
     // Mock data
@@ -20,6 +22,14 @@ const Dashboard = () => {
     setTotalProfit(245.82);
     setActiveStrategies(2);
     setMockTrades(3);
+    
+    // Check if we should show strategy popup
+    const shouldShowPopup = localStorage.getItem('showStrategyPopup') === 'true';
+    if (shouldShowPopup) {
+      setShowStrategyPopup(true);
+      // Clear the flag
+      localStorage.removeItem('showStrategyPopup');
+    }
   }, []);
 
   const profitPercentage = ((totalProfit / totalInvested) * 100).toFixed(2);
@@ -72,6 +82,13 @@ const Dashboard = () => {
       time: '1 day ago',
     }
   ];
+
+  const handleStrategyStart = (strategyData: { amount: number; token: string }) => {
+    console.log('Starting strategy with:', strategyData);
+    // In a real app, you'd make an API call to start the strategy
+    // For now, we'll just update the state to simulate adding a new strategy
+    setActiveStrategies(prev => prev + 1);
+  };
   
   return (
     <AppLayout>
@@ -79,6 +96,13 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-slate-600">Welcome back! Here's your trading overview.</p>
       </div>
+      
+      {/* Strategy Popup */}
+      <StrategyPopup
+        open={showStrategyPopup}
+        onOpenChange={setShowStrategyPopup}
+        onConfirm={handleStrategyStart}
+      />
       
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -88,7 +112,7 @@ const Dashboard = () => {
             <CardTitle className="text-2xl">${totalValue.toFixed(2)}</CardTitle>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className={`flex items-center gap-1 text-sm ${isProfitable ? 'text-crypto-green' : 'text-crypto-red'}`}>
+            <div className={`flex items-center gap-1 text-sm ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
               {isProfitable ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               <span>{profitPercentage}%</span>
             </div>
@@ -108,12 +132,12 @@ const Dashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Profit/Loss</CardDescription>
-            <CardTitle className={`text-2xl ${isProfitable ? 'text-crypto-green' : 'text-crypto-red'}`}>
+            <CardTitle className={`text-2xl ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
               {isProfitable ? '+' : '-'}${Math.abs(totalProfit).toFixed(2)}
             </CardTitle>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className={`flex items-center gap-1 text-sm ${isProfitable ? 'text-crypto-green' : 'text-crypto-red'}`}>
+            <div className={`flex items-center gap-1 text-sm ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
               {isProfitable ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               <span>{profitPercentage}%</span>
             </div>
@@ -135,7 +159,7 @@ const Dashboard = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Active Plans</h2>
-          <Link to="/app/strategies" className="text-crypto-blue text-sm flex items-center">
+          <Link to="/app/strategies" className="text-blue-600 text-sm flex items-center">
             View all <ArrowRight size={16} className="ml-1" />
           </Link>
         </div>
@@ -150,7 +174,7 @@ const Dashboard = () => {
                     <CardTitle className="text-xl">{plan.token}</CardTitle>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
-                    plan.type === 'Smart DCA' ? 'bg-crypto-blue' : 'bg-crypto-purple'
+                    plan.type === 'Smart DCA' ? 'bg-blue-600' : 'bg-purple-600'
                   }`}>
                     {plan.type}
                   </div>
@@ -168,7 +192,7 @@ const Dashboard = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500 text-sm">Profit/Loss</span>
-                    <span className={`font-medium ${plan.profit >= 0 ? 'text-crypto-green' : 'text-crypto-red'}`}>
+                    <span className={`font-medium ${plan.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                       {plan.profit >= 0 ? '+' : '-'}${Math.abs(plan.profit).toFixed(2)} ({plan.profitPercentage.toFixed(2)}%)
                     </span>
                   </div>
@@ -191,11 +215,12 @@ const Dashboard = () => {
               <p className="text-slate-500 text-sm text-center mb-4">
                 Choose from our one-click trading strategies to grow your portfolio
               </p>
-              <Link to="/app/strategies">
-                <Button className="bg-crypto-blue hover:bg-crypto-blue/90">
-                  Explore Strategies
-                </Button>
-              </Link>
+              <Button 
+                onClick={() => setShowStrategyPopup(true)}
+                className="bg-gradient-to-r from-meow-paw to-meow-tabby text-white hover:opacity-90"
+              >
+                Start New Strategy
+              </Button>
             </CardContent>
           </Card>
         </div>
