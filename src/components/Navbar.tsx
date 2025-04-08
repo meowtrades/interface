@@ -18,12 +18,6 @@ const Navbar = () => {
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <div className="flex gap-6">
-            <Link to="/" className="text-slate-600 hover:text-meow-paw font-medium transition-colors">Home</Link>
-            <Link to="/strategies" className="text-slate-600 hover:text-meow-paw font-medium transition-colors">Strategies</Link>
-            <Link to="/about" className="text-slate-600 hover:text-meow-paw font-medium transition-colors">About</Link>
-          </div>
-          <div className="flex gap-3">
             <Link to="/app">
               <Button size="sm" className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white rounded-lg">
                 Launch App
@@ -45,27 +39,6 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 p-4 bg-white shadow-lg border-t border-slate-100 animate-fade-in">
           <div className="flex flex-col gap-4">
-            <Link 
-              to="/" 
-              className="px-4 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-            <Link 
-              to="/strategies" 
-              className="px-4 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Strategies
-            </Link>
-            <Link 
-              to="/about" 
-              className="px-4 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
             <Link 
               to="/app" 
               className="px-4 py-2 bg-gradient-to-r from-meow-paw to-meow-tabby text-white rounded-md text-center font-medium"
