@@ -52,7 +52,7 @@ const Index = () => {
 
   const testimonials = [
     {
-      quote: "Trading used to be as confusing as a ball of yarn. MeowTrade made it as simple as a cat's nap.",
+      quote: "Trading used to be as confusing as a ball of yarn. Meowtrade made it as simple as a cat's nap.",
       name: "Sarah L.",
       role: "Crypto Novice"
     },
@@ -62,7 +62,7 @@ const Index = () => {
       role: "Cautious Investor"
     },
     {
-      quote: "Grid trading felt complicated, but MeowTrade made it as smooth as a cat's whisker.",
+      quote: "Grid trading felt complicated, but Meowtrade made it as smooth as a cat's whisker.",
       name: "Aisha K.",
       role: "Passive Investor"
     }
@@ -77,7 +77,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="gradient-text">MeowTrade</span>: <br />
+              <span className="gradient-text">Meowtrade</span>: <br />
               <span className="text-meow-midnight">Trading as Smooth as a Cat's Purr</span>
             </h1>
             <p className="text-lg text-meow-charcoal/80 mb-10 max-w-2xl mx-auto">
