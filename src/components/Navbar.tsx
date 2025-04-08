@@ -18,6 +18,7 @@ const Navbar = () => {
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
+          <div className="flex gap-3">
             <Link to="/app">
               <Button size="sm" className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white rounded-lg">
                 Launch App
