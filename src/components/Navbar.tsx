@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -14,7 +13,7 @@ const Navbar = () => {
           <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
             <Cat className="w-7 h-7 text-white" />
           </div>
-          <span className="text-2xl font-bold gradient-text">MeowTrade</span>
+          <span className="text-2xl font-bold gradient-text">Meowtrade</span>
         </Link>
         
         {/* Desktop Navigation */}

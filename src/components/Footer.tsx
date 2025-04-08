@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Cat, ArrowRight, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
 
@@ -12,7 +11,7 @@ const Footer = () => {
               <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
                 <Cat className="w-7 h-7 text-white" />
               </div>
-              <span className="text-2xl font-bold gradient-text">MeowTrade</span>
+              <span className="text-2xl font-bold gradient-text">Meowtrade</span>
             </Link>
             <p className="mt-4 text-slate-500 text-sm">
               Professional-grade trading strategies with algorithmic precision. Simplified for everyone.
@@ -75,7 +74,7 @@ const Footer = () => {
         
         <div className="mt-10 pt-6 border-t border-slate-100">
           <p className="text-sm text-slate-500 text-center">
-            &copy; {new Date().getFullYear()} MeowTrade. All rights reserved.
+            &copy; {new Date().getFullYear()} Meowtrade. All rights reserved.
           </p>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -69,7 +68,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
               <Cat className="w-7 h-7 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">MeowTrade</span>
+            <span className="text-xl font-bold gradient-text">Meowtrade</span>
           </Link>
         </div>
         
@@ -155,7 +154,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
                   <Cat className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold gradient-text">MeowTrade</span>
+                <span className="text-xl font-bold gradient-text">Meowtrade</span>
               </Link>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
