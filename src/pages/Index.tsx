@@ -1,11 +1,11 @@
 
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign } from 'lucide-react';
+import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign, Activity } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Cat, PawPrint } from 'lucide-react';
-import StrategyCardChart from '@/components/charts/StrategyCardChart';
 import MockTradingChart from '@/components/charts/MockTradingChart';
 
 const Index = () => {
@@ -54,7 +54,7 @@ const Index = () => {
       performance: "+32.5%",
       timeframe: "1 Year",
       color: "from-meow-paw to-meow-tabby",
-      chartData: strategyChartData.whiskerDca,
+      icon: <Activity className="w-16 h-16 text-meow-paw opacity-70" />,
       chartColor: "#9b87f5"
     },
     {
@@ -63,7 +63,7 @@ const Index = () => {
       performance: "+24.8%",
       timeframe: "1 Year",
       color: "from-meow-paw to-meow-tabby",
-      chartData: strategyChartData.pawGrid,
+      icon: <TrendingUp className="w-16 h-16 text-meow-paw opacity-70" />,
       chartColor: "#7E69AB"
     }
   ];
@@ -144,8 +144,8 @@ const Index = () => {
                       {strategy.description}
                     </p>
                     <div className="h-32 rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-slate-50">
-                      <div className="w-full h-full">
-                        <StrategyCardChart data={strategy.chartData} color={strategy.chartColor} />
+                      <div className="w-full h-full flex items-center justify-center">
+                        {strategy.icon}
                       </div>
                     </div>
                     <Button 
