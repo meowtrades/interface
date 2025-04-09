@@ -1,9 +1,11 @@
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck } from 'lucide-react';
+import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, Cat } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Cat, PawPrint } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
+
 const Index = () => {
   const navigate = useNavigate();
   const handleStartStrategy = () => {
@@ -12,6 +14,7 @@ const Index = () => {
     // Navigate to dashboard
     navigate('/app/dashboard');
   };
+
   const strategyCards = [{
     name: "Whisker DCA",
     description: "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
@@ -25,6 +28,7 @@ const Index = () => {
     timeframe: "1 Year",
     color: "from-meow-paw to-meow-tabby"
   }];
+
   const features = [{
     icon: <MousePointerClick className="w-6 h-6 text-meow-paw" />,
     title: "One-Click Trading",
@@ -38,6 +42,7 @@ const Index = () => {
     title: "Mock Trading",
     description: "Practice with virtual funds, just like a kitten learning to hunt."
   }];
+
   const testimonials = [{
     quote: "Trading used to be as confusing as a ball of yarn. MeowTrade made it as simple as a cat's nap.",
     name: "Sarah L.",
@@ -51,6 +56,7 @@ const Index = () => {
     name: "Aisha K.",
     role: "Passive Investor"
   }];
+
   return <div className="min-h-screen flex flex-col bg-meow-cream">
       <Navbar />
       
@@ -71,9 +77,12 @@ const Index = () => {
                 <PawPrint className="ml-2 h-5 w-5" />
               </Button>
               <Link to="/strategies">
-                <Button variant="outline" className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-whisker/50 transition-colors">
+                <Button 
+                  variant="outline" 
+                  className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-paw/10 hover:border-meow-paw/50 transition-colors group"
+                >
                   Explore Strategies
-                  <Cat className="ml-2 h-5 w-5" />
+                  <Cat className="ml-2 h-5 w-5 text-meow-paw group-hover:text-meow-tabby transition-colors" />
                 </Button>
               </Link>
             </div>
@@ -204,4 +213,5 @@ const Index = () => {
       <Footer />
     </div>;
 };
+
 export default Index;
