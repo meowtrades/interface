@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign, Activity } from 'lucide-react';
+import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign, Activity, Zap, Package } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Cat, PawPrint } from 'lucide-react';
@@ -69,12 +69,17 @@ const Index = () => {
     {
       icon: <MousePointerClick className="w-6 h-6 text-meow-paw" />,
       title: "One-Click Trading",
-      description: "Start trading with the precision of a cat's paw. No complex setup required."
+      description: "Start trading with just one click. No complex setup, no technical knowledge required - it's that simple."
+    },
+    {
+      icon: <Package className="w-6 h-6 text-meow-paw" />,
+      title: "Multiple Strategies",
+      description: "Access a diverse collection of automated trading strategies, each designed for different market conditions."
     },
     {
       icon: <BarChart2 className="w-6 h-6 text-meow-paw" />,
       title: "Performance Preview",
-      description: "See how strategies would have performed, as calculated as a cat's hunting strategy."
+      description: "See how each strategy would have performed over different timeframes before you invest."
     },
     {
       icon: <ShieldCheck className="w-6 h-6 text-meow-paw" />,
@@ -93,18 +98,18 @@ const Index = () => {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               <span className="gradient-text">Meowtrade</span><br />
-              <span className="text-meow-midnight">Trading as Smooth as a Cat's Purr</span>
+              <span className="text-meow-midnight">One-Click Access to <br/>Automated Trading Strategies</span>
             </h1>
             <p className="text-lg text-meow-charcoal/80 mb-10 max-w-2xl mx-auto">
-              Tap into crypto strategies with the calculated precision of a feline. See historical performance, simulate trades, and grow your wealth effortlessly.
+              Invest in multiple crypto trading strategies with a single click. No trading experience needed - just view historical performance, select your strategy, and let automation do the work.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={handleStartStrategy}
                 className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-80 text-white px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
               >
-                Launch App
-                <PawPrint className="ml-2 h-5 w-5" />
+                Trade with One Click
+                <Zap className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 onClick={handleExploreDemo}
@@ -154,7 +159,7 @@ const Index = () => {
                       onClick={handleStartStrategy}
                       className="w-full bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white"
                     >
-                      Start Strategy
+                      Start With One Click
                     </Button>
                   </div>
                 ))}
@@ -164,18 +169,17 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Mock Trading Highlight Section */}
+      {/* Strategies Showcase Section */}
       <section className="py-20 px-6 bg-white">
         <div className="container mx-auto">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <p className="text-blue-600 font-medium text-lg mb-2">FOR NEW TRADERS</p>
+              <p className="text-blue-600 font-medium text-lg mb-2">MULTIPLE STRATEGIES</p>
               <h2 className="text-3xl md:text-5xl font-bold mt-2 mb-6">
-                Try Before You <span className="text-blue-600">Invest</span>
+                A <span className="text-blue-600">Collection</span> of Trading Strategies
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-                Build confidence and perfect your strategy with our risk-free mock trading environment. 
-                Practice with virtual funds and see real market results before committing actual money.
+                Access multiple trading strategies with different risk profiles and market approaches. Each strategy shows historical performance so you can choose what fits your investment goals.
               </p>
             </div>
             
@@ -201,9 +205,9 @@ const Index = () => {
                     <BadgeDollarSign className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Virtual Portfolio</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Historical Performance</h3>
                     <p className="text-gray-600 text-base">
-                      Start with $100,000 in virtual funds. Experience the platform with zero financial risk.
+                      See how each strategy would have performed with a $100 investment over different timeframes.
                     </p>
                   </div>
                 </div>
@@ -213,21 +217,21 @@ const Index = () => {
                     <LineChart className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Real Market Data</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Strategy Diversity</h3>
                     <p className="text-gray-600 text-base">
-                      Practice with actual market conditions and real-time price movements to build authentic skills.
+                      Choose from multiple strategies with different approaches to market volatility and risk profiles.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
                   <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="w-7 h-7 text-blue-600" />
+                    <MousePointerClick className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Track Performance</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">One-Click Entry</h3>
                     <p className="text-gray-600 text-base">
-                      Monitor your mock trades and strategy performance with detailed analytics.
+                      Start trading any strategy with just one click - no complex setup or technical knowledge required.
                     </p>
                   </div>
                 </div>
@@ -237,7 +241,7 @@ const Index = () => {
                     onClick={handleExploreDemo}
                     className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md text-base font-medium hover:shadow-lg transition-all flex items-center"
                   >
-                    Try Mock Trading Now
+                    Explore All Strategies
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
@@ -254,7 +258,7 @@ const Index = () => {
             Trading Made <span className="gradient-text">Simple</span>
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="p-6 rounded-xl glass-card">
                 <div className="w-12 h-12 rounded-full bg-meow-cream flex items-center justify-center mb-4">
@@ -281,9 +285,9 @@ const Index = () => {
               <div className="hidden md:block absolute top-6 left-[10%] right-[10%] h-1 bg-meow-paw/20 z-0 w-[80%]"></div>
               
               {[
-                { number: 1, title: "Start with Mock Trading", description: "Build confidence with virtual funds in our risk-free environment." },
-                { number: 2, title: "Choose a Strategy", description: "Select from our proven trading strategies that match your goals." },
-                { number: 3, title: "Start Real Trading", description: "When ready, deposit funds and let our bots handle the rest." }
+                { number: 1, title: "Browse Strategies", description: "Explore multiple automated trading strategies and their historical performance." },
+                { number: 2, title: "One-Click Entry", description: "Enter any strategy with a single click. No complex setup required." },
+                { number: 3, title: "Automated Trading", description: "Let our strategies work for you. Monitor performance from your unified dashboard." }
               ].map((step, index) => (
                 <div key={index} className="relative z-10 text-center">
                   <div className="w-12 h-12 rounded-full bg-white shadow-md border-2 border-meow-paw text-meow-paw flex items-center justify-center text-lg font-bold mx-auto">
@@ -301,9 +305,9 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-20 px-6 bg-gradient-to-r from-meow-paw to-meow-tabby text-white">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Your Trading Journey?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Access Multiple Trading Strategies?</h2>
           <p className="max-w-2xl mx-auto mb-10 text-white/90">
-            Try our risk-free mock trading environment today, or jump right into real trading.
+            Get one-click access to a collection of automated trading strategies, each optimized for different market conditions.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
@@ -317,7 +321,7 @@ const Index = () => {
               onClick={handleStartStrategy}
               className="bg-meow-midnight text-white hover:bg-meow-midnight/90 hover:shadow-xl px-8 py-6 text-lg rounded-xl transition-all"
             >
-              Launch Full App
+              Access All Strategies
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
