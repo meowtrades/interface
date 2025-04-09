@@ -11,9 +11,7 @@ const Index = () => {
   const navigate = useNavigate();
   
   const handleStartStrategy = () => {
-    // Store info in localStorage that we're coming from landing page
-    localStorage.setItem('showStrategyPopup', 'true');
-    // Navigate to dashboard
+    // Navigate directly to dashboard without showing strategy popup
     navigate('/app/dashboard');
   };
 

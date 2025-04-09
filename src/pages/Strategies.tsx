@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from '@/components/ui/separator';
 import { BarChart2, ArrowRight, Info, RefreshCw, Grid, TrendingUp, Clock, RefreshCcw } from 'lucide-react';
+import StrategyWhatIfDialog from '@/components/StrategyWhatIfDialog';
 
 // Mock historical performance data
 const performanceData = {
@@ -45,6 +46,19 @@ const performanceData = {
 
 const Strategies = () => {
   const [token, setToken] = useState("btc");
+  const [whatIfDialogOpen, setWhatIfDialogOpen] = useState(false);
+  const [selectedStrategy, setSelectedStrategy] = useState<{
+    name: string;
+    type: 'smart-dca' | 'grid-trading';
+  } | null>(null);
+  
+  const handleViewDetails = (strategyName: string, strategyType: 'smart-dca' | 'grid-trading') => {
+    setSelectedStrategy({
+      name: strategyName,
+      type: strategyType
+    });
+    setWhatIfDialogOpen(true);
+  };
   
   return (
     <AppLayout>
@@ -152,11 +166,13 @@ const Strategies = () => {
                     Start Strategy
                   </Button>
                 </Link>
-                <Link to="/app/strategies/smart-dca/details" state={{ source: 'strategies' }} className="w-full">
-                  <Button variant="outline" className="w-full">
-                    View Details
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => handleViewDetails("Smart DCA Strategy", "smart-dca")}
+                >
+                  View Details
+                </Button>
               </CardFooter>
             </Card>
             
@@ -250,11 +266,13 @@ const Strategies = () => {
                     Start Strategy
                   </Button>
                 </Link>
-                <Link to="/app/strategies/grid-trading/details" state={{ source: 'strategies' }} className="w-full">
-                  <Button variant="outline" className="w-full">
-                    View Details
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => handleViewDetails("Grid Trading Strategy", "grid-trading")}
+                >
+                  View Details
+                </Button>
               </CardFooter>
             </Card>
           </div>
@@ -304,12 +322,6 @@ const Strategies = () => {
                   </div>
                 </div>
                 
-                <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-slate-400">
-                    <BarChart2 size={32} className="mx-auto mb-1" />
-                    <span className="text-xs">Performance Chart</span>
-                  </div>
-                </div>
               </CardContent>
               
               <CardFooter className="flex flex-col gap-2 sm:flex-row">
@@ -366,12 +378,7 @@ const Strategies = () => {
                   </div>
                 </div>
                 
-                <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-slate-400">
-                    <BarChart2 size={32} className="mx-auto mb-1" />
-                    <span className="text-xs">Performance Chart</span>
-                  </div>
-                </div>
+                
               </CardContent>
               
               <CardFooter className="flex flex-col gap-2 sm:flex-row">
@@ -388,6 +395,16 @@ const Strategies = () => {
           </div>
         </TabsContent>
       </Tabs>
+      
+      {/* What If Dialog */}
+      {selectedStrategy && (
+        <StrategyWhatIfDialog
+          open={whatIfDialogOpen}
+          onOpenChange={setWhatIfDialogOpen}
+          strategyName={selectedStrategy.name}
+          strategyType={selectedStrategy.type}
+        />
+      )}
     </AppLayout>
   );
 };
