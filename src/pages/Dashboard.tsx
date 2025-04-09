@@ -83,9 +83,9 @@ const Dashboard = () => {
         onConfirm={handleStrategyStart}
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="pb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4 px-5">
             <CardDescription>Total Portfolio Value</CardDescription>
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
@@ -93,7 +93,7 @@ const Dashboard = () => {
               <CardTitle className="text-2xl">${totalValue.toFixed(2)}</CardTitle>
             )}
           </CardHeader>
-          <CardContent className="pb-2">
+          <CardContent className="pb-4 px-5">
             {isLoading ? (
               <Skeleton className="h-4 w-16" />
             ) : (
@@ -105,8 +105,8 @@ const Dashboard = () => {
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4 px-5">
             <CardDescription>Total Invested</CardDescription>
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
@@ -114,13 +114,13 @@ const Dashboard = () => {
               <CardTitle className="text-2xl">${totalInvested.toFixed(2)}</CardTitle>
             )}
           </CardHeader>
-          <CardContent className="pb-2">
+          <CardContent className="pb-4 px-5">
             <div className="text-sm text-slate-500">Across all strategies</div>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4 px-5">
             <CardDescription>Total Profit/Loss</CardDescription>
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
@@ -130,7 +130,7 @@ const Dashboard = () => {
               </CardTitle>
             )}
           </CardHeader>
-          <CardContent className="pb-2">
+          <CardContent className="pb-4 px-5">
             {isLoading ? (
               <Skeleton className="h-4 w-16" />
             ) : (
@@ -142,8 +142,8 @@ const Dashboard = () => {
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4 px-5">
             <CardDescription>Active Strategies</CardDescription>
             {isLoading ? (
               <Skeleton className="h-8 w-8" />
@@ -151,7 +151,7 @@ const Dashboard = () => {
               <CardTitle className="text-2xl">{activeUserStrategies.length}</CardTitle>
             )}
           </CardHeader>
-          <CardContent className="pb-2">
+          <CardContent className="pb-4 px-5">
             <div className="text-sm text-slate-500">{mockTradesCount} mock trades</div>
           </CardContent>
         </Card>
@@ -165,7 +165,7 @@ const Dashboard = () => {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {isLoading ? (
             <>
               <Skeleton className="h-64 w-full" />
@@ -180,8 +180,8 @@ const Dashboard = () => {
               if (!strategy || !token || !chain) return null;
               
               return (
-                <Card key={userStrategy.id}>
-                  <CardHeader className="pb-2">
+                <Card key={userStrategy.id} className="shadow-sm">
+                  <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
                         <CardDescription>{strategy.name}</CardDescription>
@@ -198,7 +198,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-5 pb-3">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-slate-500 text-sm">Current Value</span>
@@ -216,8 +216,8 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Link to={`/app/strategies/${userStrategy.strategyId}`} state={{ source: 'dashboard' }} className="w-full">
+                  <CardFooter className="px-5 pt-0 pb-4">
+                    <Link to={`/app/strategies/${userStrategy.id}`} state={{ source: 'dashboard', planId: userStrategy.id }} className="w-full">
                       <Button variant="outline" className="w-full">View Details</Button>
                     </Link>
                   </CardFooter>
@@ -225,13 +225,13 @@ const Dashboard = () => {
               );
             })
           ) : (
-            <Card className="border-dashed border-2 border-slate-200">
+            <Card className="border-dashed border-2 border-slate-200 shadow-sm">
               <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
                 <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
                   <Zap size={24} />
                 </div>
-                <h3 className="text-lg font-medium mb-2">Start Your First Strategy</h3>
-                <p className="text-slate-500 mb-4">
+                <h3 className="text-lg font-medium mb-3">Start Your First Strategy</h3>
+                <p className="text-slate-500 mb-5">
                   Choose from our range of automated trading strategies to start investing with just one click.
                 </p>
                 <Link to="/app/strategies">
@@ -244,27 +244,28 @@ const Dashboard = () => {
           )}
           
           {activeUserStrategies.length > 0 && (
-            <Card className="border-dashed border-2 border-slate-200">
+            <Card className="border-dashed border-2 border-slate-200 shadow-sm">
               <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
                 <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
                   <Zap size={24} />
                 </div>
-                <h3 className="text-lg font-medium mb-2">Start a New Strategy</h3>
-                <p className="text-slate-500 mb-4">
+                <h3 className="text-lg font-medium mb-3">Start a New Strategy</h3>
+                <p className="text-slate-500 mb-5">
                   Add another strategy to diversify your automated trading portfolio.
                 </p>
-                <Link to="/app/strategies">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    Add Strategy
-                  </Button>
-                </Link>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setShowStrategyPopup(true)}
+                >
+                  Create Strategy
+                </Button>
               </CardContent>
             </Card>
           )}
         </div>
       </div>
       
-      <div>
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Recent Activities</h2>
           <Link to="/app/history" className="text-blue-600 text-sm flex items-center">
@@ -279,7 +280,7 @@ const Dashboard = () => {
             <Skeleton className="h-16 w-full" />
           </div>
         ) : (
-          <Card>
+          <Card className="shadow-sm">
             <CardContent className="p-0">
               <div className="divide-y">
                 {/* Mock data - in a real app, this would come from an API */}
@@ -309,16 +310,16 @@ const Dashboard = () => {
                     time: '1 day ago',
                   }
                 ].map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  <div key={activity.id} className="flex items-center justify-between p-5">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center ${
                         activity.type === 'Buy' 
                           ? 'bg-green-100 text-green-600' 
                           : 'bg-amber-100 text-amber-600'
                       }`}>
                         {activity.type === 'Buy' 
-                          ? <TrendingUp size={18} /> 
-                          : <TrendingDown size={18} />
+                          ? <TrendingUp size={20} /> 
+                          : <TrendingDown size={20} />
                         }
                       </div>
                       <div>

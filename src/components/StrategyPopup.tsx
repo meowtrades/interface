@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -144,10 +143,10 @@ const StrategyPopup = ({ open, onOpenChange, onConfirm }: StrategyPopupProps) =>
           </Button>
           <Button 
             onClick={handleSubmit} 
-            className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 gap-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
           >
             <Wallet className="w-4 h-4" />
-            Start Strategy
+            One Click Start
           </Button>
         </DialogFooter>
       </DialogContent>

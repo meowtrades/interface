@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Info, RefreshCw, Grid, TrendingUp } from 'lucide-react';
 import { Strategy, StrategyPerformance } from '@/lib/types';
+import StartStrategyDialog from './StartStrategyDialog';
+import { toast } from 'sonner';
+import { startStrategy } from '@/lib/api/strategies';
 
 const IconMap: Record<string, React.ReactNode> = {
   'RefreshCw': <RefreshCw size={20} />,
@@ -38,6 +41,35 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
   const performance = strategy.performance?.[selectedToken] || 
     Object.values(strategy.performance || {})[0] as StrategyPerformance || 
     { year: 0, sixMonths: 0, threeMonths: 0, month: 0, week: 0 };
+
+  // State for strategy dialog
+  const [startDialogOpen, setStartDialogOpen] = useState(false);
+  
+  // Handle starting a strategy
+  const handleStartStrategy = async (data: {
+    strategyId: string;
+    tokenId: string;
+    amount: number;
+    duration: string;
+    riskLevel?: number;
+  }) => {
+    try {
+      // For now, we'll hardcode the chainId to the first supported chain
+      const chainId = strategy.supportedChains[0];
+      
+      await startStrategy(
+        data.strategyId,
+        chainId,
+        data.tokenId,
+        data.amount
+      );
+      
+      toast.success(`${strategy.name} started successfully!`);
+    } catch (error) {
+      console.error('Error starting strategy:', error);
+      toast.error('Failed to start strategy. Please try again.');
+    }
+  };
 
   return (
     <Card>
@@ -100,9 +132,9 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       </CardContent>
       
       <CardFooter className="flex flex-col gap-2 sm:flex-row">
-        <Link to={`/app/strategies/${strategy.id}/start`} className="w-full">
-          <Button className={`w-full ${colorScheme.text.replace('text', 'bg')} hover:opacity-90 text-white`}>
-            Start Strategy
+        <Link to={`/app/strategies/${strategy.id}/start`} state={{ strategyId: strategy.id, token: selectedToken }} className="w-full">
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            One Click Start
           </Button>
         </Link>
         <Button 
@@ -113,6 +145,15 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
           View Details
         </Button>
       </CardFooter>
+
+      {/* Strategy Start Dialog */}
+      <StartStrategyDialog
+        strategy={strategy}
+        open={startDialogOpen}
+        onClose={() => setStartDialogOpen(false)}
+        defaultToken={selectedToken}
+        onStartStrategy={handleStartStrategy}
+      />
     </Card>
   );
 };

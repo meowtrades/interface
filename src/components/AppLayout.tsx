@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -19,10 +18,16 @@ type AppLayoutProps = {
   children: React.ReactNode;
 };
 
+interface UserData {
+  name?: string;
+  authenticated: boolean;
+  [key: string]: unknown; // Changed from 'any' to 'unknown' for better type safety
+}
+
 const AppLayout = ({ children }: AppLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   useEffect(() => {
@@ -33,7 +38,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     }
     
     try {
-      const userData = JSON.parse(userJson);
+      const userData = JSON.parse(userJson) as UserData;
       if (!userData.authenticated) {
         navigate('/login');
         return;
@@ -60,10 +65,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar - Increased width for more space */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200 bg-white">
-        <div className="p-6 border-b border-slate-200 bg-white">
-          <Link to="/" className="flex items-center gap-2">
+        <div className="p-5 border-b border-slate-200 bg-white">
+          <Link to="/" className="flex items-center gap-3">
             <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
               <Cat className="w-7 h-7 text-white" />
             </div>
@@ -72,7 +77,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         </div>
         
         <nav className="flex-1 py-6 px-3">
-          <ul className="space-y-1">
+          <ul className="space-y-4">
             {navItems.map((item, index) => (
               <li key={index}>
                 <Link 
@@ -105,7 +110,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       
       <div className="flex-1 flex flex-col">
         {/* Top Header Bar */}
-        <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+        <header className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
           {/* Mobile Menu Button */}
           <div className="lg:hidden">
             <button 
@@ -127,15 +132,15 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
           
           {/* Right Side Actions */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 rounded-full text-slate-600 hover:bg-slate-100 relative">
-              <Bell size={20} />
+          <div className="flex items-center gap-3">
+            <button className="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
+              <Bell size={18} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-meow-paw rounded-full"></span>
             </button>
             
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-meow-siamese/30 flex items-center justify-center text-meow-paw">
-                <User size={18} />
+              <div className="w-8 h-8 rounded-full bg-meow-siamese/30 flex items-center justify-center text-meow-paw">
+                <User size={16} />
               </div>
               <span className="hidden md:block text-sm font-medium text-slate-700">
                 {user?.name || 'User'}
@@ -147,10 +152,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
-            <div className="flex justify-between items-center p-4 border-b border-slate-200">
-              <Link to="/" className="flex items-center gap-2">
+            <div className="flex justify-between items-center p-5 border-b border-slate-200">
+              <Link to="/" className="flex items-center gap-3">
                 <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
-                  <Cat className="w-6 h-6 text-white" />
+                  <Cat className="w-7 h-7 text-white" />
                 </div>
                 <span className="text-xl font-bold gradient-text">Meowtrade</span>
               </Link>
@@ -162,8 +167,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               </button>
             </div>
             
-            <nav className="p-4">
-              <ul className="space-y-1">
+            <nav className="p-5">
+              <ul className="space-y-4">
                 {navItems.map((item, index) => (
                   <li key={index}>
                     <Link 
@@ -182,7 +187,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 ))}
               </ul>
               
-              <div className="mt-6 pt-6 border-t border-slate-200">
+              <div className="mt-8 pt-6 border-t border-slate-200">
                 <Button 
                   onClick={handleLogout}
                   variant="ghost" 
@@ -196,9 +201,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
         )}
         
-        {/* Page Content */}
-        <main className="flex-1 p-6 bg-slate-50 overflow-auto">
-          <div className="premium-container">
+        {/* Page Content - Increased horizontal padding and added max-width for better content width */}
+        <main className="flex-1 p-5 md:p-8 bg-slate-50 overflow-auto">
+          <div className="premium-container mx-auto w-full max-w-[1400px]">
             {children}
           </div>
         </main>

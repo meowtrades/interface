@@ -183,9 +183,9 @@ const StrategyWhatIfDialog = ({ strategy, open, onClose, defaultToken = 'btc' }:
           <Button
             type="button"
             onClick={onClose}
-            className={`${colorScheme.text.replace('text', 'bg')} hover:opacity-90 text-white sm:order-2`}
+            className="bg-blue-600 hover:bg-blue-700 text-white sm:order-2"
           >
-            Start Strategy Now
+            One Click Start
           </Button>
         </DialogFooter>
       </DialogContent>

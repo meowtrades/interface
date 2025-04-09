@@ -9,6 +9,7 @@ import StrategyCard from '@/components/StrategyCard';
 import { useStrategies } from '@/lib/context/StrategiesContext';
 import { Strategy } from '@/lib/types';
 import { RefreshCw, Grid, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Strategies = () => {
   const {
@@ -96,7 +97,7 @@ const Strategies = () => {
       
       {/* Filter controls */}
       <div className="mb-6 flex flex-wrap gap-3 items-center">
-        <div className="text-sm font-medium text-slate-700">Filter by:</div>
+        {/* <div className="text-sm font-medium text-slate-700">Filter by:</div> */}
         
         <Select onValueChange={handleChainChange} value={selectedChain || undefined} disabled={isLoading}>
           <SelectTrigger className="w-[150px]">
@@ -221,8 +222,10 @@ const Strategies = () => {
                     </div>
                     
                     <div className="flex gap-3">
-                      <Button className="flex-1" variant="outline">View Details</Button>
                       <Button className="flex-1" variant="destructive">Stop Strategy</Button>
+                      <Link to={`/app/strategies/${userStrategy.id}`} state={{ planId: userStrategy.id }} className="flex-1">
+                        <Button className="w-full" variant="outline">View Details</Button>
+                      </Link>
                     </div>
                   </div>
                 );
