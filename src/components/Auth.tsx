@@ -38,16 +38,11 @@ const Auth = ({ onSuccess }: AuthProps) => {
   };
   
   return (
-    <div className="flex flex-col items-center p-6 rounded-xl bg-white shadow-lg border border-slate-200/50 max-w-md w-full">
-      <h2 className="text-2xl font-bold mb-6">Connect to Continue</h2>
-      <p className="text-slate-600 mb-8 text-center">
-        Sign in to access your dashboard and start your one-click trading journey
-      </p>
-      
+    <div className="flex flex-col items-center">
       <Button 
         onClick={handleGoogleAuth}
         disabled={isLoading}
-        className="w-full flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300"
+        className="w-full flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200"
       >
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path
@@ -74,8 +69,8 @@ const Auth = ({ onSuccess }: AuthProps) => {
         <span>{isLoading ? 'Connecting...' : 'Continue with Google'}</span>
       </Button>
       
-      <p className="text-xs text-slate-500 mt-6 text-center">
-        By continuing, you agree to our Terms of Service and Privacy Policy
+      <p className="text-xs text-slate-400 mt-4 text-center">
+        By continuing, you agree to our Terms & Privacy Policy
       </p>
     </div>
   );
