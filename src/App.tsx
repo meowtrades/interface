@@ -11,6 +11,7 @@ import Strategies from "./pages/Strategies";
 import MockTrades from "./pages/MockTrades";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
+import StrategyDetail from "./pages/StrategyDetail";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/app" element={<RequireAuth><Navigate to="/app/dashboard" replace /></RequireAuth>} />
           <Route path="/app/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/app/strategies" element={<RequireAuth><Strategies /></RequireAuth>} />
+          <Route path="/app/strategies/:strategyId" element={<RequireAuth><StrategyDetail /></RequireAuth>} />
           <Route path="/app/mock-trades" element={<RequireAuth><MockTrades /></RequireAuth>} />
           <Route path="/app/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
           

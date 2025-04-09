@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
@@ -16,18 +15,15 @@ const Dashboard = () => {
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
   
   useEffect(() => {
-    // Mock data
     setTotalValue(1245.82);
     setTotalInvested(1000);
     setTotalProfit(245.82);
     setActiveStrategies(2);
     setMockTrades(3);
     
-    // Check if we should show strategy popup
     const shouldShowPopup = localStorage.getItem('showStrategyPopup') === 'true';
     if (shouldShowPopup) {
       setShowStrategyPopup(true);
-      // Clear the flag
       localStorage.removeItem('showStrategyPopup');
     }
   }, []);
@@ -85,8 +81,6 @@ const Dashboard = () => {
 
   const handleStrategyStart = (strategyData: { amount: number; token: string }) => {
     console.log('Starting strategy with:', strategyData);
-    // In a real app, you'd make an API call to start the strategy
-    // For now, we'll just update the state to simulate adding a new strategy
     setActiveStrategies(prev => prev + 1);
   };
   
@@ -97,14 +91,12 @@ const Dashboard = () => {
         <p className="text-slate-600">Welcome back! Here's your trading overview.</p>
       </div>
       
-      {/* Strategy Popup */}
       <StrategyPopup
         open={showStrategyPopup}
         onOpenChange={setShowStrategyPopup}
         onConfirm={handleStrategyStart}
       />
       
-      {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
@@ -155,7 +147,6 @@ const Dashboard = () => {
         </Card>
       </div>
       
-      {/* Active Plans */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Active Plans</h2>
@@ -226,7 +217,6 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Recent Activity */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Recent Activity</h2>

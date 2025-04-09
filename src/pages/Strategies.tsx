@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
@@ -317,7 +316,7 @@ const Strategies = () => {
                 <Button variant="destructive" className="w-full">
                   Stop Strategy
                 </Button>
-                <Link to="/app/strategies/smart-dca/details/plan1" className="w-full">
+                <Link to="/app/strategies/plan1" className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
@@ -379,7 +378,7 @@ const Strategies = () => {
                 <Button variant="destructive" className="w-full">
                   Stop Strategy
                 </Button>
-                <Link to="/app/strategies/grid-trading/details/plan2" className="w-full">
+                <Link to="/app/strategies/plan2" className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
