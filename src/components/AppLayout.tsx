@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import {
   LineChart, 
   CircleDollarSign, 
   Wallet, 
-  Settings, 
   LogOut,
   Menu,
   X,
@@ -56,7 +56,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { icon: <LineChart size={20} />, label: 'Strategies', path: '/app/strategies' },
     { icon: <CircleDollarSign size={20} />, label: 'Mock Trades', path: '/app/mock-trades' },
     { icon: <Wallet size={20} />, label: 'Wallet', path: '/app/wallet' },
-    { icon: <Settings size={20} />, label: 'Settings', path: '/app/settings' },
   ];
 
   return (
@@ -124,7 +123,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               {location.pathname.includes('strategies') && 'Trading Strategies'}
               {location.pathname.includes('mock-trades') && 'Mock Trading'}
               {location.pathname.includes('wallet') && 'Wallet'}
-              {location.pathname.includes('settings') && 'Settings'}
             </h1>
           </div>
           

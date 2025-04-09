@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign } from 'lucide-react';
@@ -53,24 +52,6 @@ const Index = () => {
       icon: <ShieldCheck className="w-6 h-6 text-meow-paw" />,
       title: "Risk-Free Mock Trading",
       description: "Practice with virtual funds before risking real money. Perfect your strategy in a safe environment."
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "Trading used to be as confusing as a ball of yarn. Meowtrade made it as simple as a cat's nap.",
-      name: "Sarah L.",
-      role: "Crypto Novice"
-    },
-    {
-      quote: "The mock trading feature helped me understand strategies without risking my actual catnip fund.",
-      name: "Michael T.",
-      role: "Cautious Investor"
-    },
-    {
-      quote: "Grid trading felt complicated, but Meowtrade made it as smooth as a cat's whisker.",
-      name: "Aisha K.",
-      role: "Passive Investor"
     }
   ];
 
@@ -283,27 +264,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Testimonials */}
-      <section className="py-20 px-6 bg-meow-whisker">
-        <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-meow-midnight">
-            What Our Users <span className="gradient-text">Say</span>
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="p-6 rounded-xl glass-card">
-                <p className="text-meow-charcoal/80 italic mb-6">"{testimonial.quote}"</p>
-                <div>
-                  <p className="font-medium text-meow-midnight">{testimonial.name}</p>
-                  <p className="text-sm text-meow-charcoal/60">{testimonial.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      
       {/* CTA Section */}
       <section className="py-20 px-6 bg-gradient-to-r from-meow-paw to-meow-tabby text-white">
         <div className="container mx-auto text-center">
@@ -312,9 +272,9 @@ const Index = () => {
             Try our risk-free mock trading environment today, or jump right into real trading.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button 
+            <Button
               onClick={handleExploreDemo}
-              className="bg-white text-meow-paw hover:bg-white/90 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
+              className="bg-white text-meow-paw hover:bg-meow-whisker/50 px-8 py-6 text-lg rounded-xl hover:shadow-xl transition-all"
             >
               Try Mock Trading
               <TrendingUp className="ml-2 h-5 w-5" />
