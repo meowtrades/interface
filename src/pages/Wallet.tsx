@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import TokenPriceChart from '@/components/TokenPriceChart';
 
 const Wallet = () => {
   const [selectedChain, setSelectedChain] = useState("ethereum");
@@ -110,7 +111,7 @@ const Wallet = () => {
             </div>
           </CardHeader>
           <CardContent className="pb-0">
-            <div className="flex flex-col items-start p-6 bg-slate-50 rounded-lg">
+            <div className="flex flex-col items-start p-6 bg-slate-50 rounded-lg mb-6">
               <div className="flex items-center gap-3 mb-1">
                 <div className="h-9 w-9 rounded-full bg-meow-paw/20 flex items-center justify-center">
                   <WalletIcon size={18} className="text-meow-paw" />
@@ -126,6 +127,9 @@ const Wallet = () => {
                 </p>
               </div>
             </div>
+
+            {/* Token Price Chart */}
+            <TokenPriceChart token={selectedChain as 'ethereum' | 'bitcoin' | 'solana'} height={250} />
 
             <div className="mt-6">
               <div className="flex flex-col sm:flex-row gap-3">

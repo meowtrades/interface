@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
@@ -7,6 +6,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from '@/components/ui/separator';
 import { BarChart2, ArrowRight, Info, RefreshCw, Grid, TrendingUp, Clock, RefreshCcw } from 'lucide-react';
+import StrategyPerformanceChart from '@/components/StrategyPerformanceChart';
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis } from 'recharts';
 
 // Mock historical performance data
 const performanceData = {
@@ -52,6 +54,11 @@ const Strategies = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Trading Strategies</h1>
         <p className="text-slate-600">Explore and launch one-click trading strategies.</p>
+      </div>
+      
+      {/* Strategy Performance Chart */}
+      <div className="mb-8">
+        <StrategyPerformanceChart />
       </div>
       
       <Tabs defaultValue="available" className="mb-8">
@@ -305,10 +312,33 @@ const Strategies = () => {
                   </div>
                 </div>
                 
+                {/* Replace placeholder with actual chart */}
                 <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-slate-400">
-                    <BarChart2 size={32} className="mx-auto mb-1" />
-                    <span className="text-xs">Performance Chart</span>
+                  {/* Small performance chart for strategy */}
+                  <div className="w-full h-full">
+                    <ChartContainer config={{
+                      value: {
+                        label: "BTC Strategy Value",
+                        theme: {
+                          light: "#3b82f6",
+                          dark: "#3b82f6"
+                        }
+                      }
+                    }}>
+                      <AreaChart data={[
+                        { day: '1', value: 600 },
+                        { day: '2', value: 605 },
+                        { day: '3', value: 598 },
+                        { day: '4', value: 610 },
+                        { day: '5', value: 620 },
+                        { day: '6', value: 635 },
+                        { day: '7', value: 645 },
+                      ]}>
+                        <XAxis dataKey="day" />
+                        <YAxis hide />
+                        <Area type="monotone" dataKey="value" fill="#dbeafe" fillOpacity={0.8} stroke="var(--color-value)" />
+                      </AreaChart>
+                    </ChartContainer>
                   </div>
                 </div>
               </CardContent>
@@ -367,10 +397,33 @@ const Strategies = () => {
                   </div>
                 </div>
                 
+                {/* Replace placeholder with actual chart */}
                 <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-slate-400">
-                    <BarChart2 size={32} className="mx-auto mb-1" />
-                    <span className="text-xs">Performance Chart</span>
+                  {/* Small performance chart for strategy */}
+                  <div className="w-full h-full">
+                    <ChartContainer config={{
+                      value: {
+                        label: "ETH Strategy Value",
+                        theme: {
+                          light: "#a855f7",
+                          dark: "#a855f7"
+                        }
+                      }
+                    }}>
+                      <AreaChart data={[
+                        { day: '1', value: 400 },
+                        { day: '2', value: 420 },
+                        { day: '3', value: 450 },
+                        { day: '4', value: 480 },
+                        { day: '5', value: 520 },
+                        { day: '6', value: 580 },
+                        { day: '7', value: 600 },
+                      ]}>
+                        <XAxis dataKey="day" />
+                        <YAxis hide />
+                        <Area type="monotone" dataKey="value" fill="#f3e8ff" fillOpacity={0.8} stroke="var(--color-value)" />
+                      </AreaChart>
+                    </ChartContainer>
                   </div>
                 </div>
               </CardContent>
