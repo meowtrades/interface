@@ -190,7 +190,7 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Link to={`/app/strategies/${plan.id}`} className="w-full">
+                <Link to={`/app/strategies/${plan.id}`} state={{ source: 'dashboard' }} className="w-full">
                   <Button variant="outline" className="w-full">View Details</Button>
                 </Link>
               </CardFooter>

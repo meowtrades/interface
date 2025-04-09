@@ -94,7 +94,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="gradient-text">Meowtrade</span>: <br />
+              <span className="gradient-text">Meowtrade</span><br />
               <span className="text-meow-midnight">Trading as Smooth as a Cat's Purr</span>
             </h1>
             <p className="text-lg text-meow-charcoal/80 mb-10 max-w-2xl mx-auto">
@@ -103,7 +103,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={handleStartStrategy}
-                className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-80 text-white px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
               >
                 Launch App
                 <PawPrint className="ml-2 h-5 w-5" />
@@ -111,7 +111,7 @@ const Index = () => {
               <Button
                 onClick={handleExploreDemo}
                 variant="outline" 
-                className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-whisker/50 transition-colors"
+                className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-whisker/50 hover:text-meow-midnight hover:shadow-md transition-all"
               >
                 Try Risk-Free Demo
                 <TrendingUp className="ml-2 h-5 w-5" />
@@ -127,26 +127,30 @@ const Index = () => {
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
             </div>
             <div className="p-6 bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                 {strategyCards.map((strategy, index) => (
                   <div 
                     key={index} 
-                    className="rounded-lg p-6 glass-card hover:shadow-lg transition-all"
+                    className="rounded-lg p-6 glass-card hover:shadow-lg transition-all grid grid-rows-[auto_1fr_auto] h-full"
                   >
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-bold text-xl text-meow-midnight">{strategy.name}</h3>
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r ${strategy.color}`}>
-                        {strategy.performance} ({strategy.timeframe})
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="font-bold text-xl text-meow-midnight">{strategy.name}</h3>
+                        <div className={`px-3 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r ${strategy.color}`}>
+                          {strategy.performance} ({strategy.timeframe})
+                        </div>
                       </div>
+                      <p className="text-meow-charcoal/80 mb-4 text-sm">
+                        {strategy.description}
+                      </p>
                     </div>
-                    <p className="text-meow-charcoal/80 mb-4 text-sm">
-                      {strategy.description}
-                    </p>
-                    <div className="h-32 rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-slate-50">
+                    
+                    <div className="h-32 rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-slate-50 self-end">
                       <div className="w-full h-full flex items-center justify-center">
                         {strategy.icon}
                       </div>
                     </div>
+                    
                     <Button 
                       size="sm" 
                       onClick={handleStartStrategy}
@@ -232,7 +236,7 @@ const Index = () => {
                 
                 <Button 
                   onClick={handleExploreDemo}
-                  className="w-full md:w-auto mt-4 bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white py-4 px-6 rounded-xl"
+                  className="w-full md:w-auto mt-4 bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-80 text-white py-4 px-6 rounded-xl hover:shadow-lg transition-all"
                 >
                   Try Mock Trading Now
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -304,14 +308,14 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               onClick={handleExploreDemo}
-              className="bg-white text-meow-paw hover:bg-meow-whisker/50 px-8 py-6 text-lg rounded-xl hover:shadow-xl transition-all"
+              className="bg-white text-meow-paw hover:bg-meow-whisker/50 hover:text-meow-midnight hover:shadow-xl px-8 py-6 text-lg rounded-xl transition-all"
             >
               Try Mock Trading
               <TrendingUp className="ml-2 h-5 w-5" />
             </Button>
             <Button 
               onClick={handleStartStrategy}
-              className="bg-meow-midnight text-white hover:bg-meow-midnight/90 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
+              className="bg-meow-midnight text-white hover:bg-meow-midnight/90 hover:shadow-xl px-8 py-6 text-lg rounded-xl transition-all"
             >
               Launch Full App
               <ArrowRight className="ml-2 h-5 w-5" />

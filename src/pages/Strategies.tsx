@@ -152,7 +152,7 @@ const Strategies = () => {
                     Start Strategy
                   </Button>
                 </Link>
-                <Link to="/app/strategies/smart-dca/details" className="w-full">
+                <Link to="/app/strategies/smart-dca/details" state={{ source: 'strategies' }} className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
@@ -250,7 +250,7 @@ const Strategies = () => {
                     Start Strategy
                   </Button>
                 </Link>
-                <Link to="/app/strategies/grid-trading/details" className="w-full">
+                <Link to="/app/strategies/grid-trading/details" state={{ source: 'strategies' }} className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
@@ -316,7 +316,7 @@ const Strategies = () => {
                 <Button variant="destructive" className="w-full">
                   Stop Strategy
                 </Button>
-                <Link to="/app/strategies/plan1" className="w-full">
+                <Link to="/app/strategies/plan1" state={{ source: 'dashboard' }} className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
@@ -378,7 +378,7 @@ const Strategies = () => {
                 <Button variant="destructive" className="w-full">
                   Stop Strategy
                 </Button>
-                <Link to="/app/strategies/plan2" className="w-full">
+                <Link to="/app/strategies/plan2" state={{ source: 'dashboard' }} className="w-full">
                   <Button variant="outline" className="w-full">
                     View Details
                   </Button>
