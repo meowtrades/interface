@@ -18,10 +18,15 @@ type AppLayoutProps = {
   children: React.ReactNode;
 };
 
+type UserData = {
+  authenticated: boolean;
+  name?: string;
+}
+
 const AppLayout = ({ children }: AppLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   useEffect(() => {
@@ -59,44 +64,44 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      {/* Desktop Sidebar - Reduced width from w-64 to w-56 */}
-      <aside className="hidden lg:flex flex-col w-56 border-r border-slate-200 bg-white">
-        <div className="p-4 border-b border-slate-200 bg-white">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
-              <Cat className="w-6 h-6 text-white" />
+      {/* Desktop Sidebar - Increased width from w-56 to w-72 */}
+      <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
+        <div className="p-6 border-b border-slate-200 bg-white">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
+              <Cat className="w-7 h-7 text-white" />
             </div>
-            <span className="text-lg font-bold gradient-text">Meowtrade</span>
+            <span className="text-xl font-bold gradient-text">Meowtrade</span>
           </Link>
         </div>
         
-        <nav className="flex-1 py-4 px-2">
-          <ul className="space-y-1">
+        <nav className="flex-1 py-6 px-4">
+          <ul className="space-y-2.5">
             {navItems.map((item, index) => (
               <li key={index}>
                 <Link 
                   to={item.path} 
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     location.pathname === item.path ? 
                     'bg-meow-siamese/10 text-meow-paw font-medium' : 
                     'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   {item.icon}
-                  <span>{item.label}</span>
+                  <span className="text-base">{item.label}</span>
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
         
-        <div className="p-3 border-t border-slate-200">
+        <div className="p-5 border-t border-slate-200">
           <Button 
             onClick={handleLogout}
             variant="ghost" 
-            className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-50 py-3 px-4 h-auto"
           >
-            <LogOut size={18} className="mr-2" />
+            <LogOut size={18} className="mr-3" />
             Log out
           </Button>
         </div>
@@ -104,20 +109,20 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       
       <div className="flex-1 flex flex-col">
         {/* Top Header Bar */}
-        <header className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
           {/* Mobile Menu Button */}
           <div className="lg:hidden">
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-slate-600 rounded-lg hover:bg-slate-100"
+              className="p-2.5 text-slate-600 rounded-lg hover:bg-slate-100"
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
           
           {/* Search or Title */}
           <div className="hidden md:block">
-            <h1 className="text-lg font-medium text-slate-800">
+            <h1 className="text-xl font-medium text-slate-800">
               {location.pathname.includes('dashboard') && 'Dashboard'}
               {location.pathname.includes('strategies') && 'Trading Strategies'}
               {location.pathname.includes('mock-trades') && 'Mock Trading'}
@@ -126,17 +131,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
           
           {/* Right Side Actions */}
-          <div className="flex items-center gap-3">
-            <button className="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-meow-paw rounded-full"></span>
+          <div className="flex items-center gap-5">
+            <button className="p-2.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
+              <Bell size={20} />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-meow-paw rounded-full"></span>
             </button>
             
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-meow-siamese/30 flex items-center justify-center text-meow-paw">
-                <User size={16} />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-meow-siamese/30 flex items-center justify-center text-meow-paw">
+                <User size={18} />
               </div>
-              <span className="hidden md:block text-sm font-medium text-slate-700">
+              <span className="hidden md:block text-base font-medium text-slate-700">
                 {user?.name || 'User'}
               </span>
             </div>
@@ -146,28 +151,28 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
-            <div className="flex justify-between items-center p-4 border-b border-slate-200">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
-                  <Cat className="w-6 h-6 text-white" />
+            <div className="flex justify-between items-center p-6 border-b border-slate-200">
+              <Link to="/" className="flex items-center gap-3">
+                <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
+                  <Cat className="w-7 h-7 text-white" />
                 </div>
                 <span className="text-xl font-bold gradient-text">Meowtrade</span>
               </Link>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 text-slate-600 rounded-lg hover:bg-slate-100"
+                className="p-2.5 text-slate-600 rounded-lg hover:bg-slate-100"
               >
-                <X size={20} />
+                <X size={22} />
               </button>
             </div>
             
-            <nav className="p-4">
-              <ul className="space-y-1">
+            <nav className="p-6">
+              <ul className="space-y-3">
                 {navItems.map((item, index) => (
                   <li key={index}>
                     <Link 
                       to={item.path} 
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      className={`flex items-center gap-4 px-5 py-4 rounded-lg transition-colors ${
                         location.pathname === item.path ? 
                         'bg-meow-siamese/10 text-meow-paw font-medium' : 
                         'text-slate-600 hover:bg-slate-50'
@@ -175,19 +180,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.icon}
-                      <span>{item.label}</span>
+                      <span className="text-base">{item.label}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
               
-              <div className="mt-6 pt-6 border-t border-slate-200">
+              <div className="mt-8 pt-6 border-t border-slate-200">
                 <Button 
                   onClick={handleLogout}
                   variant="ghost" 
-                  className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-50 py-4 px-5 h-auto"
                 >
-                  <LogOut size={20} className="mr-3" />
+                  <LogOut size={20} className="mr-4" />
                   Log out
                 </Button>
               </div>
@@ -196,7 +201,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
         
         {/* Page Content - Increased horizontal padding and added max-width for better content width */}
-        <main className="flex-1 p-5 md:p-8 bg-slate-50 overflow-auto">
+        <main className="flex-1 p-6 md:p-10 bg-slate-50 overflow-auto">
           <div className="premium-container mx-auto w-full max-w-[1400px]">
             {children}
           </div>
