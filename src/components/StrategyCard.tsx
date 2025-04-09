@@ -132,11 +132,12 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       </CardContent>
       
       <CardFooter className="flex flex-col gap-2 sm:flex-row">
-        <Link to={`/app/strategies/${strategy.id}/start`} state={{ strategyId: strategy.id, token: selectedToken }} className="w-full">
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-            One Click Start
-          </Button>
-        </Link>
+        <Button 
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          onClick={() => setStartDialogOpen(true)}
+        >
+          One Click Start
+        </Button>
         <Button 
           variant="outline" 
           className="w-full"

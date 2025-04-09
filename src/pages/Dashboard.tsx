@@ -253,12 +253,11 @@ const Dashboard = () => {
                 <p className="text-slate-500 mb-5">
                   Add another strategy to diversify your automated trading portfolio.
                 </p>
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={() => setShowStrategyPopup(true)}
-                >
-                  Create Strategy
-                </Button>
+                <Link to="/app/strategies">
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    One Click Start
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           )}

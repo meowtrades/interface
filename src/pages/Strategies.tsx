@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import StrategyWhatIfDialog from '@/components/StrategyWhatIfDialog';
+import StrategySimulationDialog from '@/components/StrategySimulationDialog';
 import StrategyCard from '@/components/StrategyCard';
 import { useStrategies } from '@/lib/context/StrategiesContext';
 import { Strategy } from '@/lib/types';
@@ -28,7 +28,7 @@ const Strategies = () => {
     getStrategiesForChainAndToken
   } = useStrategies();
 
-  const [whatIfDialogOpen, setWhatIfDialogOpen] = useState(false);
+  const [simulationDialogOpen, setSimulationDialogOpen] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   
   // Get supported tokens for the current chain
@@ -53,7 +53,7 @@ const Strategies = () => {
     const strategy = strategies.find(s => s.id === strategyId);
     if (strategy) {
       setSelectedStrategy(strategy);
-      setWhatIfDialogOpen(true);
+      setSimulationDialogOpen(true);
     }
   };
   
@@ -65,9 +65,9 @@ const Strategies = () => {
     setSelectedToken(value);
   };
   
-  // Handle closing the what-if dialog
-  const handleWhatIfClose = () => {
-    setWhatIfDialogOpen(false);
+  // Handle closing the simulation dialog
+  const handleSimulationClose = () => {
+    setSimulationDialogOpen(false);
   };
   
   // Switch to available strategies tab
@@ -245,12 +245,12 @@ const Strategies = () => {
         </TabsContent>
       </Tabs>
       
-      {/* WhatIf dialog */}
+      {/* Simulation dialog */}
       {selectedStrategy && (
-        <StrategyWhatIfDialog 
+        <StrategySimulationDialog 
           strategy={selectedStrategy}
-          open={whatIfDialogOpen}
-          onClose={handleWhatIfClose}
+          open={simulationDialogOpen}
+          onClose={handleSimulationClose}
           defaultToken={selectedToken || 'btc'}
         />
       )}
