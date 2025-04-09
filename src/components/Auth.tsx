@@ -1,7 +1,7 @@
-
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { authClient } from "@/lib/auth";
 
 type AuthProps = {
   onSuccess?: () => void;
@@ -13,33 +13,41 @@ const Auth = ({ onSuccess }: AuthProps) => {
 
   // This is a mock authentication function
   // In a real app, this would connect to Google Auth
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
-    
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "http://localhost:8080",
+      errorCallbackURL: "http://localhost:8080",
+    });
+
     // Mock auth delay
-    setTimeout(() => {
-      // Store a mock user token
-      localStorage.setItem('cryptoclick_user', JSON.stringify({
-        id: 'user123',
-        name: 'Demo User',
-        email: 'demo@example.com',
-        walletAddress: '0x123...abc',
-        authenticated: true
-      }));
-      
-      setIsLoading(false);
-      
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/app/dashboard');
-      }
-    }, 1500);
+    // setTimeout(() => {
+    //   // Store a mock user token
+    //   localStorage.setItem(
+    //     "cryptoclick_user",
+    //     JSON.stringify({
+    //       id: "user123",
+    //       name: "Demo User",
+    //       email: "demo@example.com",
+    //       walletAddress: "0x123...abc",
+    //       authenticated: true,
+    //     })
+    //   );
+
+    //   setIsLoading(false);
+
+    //   if (onSuccess) {
+    //     onSuccess();
+    //   } else {
+    //     navigate("/app/dashboard");
+    //   }
+    // }, 1500);
   };
-  
+
   return (
     <div className="flex flex-col items-center">
-      <Button 
+      <Button
         onClick={handleGoogleAuth}
         disabled={isLoading}
         className="w-full flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200"
@@ -66,9 +74,9 @@ const Auth = ({ onSuccess }: AuthProps) => {
             className="fill-[#EA4335]"
           />
         </svg>
-        <span>{isLoading ? 'Connecting...' : 'Continue with Google'}</span>
+        <span>{isLoading ? "Connecting..." : "Continue with Google"}</span>
       </Button>
-      
+
       <p className="text-xs text-slate-400 mt-4 text-center">
         By continuing, you agree to our Terms & Privacy Policy
       </p>
