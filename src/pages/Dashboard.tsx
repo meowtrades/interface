@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, ArrowRight, BarChart2, Zap } from 'lucide-react';
 import StrategyPopup from '@/components/StrategyPopup';
-import PortfolioChart from '@/components/PortfolioChart';
-import StrategyPerformanceChart from '@/components/StrategyPerformanceChart';
 
 const Dashboard = () => {
   const [totalValue, setTotalValue] = useState(0);
@@ -157,82 +155,74 @@ const Dashboard = () => {
         </Card>
       </div>
       
-      {/* Portfolio Performance Chart */}
+      {/* Active Plans */}
       <div className="mb-8">
-        <PortfolioChart height={300} />
-      </div>
-      
-      {/* Active Plans and Strategy Performance */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2">
-          <StrategyPerformanceChart />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Active Plans</h2>
+          <Link to="/app/strategies" className="text-blue-600 text-sm flex items-center">
+            View all <ArrowRight size={16} className="ml-1" />
+          </Link>
         </div>
         
-        <div>
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Active Plans</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {mockActivePlans.map((plan) => (
-              <Card key={plan.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardDescription>{plan.type}</CardDescription>
-                      <CardTitle className="text-xl">{plan.token}</CardTitle>
-                    </div>
-                    <div className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
-                      plan.type === 'Smart DCA' ? 'bg-blue-600' : 'bg-purple-600'
-                    }`}>
-                      {plan.type}
-                    </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {mockActivePlans.map((plan) => (
+            <Card key={plan.id}>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardDescription>{plan.type}</CardDescription>
+                    <CardTitle className="text-xl">{plan.token}</CardTitle>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">Current Value</span>
-                      <span className="font-medium">${plan.value.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">Starting Value</span>
-                      <span className="font-medium">${plan.starting.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">Profit/Loss</span>
-                      <span className={`font-medium ${plan.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {plan.profit >= 0 ? '+' : '-'}${Math.abs(plan.profit).toFixed(2)} ({plan.profitPercentage.toFixed(2)}%)
-                      </span>
-                    </div>
+                  <div className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
+                    plan.type === 'Smart DCA' ? 'bg-blue-600' : 'bg-purple-600'
+                  }`}>
+                    {plan.type}
                   </div>
-                </CardContent>
-                <CardFooter>
-                  <Link to={`/app/strategies/${plan.id}`} className="w-full">
-                    <Button variant="outline" className="w-full">View Details</Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-            
-            <Card className="border-dashed border-2 border-slate-200">
-              <CardContent className="flex flex-col items-center justify-center h-full py-8">
-                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
-                  <Zap size={24} />
                 </div>
-                <h3 className="text-xl font-medium mb-2">Start a New Strategy</h3>
-                <p className="text-slate-500 text-sm text-center mb-4">
-                  Choose from our one-click trading strategies to grow your portfolio
-                </p>
-                <Button 
-                  onClick={() => setShowStrategyPopup(true)}
-                  className="bg-gradient-to-r from-meow-paw to-meow-tabby text-white hover:opacity-90"
-                >
-                  Start New Strategy
-                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 text-sm">Current Value</span>
+                    <span className="font-medium">${plan.value.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 text-sm">Starting Value</span>
+                    <span className="font-medium">${plan.starting.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 text-sm">Profit/Loss</span>
+                    <span className={`font-medium ${plan.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {plan.profit >= 0 ? '+' : '-'}${Math.abs(plan.profit).toFixed(2)} ({plan.profitPercentage.toFixed(2)}%)
+                    </span>
+                  </div>
+                </div>
               </CardContent>
+              <CardFooter>
+                <Link to={`/app/strategies/${plan.id}`} className="w-full">
+                  <Button variant="outline" className="w-full">View Details</Button>
+                </Link>
+              </CardFooter>
             </Card>
-          </div>
+          ))}
+          
+          <Card className="border-dashed border-2 border-slate-200">
+            <CardContent className="flex flex-col items-center justify-center h-full py-8">
+              <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
+                <Zap size={24} />
+              </div>
+              <h3 className="text-xl font-medium mb-2">Start a New Strategy</h3>
+              <p className="text-slate-500 text-sm text-center mb-4">
+                Choose from our one-click trading strategies to grow your portfolio
+              </p>
+              <Button 
+                onClick={() => setShowStrategyPopup(true)}
+                className="bg-gradient-to-r from-meow-paw to-meow-tabby text-white hover:opacity-90"
+              >
+                Start New Strategy
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
       
