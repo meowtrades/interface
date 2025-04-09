@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -9,12 +8,72 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TrendingUp, TrendingDown, Plus, AlertCircle, BarChart2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+// Mock data for performance chart
+const generateMockChartData = (timeframe) => {
+  const currentDate = new Date();
+  const data = [];
+  let value = 1000;
+  
+  if (timeframe === '1m') {
+    // 1 month data - daily points
+    for (let i = 30; i >= 0; i--) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - i);
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      // Add some randomness to the value
+      value = value * (1 + (Math.random() * 0.03 - 0.01));
+      data.push({ date: formattedDate, value: Math.round(value) });
+    }
+  } else if (timeframe === '3m') {
+    // 3 months data - every 3 days
+    for (let i = 90; i >= 0; i -= 3) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - i);
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      value = value * (1 + (Math.random() * 0.04 - 0.015));
+      data.push({ date: formattedDate, value: Math.round(value) });
+    }
+  } else if (timeframe === '6m') {
+    // 6 months data - weekly points
+    for (let i = 26; i >= 0; i--) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - (i * 7));
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      value = value * (1 + (Math.random() * 0.05 - 0.02));
+      data.push({ date: formattedDate, value: Math.round(value) });
+    }
+  } else {
+    // 1 year data - bi-weekly points
+    for (let i = 26; i >= 0; i--) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - (i * 14));
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      value = value * (1 + (Math.random() * 0.08 - 0.03));
+      data.push({ date: formattedDate, value: Math.round(value) });
+    }
+  }
+  
+  return data;
+};
 
 const MockTrades = () => {
   const [amount, setAmount] = useState('100');
   const [selectedStrategy, setSelectedStrategy] = useState('smartDca');
   const [selectedToken, setSelectedToken] = useState('btc');
   const [riskLevel, setRiskLevel] = useState('moderate');
+  const [chartTimeframe, setChartTimeframe] = useState('1y');
+  const [chartData, setChartData] = useState(generateMockChartData('1y'));
+  
+  const handleTimeframeChange = (timeframe) => {
+    setChartTimeframe(timeframe);
+    setChartData(generateMockChartData(timeframe));
+  };
   
   const handleStartMockTrade = () => {
     toast.success("Mock trade started successfully!", {
@@ -144,15 +203,97 @@ const MockTrades = () => {
         
         <Card className="w-full lg:w-2/3">
           <CardHeader>
-            <CardTitle>Strategy Performance</CardTitle>
+            <CardTitle>Simulate Performance</CardTitle>
             <CardDescription>
-              How a $100 investment would have performed over time
+              How a $1000 investment would have performed over time
             </CardDescription>
           </CardHeader>
-          <CardContent className="min-h-[320px] flex items-center justify-center bg-slate-50 rounded-lg">
-            <div className="text-center text-slate-500">
-              <BarChart2 size={48} className="mx-auto mb-2" />
-              <p className="text-sm">Select a strategy and token to view performance</p>
+          <CardContent>
+            <div className="flex justify-end space-x-2 mb-4">
+              <Button 
+                variant={chartTimeframe === '1m' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handleTimeframeChange('1m')}
+                className={chartTimeframe === '1m' ? 'bg-purple-700 hover:bg-purple-800' : ''}
+              >
+                1M
+              </Button>
+              <Button 
+                variant={chartTimeframe === '3m' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handleTimeframeChange('3m')}
+                className={chartTimeframe === '3m' ? 'bg-purple-700 hover:bg-purple-800' : ''}
+              >
+                3M
+              </Button>
+              <Button 
+                variant={chartTimeframe === '6m' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handleTimeframeChange('6m')}
+                className={chartTimeframe === '6m' ? 'bg-purple-700 hover:bg-purple-800' : ''}
+              >
+                6M
+              </Button>
+              <Button 
+                variant={chartTimeframe === '1y' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handleTimeframeChange('1y')}
+                className={chartTimeframe === '1y' ? 'bg-purple-700 hover:bg-purple-800' : ''}
+              >
+                1Y
+              </Button>
+            </div>
+            <div className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={chartData}
+                  margin={{
+                    top: 10,
+                    right: 10,
+                    left: 0,
+                    bottom: 0,
+                  }}
+                >
+                  <defs>
+                    <linearGradient id="colorPerformance" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9a71ff" stopOpacity={0.6}/>
+                      <stop offset="95%" stopColor="#9a71ff" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e2e8f0' }}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={value => `$${value.toLocaleString()}`}
+                    domain={['dataMin - 200', 'dataMax + 200']}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`$${value.toLocaleString()}`, 'Value']}
+                    labelFormatter={(label) => `Date: ${label}`}
+                    contentStyle={{ 
+                      borderRadius: '6px',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={2}
+                    fill="url(#colorPerformance)" 
+                    dot={false}
+                    activeDot={{ r: 6, stroke: "#FFF", strokeWidth: 2, fill: "#8b5cf6" }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -210,9 +351,6 @@ const MockTrades = () => {
                     </div>
                   </div>
                   
-                  <div className="mt-4 h-20 bg-slate-100 rounded-lg flex items-center justify-center">
-                    <span className="text-xs text-slate-400">Performance Chart</span>
-                  </div>
                 </CardContent>
                 
                 <CardFooter className="flex gap-2">

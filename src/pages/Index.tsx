@@ -166,81 +166,83 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Mock Trading Highlight Section - NEW */}
-      <section className="py-16 px-6 bg-white">
+      {/* Mock Trading Highlight Section */}
+      <section className="py-20 px-6 bg-white">
         <div className="container mx-auto">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10">
-              <span className="text-meow-paw font-medium">FOR NEW TRADERS</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-                Try Before You <span className="gradient-text">Invest</span>
+            <div className="text-center mb-12">
+              <p className="text-blue-600 font-medium text-lg mb-2">FOR NEW TRADERS</p>
+              <h2 className="text-3xl md:text-5xl font-bold mt-2 mb-6">
+                Try Before You <span className="text-blue-600">Invest</span>
               </h2>
-              <p className="text-meow-charcoal/80 max-w-2xl mx-auto">
+              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
                 Build confidence and perfect your strategy with our risk-free mock trading environment. 
                 Practice with virtual funds and see real market results before committing actual money.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div className="rounded-xl shadow-lg overflow-hidden border border-slate-100">
-                <div className="h-8 bg-meow-whisker flex items-center px-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                <div className="h-8 bg-gray-50 flex items-center px-3">
                   <div className="flex gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-400"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                     <div className="w-3 h-3 rounded-full bg-green-400"></div>
                   </div>
                 </div>
-                <div className="p-4 bg-white">
-                  <div className="h-64 bg-slate-50 rounded-lg flex items-center justify-center">
+                <div className="px-4 pt-2 pb-4 bg-white">
+                  <div className="h-[300px] bg-white flex items-center justify-center">
                     <MockTradingChart />
                   </div>
                 </div>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-10">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-meow-cream flex items-center justify-center flex-shrink-0">
-                    <BadgeDollarSign className="w-6 h-6 text-meow-paw" />
+                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <BadgeDollarSign className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium text-meow-midnight mb-2">Virtual Portfolio</h3>
-                    <p className="text-meow-charcoal/80">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Virtual Portfolio</h3>
+                    <p className="text-gray-600 text-base">
                       Start with $100,000 in virtual funds. Experience the platform with zero financial risk.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-meow-cream flex items-center justify-center flex-shrink-0">
-                    <LineChart className="w-6 h-6 text-meow-paw" />
+                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <LineChart className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium text-meow-midnight mb-2">Real Market Data</h3>
-                    <p className="text-meow-charcoal/80">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Real Market Data</h3>
+                    <p className="text-gray-600 text-base">
                       Practice with actual market conditions and real-time price movements to build authentic skills.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-meow-cream flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="w-6 h-6 text-meow-paw" />
+                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium text-meow-midnight mb-2">Track Performance</h3>
-                    <p className="text-meow-charcoal/80">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Track Performance</h3>
+                    <p className="text-gray-600 text-base">
                       Monitor your mock trades and strategy performance with detailed analytics.
                     </p>
                   </div>
                 </div>
                 
-                <Button 
-                  onClick={handleExploreDemo}
-                  className="w-full md:w-auto mt-4 bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-80 text-white py-4 px-6 rounded-xl hover:shadow-lg transition-all"
-                >
-                  Try Mock Trading Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <div>
+                  <Button 
+                    onClick={handleExploreDemo}
+                    className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md text-base font-medium hover:shadow-lg transition-all flex items-center"
+                  >
+                    Try Mock Trading Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
