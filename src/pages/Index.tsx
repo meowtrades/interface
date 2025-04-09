@@ -1,9 +1,12 @@
+
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MousePointerClick, BarChart2, ShieldCheck, TrendingUp, LineChart, BadgeDollarSign } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Cat, PawPrint } from 'lucide-react';
+import StrategyCardChart from '@/components/charts/StrategyCardChart';
+import MockTradingChart from '@/components/charts/MockTradingChart';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -20,20 +23,48 @@ const Index = () => {
     navigate('/app/mock-trades');
   };
 
+  // Mock chart data for strategy cards
+  const strategyChartData = {
+    whiskerDca: [
+      { value: 100 },
+      { value: 110 },
+      { value: 105 },
+      { value: 120 },
+      { value: 115 },
+      { value: 130 },
+      { value: 125 },
+      { value: 140 }
+    ],
+    pawGrid: [
+      { value: 100 },
+      { value: 115 },
+      { value: 110 },
+      { value: 118 },
+      { value: 125 },
+      { value: 120 },
+      { value: 130 },
+      { value: 125 }
+    ]
+  };
+
   const strategyCards = [
     {
       name: "Whisker DCA",
       description: "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
       performance: "+32.5%",
       timeframe: "1 Year",
-      color: "from-meow-paw to-meow-tabby"
+      color: "from-meow-paw to-meow-tabby",
+      chartData: strategyChartData.whiskerDca,
+      chartColor: "#9b87f5"
     },
     {
       name: "Paw Grid Trading",
       description: "Automated trading across price ranges. Pounce on opportunities with calculated moves, just like a cat hunting.",
       performance: "+24.8%",
       timeframe: "1 Year",
-      color: "from-meow-paw to-meow-tabby"
+      color: "from-meow-paw to-meow-tabby",
+      chartData: strategyChartData.pawGrid,
+      chartColor: "#7E69AB"
     }
   ];
 
@@ -112,9 +143,9 @@ const Index = () => {
                     <p className="text-meow-charcoal/80 mb-4 text-sm">
                       {strategy.description}
                     </p>
-                    <div className="h-32 bg-meow-whisker/50 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-br from-meow-whisker/30 to-white flex items-center justify-center">
-                        <span className="text-meow-charcoal/50 text-sm">Performance Chart</span>
+                    <div className="h-32 rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-slate-50">
+                      <div className="w-full h-full">
+                        <StrategyCardChart data={strategy.chartData} color={strategy.chartColor} />
                       </div>
                     </div>
                     <Button 
@@ -157,8 +188,8 @@ const Index = () => {
                   </div>
                 </div>
                 <div className="p-4 bg-white">
-                  <div className="h-64 bg-meow-whisker/10 rounded-lg flex items-center justify-center">
-                    <LineChart className="h-32 w-32 text-meow-paw/30" />
+                  <div className="h-64 bg-slate-50 rounded-lg flex items-center justify-center">
+                    <MockTradingChart />
                   </div>
                 </div>
               </div>
