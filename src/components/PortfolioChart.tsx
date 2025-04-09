@@ -54,6 +54,58 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
     }
   };
 
+  // Render the appropriate chart based on the type prop
+  const renderChart = () => {
+    switch (type) {
+      case 'line':
+        return (
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend />
+            <Line type="monotone" dataKey="value" name="Value" stroke="var(--color-value)" />
+            <Line type="monotone" dataKey="profit" name="Profit/Loss" stroke="var(--color-profit)" />
+          </LineChart>
+        );
+      case 'area':
+        return (
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend />
+            <Area type="monotone" dataKey="value" name="Value" stroke="var(--color-value)" fill="var(--color-value)" fillOpacity={0.2} />
+          </AreaChart>
+        );
+      case 'bar':
+        return (
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend />
+            <Bar dataKey="value" name="Value" fill="var(--color-value)" />
+            <Bar dataKey="profit" name="Profit/Loss" fill="var(--color-profit)" />
+          </BarChart>
+        );
+      default:
+        return (
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend />
+            <Area type="monotone" dataKey="value" name="Value" stroke="var(--color-value)" fill="var(--color-value)" fillOpacity={0.2} />
+          </AreaChart>
+        );
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -63,38 +115,7 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
       <CardContent>
         <div style={{ height: height }}>
           <ChartContainer config={chartConfig}>
-            {type === 'line' && (
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="monotone" dataKey="value" name="Value" stroke="var(--color-value)" />
-                <Line type="monotone" dataKey="profit" name="Profit/Loss" stroke="var(--color-profit)" />
-              </LineChart>
-            )}
-            {type === 'area' && (
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Area type="monotone" dataKey="value" name="Value" stroke="var(--color-value)" fill="var(--color-value)" fillOpacity={0.2} />
-              </AreaChart>
-            )}
-            {type === 'bar' && (
-              <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Bar dataKey="value" name="Value" fill="var(--color-value)" />
-                <Bar dataKey="profit" name="Profit/Loss" fill="var(--color-profit)" />
-              </BarChart>
-            )}
+            {renderChart()}
           </ChartContainer>
         </div>
       </CardContent>
