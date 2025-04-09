@@ -15,7 +15,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ handleStartStrategy }) => {
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             <span className="gradient-text">MeowTrade</span>: <br />
-            <span className="text-meow-midnight bg-slate-200 hover:bg-slate-100">Trading as Smooth as a Cat's Purr</span>
+            <span className="text-meow-midnight">Trading as Smooth as a Cat's Purr</span>
           </h1>
           <p className="text-lg text-meow-charcoal/80 mb-10 max-w-2xl mx-auto">
             Tap into crypto strategies with the calculated precision of a feline. See historical performance, simulate trades, and grow your wealth effortlessly.
@@ -28,10 +28,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ handleStartStrategy }) => {
             <Link to="/strategies">
               <Button 
                 variant="outline" 
-                className="px-8 py-6 text-lg rounded-xl border-meow-paw/30 text-meow-midnight hover:bg-meow-paw/10 hover:border-meow-paw/50 transition-colors group"
+                className="px-8 py-6 text-lg rounded-xl border-meow-paw text-meow-midnight hover:bg-meow-paw/10 hover:text-meow-tabby transition-colors"
               >
                 Explore Strategies
-                <Cat className="ml-2 h-5 w-5 text-meow-paw group-hover:text-meow-tabby transition-colors" />
+                <Cat className="ml-2 h-5 w-5 text-meow-paw" />
               </Button>
             </Link>
           </div>
