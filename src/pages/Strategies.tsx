@@ -1,64 +1,91 @@
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from '@/components/ui/separator';
-import { BarChart2, ArrowRight, Info, RefreshCw, Grid, TrendingUp, Clock, RefreshCcw } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StrategyWhatIfDialog from '@/components/StrategyWhatIfDialog';
-
-// Mock historical performance data
-const performanceData = {
-  "smartDca": {
-    "btc": {
-      "year": 32.5,
-      "sixMonths": 18.3,
-      "threeMonths": 12.1,
-      "month": 5.4,
-      "week": 2.1
-    },
-    "eth": {
-      "year": 28.4,
-      "sixMonths": 15.7,
-      "threeMonths": 9.8,
-      "month": 4.2,
-      "week": 1.8
-    }
-  },
-  "gridTrading": {
-    "btc": {
-      "year": 24.8,
-      "sixMonths": 14.5,
-      "threeMonths": 8.9,
-      "month": 3.7,
-      "week": 1.5
-    },
-    "eth": {
-      "year": 22.6,
-      "sixMonths": 13.2,
-      "threeMonths": 7.6,
-      "month": 3.1,
-      "week": 1.3
-    }
-  }
-};
+import StrategyCard from '@/components/StrategyCard';
+import { useStrategies } from '@/lib/context/StrategiesContext';
+import { Strategy } from '@/lib/types';
+import { RefreshCw, Grid, TrendingUp } from 'lucide-react';
 
 const Strategies = () => {
-  const [token, setToken] = useState("btc");
+  const {
+    strategies,
+    chains,
+    tokens,
+    userStrategies,
+    isLoading,
+    error,
+    selectedChain,
+    selectedToken,
+    setSelectedChain,
+    setSelectedToken,
+    getSupportedTokensForChain,
+    getSupportedChainsForToken,
+    getStrategiesForChainAndToken
+  } = useStrategies();
+
   const [whatIfDialogOpen, setWhatIfDialogOpen] = useState(false);
-  const [selectedStrategy, setSelectedStrategy] = useState<{
-    name: string;
-    type: 'smart-dca' | 'grid-trading';
-  } | null>(null);
+  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   
-  const handleViewDetails = (strategyName: string, strategyType: 'smart-dca' | 'grid-trading') => {
-    setSelectedStrategy({
-      name: strategyName,
-      type: strategyType
-    });
-    setWhatIfDialogOpen(true);
+  // Get supported tokens for the current chain
+  const supportedTokens = selectedChain 
+    ? getSupportedTokensForChain(selectedChain)
+    : [];
+  
+  // Get supported chains for the current token
+  const supportedChains = selectedToken
+    ? getSupportedChainsForToken(selectedToken)
+    : [];
+  
+  // Get strategies for the current chain and token
+  const availableStrategies = (selectedChain && selectedToken) 
+    ? getStrategiesForChainAndToken(selectedChain, selectedToken)
+    : [];
+  
+  // Get active user strategies
+  const activeStrategies = userStrategies.filter(us => us.active);
+  
+  const handleViewDetails = (strategyId: string) => {
+    const strategy = strategies.find(s => s.id === strategyId);
+    if (strategy) {
+      setSelectedStrategy(strategy);
+      setWhatIfDialogOpen(true);
+    }
   };
+  
+  const handleChainChange = (value: string) => {
+    setSelectedChain(value);
+  };
+  
+  const handleTokenChange = (value: string) => {
+    setSelectedToken(value);
+  };
+  
+  // Handle closing the what-if dialog
+  const handleWhatIfClose = () => {
+    setWhatIfDialogOpen(false);
+  };
+  
+  // Switch to available strategies tab
+  const switchToAvailableTab = () => {
+    const availableTabTrigger = document.querySelector('[data-state="inactive"][value="available"]');
+    if (availableTabTrigger && availableTabTrigger instanceof HTMLElement) {
+      availableTabTrigger.click();
+    }
+  };
+  
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="p-4 bg-red-50 text-red-600 rounded-md">
+          Error loading strategy data: {error}
+        </div>
+      </AppLayout>
+    );
+  }
   
   return (
     <AppLayout>
@@ -67,342 +94,161 @@ const Strategies = () => {
         <p className="text-slate-600">Explore and launch one-click trading strategies.</p>
       </div>
       
+      {/* Filter controls */}
+      <div className="mb-6 flex flex-wrap gap-3 items-center">
+        <div className="text-sm font-medium text-slate-700">Filter by:</div>
+        
+        <Select onValueChange={handleChainChange} value={selectedChain || undefined} disabled={isLoading}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Select chain" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Blockchains</SelectLabel>
+              {chains.map(chain => (
+                <SelectItem key={chain.id} value={chain.id}>
+                  {chain.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        
+        <Select onValueChange={handleTokenChange} value={selectedToken || undefined} disabled={isLoading}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Select token" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Tokens</SelectLabel>
+              {supportedTokens.map(token => (
+                <SelectItem key={token.id} value={token.id}>
+                  {token.symbol}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      
       <Tabs defaultValue="available" className="mb-8">
         <TabsList>
           <TabsTrigger value="available">Available Strategies</TabsTrigger>
-          <TabsTrigger value="active">Active Strategies (2)</TabsTrigger>
+          <TabsTrigger value="active">
+            Active Strategies ({activeStrategies.length})
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="available" className="pt-6">
-          {/* Strategy Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Smart DCA Strategy */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 text-crypto-blue flex items-center justify-center">
-                        <RefreshCw size={20} />
-                      </div>
-                      <CardTitle>Smart DCA Strategy</CardTitle>
-                    </div>
-                    <CardDescription className="mt-2">
-                      Dollar-cost averaging enhanced by market timing algorithms
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-slate-700 mb-2">Strategy Features</div>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-blue-100 text-crypto-blue flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>Automated investments at regular intervals</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-blue-100 text-crypto-blue flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>AI-driven market timing optimization</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-blue-100 text-crypto-blue flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>Buy more when prices dip, less when they rise</span>
-                    </li>
-                  </ul>
-                </div>
-                
-                <Separator className="my-4" />
-                
-                <div>
-                  <div className="text-sm font-medium text-slate-700 mb-4 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Historical Performance</span>
-                      <Info size={14} className="text-slate-400" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => setToken("btc")}
-                        className={`px-2 py-1 text-xs rounded ${token === "btc" ? 'bg-blue-100 text-crypto-blue' : 'text-slate-500 hover:bg-slate-100'}`}
-                      >
-                        BTC
-                      </button>
-                      <button 
-                        onClick={() => setToken("eth")}
-                        className={`px-2 py-1 text-xs rounded ${token === "eth" ? 'bg-blue-100 text-crypto-blue' : 'text-slate-500 hover:bg-slate-100'}`}
-                      >
-                        ETH
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-5 gap-3">
-                    {[
-                      { label: '1 Year', data: performanceData.smartDca[token as keyof typeof performanceData.smartDca].year },
-                      { label: '6 Months', data: performanceData.smartDca[token as keyof typeof performanceData.smartDca].sixMonths },
-                      { label: '3 Months', data: performanceData.smartDca[token as keyof typeof performanceData.smartDca].threeMonths },
-                      { label: '1 Month', data: performanceData.smartDca[token as keyof typeof performanceData.smartDca].month },
-                      { label: '7 Days', data: performanceData.smartDca[token as keyof typeof performanceData.smartDca].week }
-                    ].map((period, index) => (
-                      <div key={index} className="bg-slate-50 p-3 rounded-lg text-center">
-                        <div className="text-crypto-green font-medium text-lg">{`+${period.data}%`}</div>
-                        <div className="text-xs text-slate-500">{period.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-              
-              <CardFooter className="flex flex-col gap-2 sm:flex-row">
-                <Link to="/app/strategies/smart-dca/start" className="w-full">
-                  <Button className="w-full bg-crypto-blue hover:bg-crypto-blue/90">
-                    Start Strategy
-                  </Button>
-                </Link>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleViewDetails("Smart DCA Strategy", "smart-dca")}
-                >
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-            
-            {/* Grid Trading Strategy */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 text-crypto-purple flex items-center justify-center">
-                        <Grid size={20} />
-                      </div>
-                      <CardTitle>Grid Trading Strategy</CardTitle>
-                    </div>
-                    <CardDescription className="mt-2">
-                      Automated buy-low, sell-high across a price range
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-slate-700 mb-2">Strategy Features</div>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-purple-100 text-crypto-purple flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>Profit from market volatility</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-purple-100 text-crypto-purple flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>Automated buy and sell orders at preset levels</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-purple-100 text-crypto-purple flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </div>
-                      <span>Works well in sideways and ranging markets</span>
-                    </li>
-                  </ul>
-                </div>
-                
-                <Separator className="my-4" />
-                
-                <div>
-                  <div className="text-sm font-medium text-slate-700 mb-4 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Historical Performance</span>
-                      <Info size={14} className="text-slate-400" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => setToken("btc")}
-                        className={`px-2 py-1 text-xs rounded ${token === "btc" ? 'bg-purple-100 text-crypto-purple' : 'text-slate-500 hover:bg-slate-100'}`}
-                      >
-                        BTC
-                      </button>
-                      <button 
-                        onClick={() => setToken("eth")}
-                        className={`px-2 py-1 text-xs rounded ${token === "eth" ? 'bg-purple-100 text-crypto-purple' : 'text-slate-500 hover:bg-slate-100'}`}
-                      >
-                        ETH
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-5 gap-3">
-                    {[
-                      { label: '1 Year', data: performanceData.gridTrading[token as keyof typeof performanceData.gridTrading].year },
-                      { label: '6 Months', data: performanceData.gridTrading[token as keyof typeof performanceData.gridTrading].sixMonths },
-                      { label: '3 Months', data: performanceData.gridTrading[token as keyof typeof performanceData.gridTrading].threeMonths },
-                      { label: '1 Month', data: performanceData.gridTrading[token as keyof typeof performanceData.gridTrading].month },
-                      { label: '7 Days', data: performanceData.gridTrading[token as keyof typeof performanceData.gridTrading].week }
-                    ].map((period, index) => (
-                      <div key={index} className="bg-slate-50 p-3 rounded-lg text-center">
-                        <div className="text-crypto-green font-medium text-lg">{`+${period.data}%`}</div>
-                        <div className="text-xs text-slate-500">{period.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-              
-              <CardFooter className="flex flex-col gap-2 sm:flex-row">
-                <Link to="/app/strategies/grid-trading/start" className="w-full">
-                  <Button className="w-full bg-crypto-purple hover:bg-crypto-purple/90">
-                    Start Strategy
-                  </Button>
-                </Link>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleViewDetails("Grid Trading Strategy", "grid-trading")}
-                >
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Skeleton className="h-96 w-full" />
+              <Skeleton className="h-96 w-full" />
+            </div>
+          ) : availableStrategies.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {availableStrategies.map(strategy => (
+                <StrategyCard
+                  key={strategy.id}
+                  strategy={strategy}
+                  selectedToken={selectedToken || 'btc'}
+                  onViewDetails={handleViewDetails}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-slate-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">No strategies found</h3>
+              <p className="text-slate-600 mb-4">
+                There are no strategies available for the selected chain and token combination.
+              </p>
+              <Button variant="outline" onClick={() => setSelectedChain(chains[0]?.id)}>
+                Reset Filters
+              </Button>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="active" className="pt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Active Smart DCA Strategy */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 text-crypto-blue flex items-center justify-center">
-                        <RefreshCw size={20} />
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Skeleton className="h-80 w-full" />
+              <Skeleton className="h-80 w-full" />
+            </div>
+          ) : activeStrategies.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {activeStrategies.map(userStrategy => {
+                const strategy = strategies.find(s => s.id === userStrategy.strategyId);
+                const token = tokens.find(t => t.id === userStrategy.tokenId);
+                const chain = chains.find(c => c.id === userStrategy.chainId);
+                
+                if (!strategy || !token || !chain) return null;
+                
+                return (
+                  <div key={userStrategy.id} className="border rounded-lg p-6 bg-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                          {strategy.icon === 'RefreshCw' && <RefreshCw size={20} />}
+                          {strategy.icon === 'Grid' && <Grid size={20} />}
+                          {strategy.icon === 'TrendingUp' && <TrendingUp size={20} />}
+                        </div>
+                        <div>
+                          <h3 className="font-medium">{strategy.name}</h3>
+                          <p className="text-sm text-slate-500">
+                            {chain.name} • {token.symbol}
+                          </p>
+                        </div>
                       </div>
-                      <CardTitle>Smart DCA - BTC</CardTitle>
-                    </div>
-                    <CardDescription className="mt-2">
-                      Started on April 1, 2023
-                    </CardDescription>
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-green-100 text-crypto-green text-xs font-medium flex items-center gap-1">
-                    <div className="w-2 h-2 bg-crypto-green rounded-full"></div>
-                    Active
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Current Value</div>
-                    <div className="font-medium">$645.32</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Starting Value</div>
-                    <div className="font-medium">$600.00</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Total Profit</div>
-                    <div className="font-medium text-crypto-green">+$45.32 (7.55%)</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Last Transaction</div>
-                    <div className="font-medium">2 hours ago</div>
-                  </div>
-                </div>
-                
-              </CardContent>
-              
-              <CardFooter className="flex flex-col gap-2 sm:flex-row">
-                <Button variant="destructive" className="w-full">
-                  Stop Strategy
-                </Button>
-                <Link to="/app/strategies/plan1" state={{ source: 'dashboard' }} className="w-full">
-                  <Button variant="outline" className="w-full">
-                    View Details
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-            
-            {/* Active Grid Trading Strategy */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 text-crypto-purple flex items-center justify-center">
-                        <Grid size={20} />
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        userStrategy.profitPercentage >= 0 
+                          ? 'bg-green-100 text-green-600' 
+                          : 'bg-red-100 text-red-600'
+                      }`}>
+                        {userStrategy.profitPercentage >= 0 ? '+' : ''}{userStrategy.profitPercentage}%
                       </div>
-                      <CardTitle>Grid Trading - ETH</CardTitle>
                     </div>
-                    <CardDescription className="mt-2">
-                      Started on March 15, 2023
-                    </CardDescription>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">Invested</div>
+                        <div className="font-medium">{userStrategy.invested} {token.symbol}</div>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">Current Value</div>
+                        <div className="font-medium">{userStrategy.currentValue} {token.symbol}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <Button className="flex-1" variant="outline">View Details</Button>
+                      <Button className="flex-1" variant="destructive">Stop Strategy</Button>
+                    </div>
                   </div>
-                  <div className="px-3 py-1 rounded-full bg-green-100 text-crypto-green text-xs font-medium flex items-center gap-1">
-                    <div className="w-2 h-2 bg-crypto-green rounded-full"></div>
-                    Active
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Current Value</div>
-                    <div className="font-medium">$600.50</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Starting Value</div>
-                    <div className="font-medium">$400.00</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Total Profit</div>
-                    <div className="font-medium text-crypto-green">+$200.50 (50.13%)</div>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-lg">
-                    <div className="text-xs text-slate-500 mb-1">Last Transaction</div>
-                    <div className="font-medium">5 hours ago</div>
-                  </div>
-                </div>
-                
-                
-              </CardContent>
-              
-              <CardFooter className="flex flex-col gap-2 sm:flex-row">
-                <Button variant="destructive" className="w-full">
-                  Stop Strategy
-                </Button>
-                <Link to="/app/strategies/plan2" state={{ source: 'dashboard' }} className="w-full">
-                  <Button variant="outline" className="w-full">
-                    View Details
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-slate-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">No active strategies</h3>
+              <p className="text-slate-600 mb-4">
+                You haven't started any strategies yet. Go to the Available Strategies tab to get started.
+              </p>
+              <Button variant="outline" onClick={switchToAvailableTab}>
+                View Available Strategies
+              </Button>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
       
-      {/* What If Dialog */}
+      {/* WhatIf dialog */}
       {selectedStrategy && (
-        <StrategyWhatIfDialog
+        <StrategyWhatIfDialog 
+          strategy={selectedStrategy}
           open={whatIfDialogOpen}
-          onOpenChange={setWhatIfDialogOpen}
-          strategyName={selectedStrategy.name}
-          strategyType={selectedStrategy.type}
+          onClose={handleWhatIfClose}
+          defaultToken={selectedToken || 'btc'}
         />
       )}
     </AppLayout>
