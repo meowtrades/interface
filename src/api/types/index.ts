@@ -25,6 +25,12 @@ export type CreateUpdateUserDto = {
 export type TimeframeOption = "7d" | "30d" | "90d" | "1y";
 export type GranularityOption = "hourly" | "daily" | "weekly" | "monthly";
 
+export type GenericResponse<T> = {
+  data: T;
+  message: string;
+  success: boolean;
+};
+
 export type PerformanceDataPoint = {
   timestamp: string;
   value: number;
@@ -38,11 +44,15 @@ export type PerformanceHistory = {
 };
 
 export type UserStatistics = {
-  totalProfit: number;
-  totalFees: number;
-  activePlans: number;
-  completedPlans: number;
-  successRate: number;
+  activeTrades: number;
+  bestPerformingStrategy: string | null;
+  completedTrades: number;
+  mostTradedToken: string | null;
+  profitLossPercentage: number;
+  totalCurrentValue: number;
+  totalInvestment: number;
+  totalProfitLoss: number;
+  worstPerformingStrategy: string | null;
 };
 
 export type PlatformStatistics = {

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
 import {
+  GenericResponse,
   GranularityOption,
   PerformanceHistory,
   PlatformStatistics,
@@ -102,10 +103,10 @@ export const useUserStatistics = () => {
   return useQuery({
     queryKey: USER_ANALYTICS_KEYS.statistics.user(),
     queryFn: async () => {
-      const response = await axiosInstance.get<UserStatistics>(
+      const response = await axiosInstance.get<GenericResponse<UserStatistics>>(
         "/user/analytics/statistics/user"
       );
-      return response.data;
+      return response.data.data;
     },
   });
 };
