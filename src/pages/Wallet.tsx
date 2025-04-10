@@ -1,138 +1,74 @@
-import { useState } from 'react';
-import { Wallet as WalletIcon, CreditCard, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
-import AppLayout from '@/components/AppLayout';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import { useWallet } from '@/lib/context/WalletContext';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect, useState } from "react";
+import { LoaderPinwheel, Wallet as WalletIcon } from "lucide-react";
+import AppLayout from "@/components/AppLayout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useUserBalances, ChainToken } from "@/api";
+import WithdrawModal from "@/components/WithdrawModal";
+import DepositModal from "@/components/DepositModal";
 
 const Wallet = () => {
-  const {
-    wallets,
-    chains,
-    tokens,
-    isLoading,
-    error,
-    selectedChain,
-    setSelectedChain,
-    getSupportedTokensForChain,
-    deposit,
-    withdraw,
-  } = useWallet();
+  const { data: userBalances, isLoading, error } = useUserBalances();
 
-  const [withdrawAddress, setWithdrawAddress] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [depositAmount, setDepositAmount] = useState("");
-  const [openWithdrawDialog, setOpenWithdrawDialog] = useState(false);
-  const [openDepositDialog, setOpenDepositDialog] = useState(false);
-  const [selectedTokenId, setSelectedTokenId] = useState<string | null>(null);
+  const [selectedChain, setSelectedChain] = useState<string | null>(null);
+  const [selectedToken, setSelectedToken] = useState<ChainToken | null>(null);
 
-  // Get the current chain
-  const currentChain = chains.find(chain => chain.id === selectedChain) || chains[0];
+  const availableChains = [
+    ...new Set(userBalances?.map((chainToken) => chainToken.chainId)),
+  ];
 
-  // Get supported tokens for the current chain
-  const supportedTokens = getSupportedTokensForChain(currentChain?.id || '');
-
-  // Set default token if not set
-  if (!selectedTokenId && supportedTokens.length > 0) {
-    setSelectedTokenId(supportedTokens[0].id);
-  }
-
-  // Get current wallet for selected chain and token
-  const currentWallet = wallets.find(
-    wallet => wallet.chainId === currentChain?.id && wallet.tokenId === selectedTokenId
-  );
-  
-  // Find the current token
-  const currentToken = tokens.find(token => token.id === selectedTokenId);
+  const supportedTokens = selectedChain
+    ? userBalances?.filter((chainToken) => chainToken.chainId === selectedChain)
+    : [];
 
   const handleChainChange = (value: string) => {
     setSelectedChain(value);
-    
+
     // Reset selected token
-    const tokens = getSupportedTokensForChain(value);
+    const tokens = userBalances?.filter(
+      (chainToken) => chainToken.chainId === value
+    );
+
     if (tokens.length > 0) {
-      setSelectedTokenId(tokens[0].id);
+      setSelectedToken(tokens[0]);
     } else {
-      setSelectedTokenId(null);
+      setSelectedToken(null);
     }
   };
 
   const handleTokenChange = (value: string) => {
-    setSelectedTokenId(value);
-  };
-
-  const handleDeposit = async () => {
-    if (!selectedChain || !selectedTokenId) {
-      toast.error("Please select a chain and token");
-      return;
-    }
-
-    if (!depositAmount || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-
-    // Call deposit function from context
-    const result = await deposit(selectedChain, selectedTokenId, parseFloat(depositAmount));
-    if (result) {
-      toast.success(`Deposit of ${depositAmount} ${currentToken?.symbol} initiated`);
-      setDepositAmount("");
-      setOpenDepositDialog(false);
-    } else {
-      toast.error("Deposit failed");
+    const token = supportedTokens.find((token) => token.tokenSymbol === value);
+    if (token) {
+      setSelectedToken(token);
     }
   };
 
-  const handleWithdraw = async () => {
-    if (!selectedChain || !selectedTokenId) {
-      toast.error("Please select a chain and token");
-      return;
+  useEffect(() => {
+    if (!selectedChain && !isLoading) {
+      handleChainChange(availableChains[0]);
     }
-
-    if (!withdrawAddress) {
-      toast.error("Please enter a valid withdrawal address");
-      return;
-    }
-
-    if (!withdrawAmount || isNaN(parseFloat(withdrawAmount)) || parseFloat(withdrawAmount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-
-    if (currentWallet && parseFloat(withdrawAmount) > currentWallet.balance) {
-      toast.error("Insufficient balance");
-      return;
-    }
-
-    // Call withdraw function from context
-    const result = await withdraw(
-      selectedChain,
-      selectedTokenId,
-      withdrawAddress,
-      parseFloat(withdrawAmount)
-    );
-    
-    if (result) {
-      toast.success(`Withdrawal of ${withdrawAmount} ${currentToken?.symbol} to ${withdrawAddress} initiated`);
-      setWithdrawAddress("");
-      setWithdrawAmount("");
-      setOpenWithdrawDialog(false);
-    } else {
-      toast.error("Withdrawal failed");
-    }
-  };
+  }, [selectedChain, isLoading]);
 
   if (error) {
     return (
       <AppLayout>
         <div className="p-4 bg-red-50 text-red-600 rounded-md">
-          Error loading wallet data: {error}
+          Error loading wallet data: {error.message}
         </div>
       </AppLayout>
     );
@@ -152,35 +88,52 @@ const Wallet = () => {
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle className="text-xl">Your Balance</CardTitle>
-                <CardDescription>Select chain and token to view balance</CardDescription>
+                <CardDescription>
+                  Select chain and token to view balance
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Select onValueChange={handleChainChange} value={selectedChain || undefined} disabled={isLoading}>
+                <Select
+                  onValueChange={handleChainChange}
+                  value={selectedChain || undefined}
+                  disabled={isLoading}
+                >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Select chain" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Blockchains</SelectLabel>
-                      {chains.map(chain => (
-                        <SelectItem key={chain.id} value={chain.id}>
-                          {chain.name}
+                      {availableChains.map((id) => (
+                        <SelectItem key={id} value={id}>
+                          {
+                            userBalances?.find(
+                              (chainToken) => chainToken.chainId === id
+                            )?.chainName
+                          }
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                
-                <Select onValueChange={handleTokenChange} value={selectedTokenId || undefined} disabled={isLoading}>
+
+                <Select
+                  onValueChange={handleTokenChange}
+                  value={selectedToken?.tokenSymbol || undefined}
+                  disabled={isLoading}
+                >
                   <SelectTrigger className="w-[120px]">
                     <SelectValue placeholder="Select token" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Tokens</SelectLabel>
-                      {supportedTokens.map(token => (
-                        <SelectItem key={token.id} value={token.id}>
-                          {token.symbol}
+                      {supportedTokens.map((token) => (
+                        <SelectItem
+                          key={token.tokenSymbol}
+                          value={token.tokenSymbol}
+                        >
+                          {token.tokenSymbol}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -206,10 +159,12 @@ const Wallet = () => {
                 ) : (
                   <>
                     <h2 className="text-3xl sm:text-4xl font-bold">
-                      {currentWallet ? currentWallet.balance : 0} {currentToken?.symbol || ''}
+                      {selectedToken?.balance || 0}{" "}
+                      {selectedToken?.tokenSymbol || ""}
                     </h2>
                     <p className="text-slate-500 text-lg sm:mb-1">
-                      (${currentWallet ? currentWallet.usdValue.toLocaleString() : '0.00'})
+                      ($
+                      {selectedToken?.usdValue.toLocaleString() || "0.00"})
                     </p>
                   </>
                 )}
@@ -217,117 +172,13 @@ const Wallet = () => {
             </div>
 
             <div className="mt-6 mb-2">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Dialog open={openDepositDialog} onOpenChange={setOpenDepositDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="flex-1 bg-meow-paw hover:bg-meow-paw/90" disabled={isLoading}>
-                      <ArrowDownToLine className="mr-2 h-4 w-4" />
-                      Deposit
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Deposit {currentToken?.symbol}</DialogTitle>
-                      <DialogDescription>
-                        Send funds to the address below to deposit into your wallet.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="deposit-address">Your deposit address</Label>
-                        <div className="flex items-center gap-2">
-                          <Input 
-                            id="deposit-address" 
-                            value={currentWallet?.address || ''} 
-                            readOnly
-                            className="flex-1 bg-slate-50"
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              if (currentWallet?.address) {
-                                navigator.clipboard.writeText(currentWallet.address);
-                                toast.success("Address copied to clipboard");
-                              }
-                            }}
-                          >
-                            Copy
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="deposit-amount">Amount to deposit</Label>
-                        <div className="flex items-center gap-2">
-                          <Input 
-                            id="deposit-amount"
-                            type="number"
-                            placeholder="0.00"
-                            value={depositAmount}
-                            onChange={(e) => setDepositAmount(e.target.value)}
-                          />
-                          <div className="bg-slate-100 px-3 py-2 rounded text-slate-600">
-                            {currentToken?.symbol || ''}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button onClick={handleDeposit}>Confirm Deposit</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+              {!!selectedToken && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <DepositModal currentToken={selectedToken} />
 
-                <Dialog open={openWithdrawDialog} onOpenChange={setOpenWithdrawDialog}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="flex-1" disabled={isLoading}>
-                      <ArrowUpFromLine className="mr-2 h-4 w-4" />
-                      Withdraw
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Withdraw {currentToken?.symbol}</DialogTitle>
-                      <DialogDescription>
-                        Enter the destination address and amount to withdraw.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="withdraw-address">Destination Address</Label>
-                        <Input 
-                          id="withdraw-address"
-                          placeholder={`Enter ${currentToken?.symbol} address`}
-                          value={withdrawAddress}
-                          onChange={(e) => setWithdrawAddress(e.target.value)}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="withdraw-amount">Amount</Label>
-                        <div className="flex items-center gap-2">
-                          <Input 
-                            id="withdraw-amount"
-                            type="number"
-                            placeholder="0.00"
-                            max={currentWallet?.balance}
-                            value={withdrawAmount}
-                            onChange={(e) => setWithdrawAmount(e.target.value)}
-                          />
-                          <div className="bg-slate-100 px-3 py-2 rounded text-slate-600">
-                            {currentToken?.symbol || ''}
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-500">
-                          Available: {currentWallet ? currentWallet.balance : 0} {currentToken?.symbol || ''}
-                        </p>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button onClick={handleWithdraw}>Confirm Withdrawal</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                  <WithdrawModal currentToken={selectedToken} />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -347,7 +198,9 @@ const Wallet = () => {
               </div>
             ) : (
               <div className="py-2">
-                <p className="text-center py-8 text-slate-500">No recent transactions</p>
+                <p className="text-center py-8 text-slate-500">
+                  No recent transactions
+                </p>
               </div>
             )}
           </CardContent>
