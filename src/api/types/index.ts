@@ -109,7 +109,12 @@ export type AllocateFundsDto = {
 };
 
 // Smart DCA types
-export type FrequencyOption = "hourly" | "daily" | "weekly" | "monthly";
+export type FrequencyOption =
+  | "hourly"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "test_minute";
 export type ThresholdComparison = "lessThan" | "greaterThan" | "equals";
 
 export type DcaPlanCustomSettings = {
@@ -121,36 +126,29 @@ export type DcaPlanCustomSettings = {
 
 export type CreateDcaPlanDto = {
   userId: string;
-  targetToken: string;
-  sourceToken: string;
-  amount: string;
+  amount: number;
+  userWalletAddress: string;
   frequency: FrequencyOption;
-  duration: number;
-  chainId: number;
-  customSettings?: DcaPlanCustomSettings;
+  chain: string;
+  riskLevel: string;
 };
 
 export type DcaPlan = {
-  id: string;
-  userId: string;
-  targetToken: Token;
-  sourceToken: Token;
-  amount: string;
-  frequency: FrequencyOption;
-  duration: number;
-  chainId: number;
-  customSettings?: DcaPlanCustomSettings;
-  status: "active" | "completed" | "stopped";
+  amount: number;
+  chain: string;
   createdAt: string;
+  executionCount: number;
+  frequency: FrequencyOption;
+  initialAmount: number;
+  isActive: boolean;
+  lastExecutionTime: string | null;
+  riskLevel: string;
+  totalInvested: number;
   updatedAt: string;
-  nextExecutionTime?: string;
-  executionHistory: {
-    timestamp: string;
-    sourceAmount: string;
-    targetAmount: string;
-    price: string;
-    txHash: string;
-  }[];
+  userId: string;
+  userWalletAddress: string;
+  __v: number;
+  _id: string;
 };
 
 export type DcaPosition = {

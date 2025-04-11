@@ -23,7 +23,7 @@ import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserStatistics } from "@/api";
+import { useUserDcaPlans, useUserStatistics } from "@/api";
 
 const Dashboard = () => {
   const {
@@ -47,6 +47,8 @@ const Dashboard = () => {
   console.log("userStatistics", userStatistics);
 
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
+
+  const { data: dcaActiveStrategies } = useUserDcaPlans();
 
   // Filter active user strategies
   const activeUserStrategies = userStrategies.filter((us) => us.active);
@@ -218,23 +220,35 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {isLoading ? (
+          {!dcaActiveStrategies ? (
             <>
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : activeUserStrategies.length > 0 ? (
-            activeUserStrategies.map((userStrategy) => {
-              const strategy = strategies.find(
-                (s) => s.id === userStrategy.strategyId
-              );
-              const token = tokens.find((t) => t.id === userStrategy.tokenId);
-              const chain = chains.find((c) => c.id === userStrategy.chainId);
+          ) : dcaActiveStrategies?.length > 0 ? (
+            dcaActiveStrategies.map((userStrategy) => {
+              // const strategy = strategies.find(
+              //   (s) => s.id === userStrategy.strategyId
+              // );
+              // const token = tokens.find((t) => t.id === userStrategy.tokenId);
+              // const chain = chains.find((c) => c.id === userStrategy.chainId);
+
+              const strategy = strategies.find((s) => s.id === "smart-dca");
+              const token = tokens.find((t) => t.id === "inj");
+              const chain = chains.find((c) => c.id === "injective");
+
+              const currentValue =
+                userStrategy.totalInvested + userStrategy.amount;
+
+              const profitPercentage =
+                ((currentValue - userStrategy.initialAmount) /
+                  userStrategy.initialAmount) *
+                100;
 
               if (!strategy || !token || !chain) return null;
 
               return (
-                <Card key={userStrategy.id} className="shadow-sm">
+                <Card key={userStrategy._id} className="shadow-sm">
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
@@ -267,7 +281,7 @@ const Dashboard = () => {
                           Current Value
                         </span>
                         <span className="font-medium">
-                          ${userStrategy.currentValue.toFixed(2)}
+                          ${currentValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -275,7 +289,7 @@ const Dashboard = () => {
                           Starting Value
                         </span>
                         <span className="font-medium">
-                          ${userStrategy.invested.toFixed(2)}
+                          ${userStrategy.initialAmount.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -284,22 +298,25 @@ const Dashboard = () => {
                         </span>
                         <span
                           className={`font-medium ${
-                            userStrategy.profit >= 0
+                            profitPercentage >= 0
                               ? "text-green-500"
                               : "text-red-500"
                           }`}
                         >
-                          {userStrategy.profit >= 0 ? "+" : "-"}$
-                          {Math.abs(userStrategy.profit).toFixed(2)} (
-                          {userStrategy.profitPercentage.toFixed(2)}%)
+                          {profitPercentage >= 0 ? "+" : "-"}$
+                          {Math.abs(profitPercentage).toFixed(2)} (
+                          {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="px-5 pt-0 pb-4">
                     <Link
-                      to={`/app/strategies/${userStrategy.id}`}
-                      state={{ source: "dashboard", planId: userStrategy.id }}
+                      to={`/app/strategies/${userStrategy._id}`}
+                      state={{
+                        source: "dashboard",
+                        planId: userStrategy._id,
+                      }}
                       className="w-full"
                     >
                       <Button variant="outline" className="w-full">

@@ -10,7 +10,7 @@ import {
 // Query keys for cache management
 export const SMART_DCA_KEYS = {
   all: ["services", "sdca"] as const,
-  plans: (userId: string) => [...SMART_DCA_KEYS.all, "plans", userId] as const,
+  plans: () => [...SMART_DCA_KEYS.all, "plans"] as const,
   totalInvestment: (userId: string) =>
     [...SMART_DCA_KEYS.all, "total-investment", userId] as const,
   currentPositions: (userId: string) =>
@@ -63,16 +63,15 @@ export const useStopAllDcaPlans = () => {
 /**
  * Get all DCA plans for a user
  */
-export const useUserDcaPlans = (userId: string) => {
+export const useUserDcaPlans = () => {
   return useQuery({
-    queryKey: SMART_DCA_KEYS.plans(userId),
+    queryKey: SMART_DCA_KEYS.plans(),
     queryFn: async () => {
       const response = await axiosInstance.get<DcaPlan[]>(
-        `/services/s-dca/plans/${userId}`
+        `/services/s-dca/plans`
       );
       return response.data;
     },
-    enabled: !!userId,
   });
 };
 
