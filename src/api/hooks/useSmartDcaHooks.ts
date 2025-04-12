@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
 import {
   CreateDcaPlanDto,
@@ -6,6 +6,7 @@ import {
   DcaPlan,
   TotalInvestment,
 } from "../types";
+import { toast } from "sonner";
 
 // Query keys for cache management
 export const SMART_DCA_KEYS = {
@@ -36,12 +37,21 @@ export const useCreateDcaPlan = () => {
  * Stop a specific DCA plan
  */
 export const useStopDcaPlan = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (planId: string) => {
       const response = await axiosInstance.post(
         `/services/s-dca/stop-plan/${planId}`
       );
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: SMART_DCA_KEYS.plans(),
+      });
+
+      toast.success("Plan stopped successfully");
     },
   });
 };

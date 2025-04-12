@@ -172,15 +172,11 @@ export type TotalInvestment = {
 export type Direction = "long" | "short";
 
 export type CreateMockTradeDto = {
-  pair: string;
-  entryPrice: number;
-  amount: number;
-  direction: Direction;
-  leverage: number;
-  stopLoss?: number;
-  takeProfit?: number;
-  tags?: string[];
-  notes?: string;
+  strategyId: string;
+  tokenSymbol: string;
+  initialInvestment: number;
+  riskLevel: string;
+  timeframe: string;
 };
 
 export type StopMockTradeDto = {

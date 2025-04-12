@@ -16,6 +16,7 @@ import StartStrategyDialog from "./StartStrategyDialog";
 import { toast } from "sonner";
 import { startStrategy } from "@/lib/api/strategies";
 import { useCreateDcaPlan } from "@/api";
+import { authClient } from "@/lib/auth";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,
@@ -63,6 +64,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
   const dcaMutation = useCreateDcaPlan();
 
+  const { data: user } = authClient.useSession();
+
   // Handle starting a strategy
   const handleStartStrategy = async (data: {
     strategyId: string;
@@ -77,7 +80,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
       dcaMutation.mutate(
         {
-          userId: "abd", // Adding userId to plan data as well
+          userId: user?.user.id, // Adding userId to plan data as well
           amount: data.amount,
           userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
           frequency: "test_minute",

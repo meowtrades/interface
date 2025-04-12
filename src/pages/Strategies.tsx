@@ -18,7 +18,7 @@ import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useUserDcaPlans } from "@/api";
+import { useStopDcaPlan, useUserDcaPlans } from "@/api";
 
 const Strategies = () => {
   const {
@@ -42,7 +42,13 @@ const Strategies = () => {
     null
   );
 
-  const { data: dcaActiveStrategies } = useUserDcaPlans();
+  const stopMutatoin = useStopDcaPlan();
+
+  const { data: allDcaActiveStrategies } = useUserDcaPlans();
+
+  const dcaActiveStrategies = allDcaActiveStrategies?.filter(
+    (us) => us.isActive
+  );
 
   console.log(dcaActiveStrategies);
 
@@ -211,6 +217,7 @@ const Strategies = () => {
           ) : activeStrategies.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {dcaActiveStrategies?.map((userStrategy) => {
+                if (!userStrategy.isActive) return null;
                 const strategy = strategies.find((s) => s.id === "smart-dca");
                 const token = tokens.find((t) => t.id === "inj");
                 const chain = chains.find((c) => c.id === "injective");
@@ -278,7 +285,11 @@ const Strategies = () => {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button className="flex-1" variant="destructive">
+                      <Button
+                        onClick={() => stopMutatoin.mutate(userStrategy._id)}
+                        className="flex-1"
+                        variant="destructive"
+                      >
                         Stop Strategy
                       </Button>
                       <Link
