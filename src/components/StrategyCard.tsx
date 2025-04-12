@@ -78,10 +78,23 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       // For now, we'll hardcode the chainId to the first supported chain
       const chainId = strategy.supportedChains[0];
 
+      const durationOptions = [
+        { label: "1 Month", value: 30 },
+        { label: "3 Months", value: 90 },
+        { label: "6 Months", value: 180 },
+        { label: "1 Year", value: 365 },
+      ];
+
+      const durationInMonths =
+        durationOptions.find((option) => option.label === data.duration)
+          ?.value || 30;
+
+      const amountPerDay = data.amount / durationInMonths;
+
       dcaMutation.mutate(
         {
           userId: user?.user.id, // Adding userId to plan data as well
-          amount: data.amount,
+          amount: amountPerDay,
           userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
           frequency: "test_minute",
           chain: chainId,
