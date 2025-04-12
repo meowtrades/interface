@@ -51,7 +51,7 @@ const Dashboard = () => {
   const { data: dcaActiveStrategies } = useUserDcaPlans();
 
   // Filter active user strategies
-  const activeUserStrategies = userStrategies.filter((us) => us.active);
+  const activeUserStrategies = dcaActiveStrategies?.filter((us) => us.isActive);
 
   const isProfitable = userStatistics?.profitLossPercentage > 0;
 
@@ -220,13 +220,13 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {!dcaActiveStrategies ? (
+          {!activeUserStrategies ? (
             <>
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : dcaActiveStrategies?.length > 0 ? (
-            dcaActiveStrategies.map((userStrategy) => {
+          ) : activeUserStrategies?.length > 0 ? (
+            activeUserStrategies.map((userStrategy) => {
               // const strategy = strategies.find(
               //   (s) => s.id === userStrategy.strategyId
               // );
@@ -349,7 +349,7 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {activeUserStrategies.length > 0 && (
+          {activeUserStrategies?.length === 0 && (
             <Card className="border-dashed border-2 border-slate-200 shadow-sm">
               <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
                 <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
