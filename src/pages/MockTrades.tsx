@@ -44,7 +44,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useCreateMockTrade } from "@/api";
+import { useCreateMockTrade, useStopMockTrade, useUserDcaPlans } from "@/api";
 
 // Mock data for performance chart
 const generateMockChartData = (timeframe) => {
@@ -119,6 +119,16 @@ const MockTrades = () => {
   const [chartData, setChartData] = useState(generateMockChartData("1y"));
 
   const mockTradeMutation = useCreateMockTrade();
+
+  const { data: allData } = useUserDcaPlans();
+
+  const stopMutation = useStopMockTrade();
+
+  const AllMockTrades = allData?.filter((trade) => trade.chain === "mock");
+
+  const activeMockTrades = AllMockTrades?.filter((trade) => trade.isActive);
+
+  console.log("activeMockTrades", activeMockTrades);
 
   const handleTimeframeChange = (timeframe) => {
     setChartTimeframe(timeframe);
@@ -423,180 +433,187 @@ const MockTrades = () => {
 
         <TabsContent value="active" className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockActiveTrades.map((trade) => (
-              <Card key={trade.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-10 h-10 rounded-full ${
-                          trade.type === "Smart DCA"
-                            ? "bg-blue-100 text-crypto-blue"
-                            : "bg-purple-100 text-crypto-purple"
-                        } flex items-center justify-center`}
-                      >
-                        {trade.type === "Smart DCA" ? (
-                          <TrendingUp size={20} />
-                        ) : (
-                          <TrendingDown size={20} />
-                        )}
-                      </div>
-                      <div>
-                        <CardTitle className="text-md">{trade.type}</CardTitle>
-                        <CardDescription>
-                          {trade.token} • Started {trade.startDate}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Initial Amount
-                      </span>
-                      <span className="font-medium">
-                        ${trade.startAmount.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Current Value
-                      </span>
-                      <span className="font-medium">
-                        ${trade.currentValue.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Profit/Loss
-                      </span>
-                      <span
-                        className={`font-medium ${
-                          trade.profit >= 0
-                            ? "text-crypto-green"
-                            : "text-crypto-red"
-                        }`}
-                      >
-                        {trade.profit >= 0 ? "+" : ""}${trade.profit.toFixed(2)}{" "}
-                        ({trade.profit >= 0 ? "+" : ""}
-                        {trade.profitPercentage.toFixed(2)}%)
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-
-                <CardFooter className="flex gap-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full">
-                        View Details
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px]">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {trade.type} - {trade.token} Mock Trade
-                        </DialogTitle>
-                        <DialogDescription>
-                          Detailed performance of your mock trade
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-4 py-4">
-                        <div className="h-40 bg-slate-100 rounded-lg flex items-center justify-center">
-                          <span className="text-slate-400">
-                            Detailed Performance Chart
-                          </span>
+            {activeMockTrades?.map((trade) => {
+              const profit = trade.initialAmount - trade.amount;
+              const profitPercentage = (profit / trade.initialAmount) * 100;
+              return (
+                <Card key={trade._id}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-10 h-10 rounded-full ${
+                            true
+                              ? "bg-blue-100 text-crypto-blue"
+                              : "bg-purple-100 text-crypto-purple"
+                          } flex items-center justify-center`}
+                        >
+                          {true ? (
+                            <TrendingUp size={20} />
+                          ) : (
+                            <TrendingDown size={20} />
+                          )}
                         </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-medium">
-                              Start Date
-                            </label>
-                            <p className="text-sm text-slate-600">
-                              {trade.startDate}
-                            </p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">
-                              Initial Investment
-                            </label>
-                            <p className="text-sm text-slate-600">
-                              ${trade.startAmount.toFixed(2)}
-                            </p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">
-                              Current Value
-                            </label>
-                            <p className="text-sm text-slate-600">
-                              ${trade.currentValue.toFixed(2)}
-                            </p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">
-                              Profit/Loss
-                            </label>
-                            <p
-                              className={`text-sm ${
-                                trade.profit >= 0
-                                  ? "text-crypto-green"
-                                  : "text-crypto-red"
-                              }`}
-                            >
-                              {trade.profit >= 0 ? "+" : ""}$
-                              {trade.profit.toFixed(2)} (
-                              {trade.profit >= 0 ? "+" : ""}
-                              {trade.profitPercentage.toFixed(2)}%)
-                            </p>
-                          </div>
-                        </div>
-
                         <div>
-                          <label className="text-sm font-medium">
-                            Trading Activity
-                          </label>
-                          <div className="bg-slate-50 p-3 rounded-lg mt-1 text-sm space-y-2">
-                            <div className="flex items-center justify-between text-slate-600">
-                              <span>Apr 7, 2023</span>
-                              <span className="text-crypto-green">
-                                Buy: $25.20
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between text-slate-600">
-                              <span>Apr 5, 2023</span>
-                              <span className="text-crypto-red">
-                                Sell: $27.80
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between text-slate-600">
-                              <span>Apr 3, 2023</span>
-                              <span className="text-crypto-green">
-                                Buy: $23.50
-                              </span>
-                            </div>
-                          </div>
+                          <CardTitle className="text-md">Smart DCA</CardTitle>
+                          <CardDescription>
+                            {"USDC"} • Started {trade.createdAt}
+                          </CardDescription>
                         </div>
                       </div>
+                    </div>
+                  </CardHeader>
 
-                      <DialogFooter>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Initial Amount
+                        </span>
+                        <span className="font-medium">
+                          ${trade.totalInvested.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Current Value
+                        </span>
+                        <span className="font-medium">
+                          ${trade.totalInvested.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Profit/Loss
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            profit >= 0
+                              ? "text-crypto-green"
+                              : "text-crypto-red"
+                          }`}
+                        >
+                          {profit >= 0 ? "+" : ""}${profit.toFixed(2)} (
+                          {profit >= 0 ? "+" : ""}
+                          {profitPercentage.toFixed(2)}%)
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+
+                  <CardFooter className="flex gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
                         <Button variant="outline" className="w-full">
-                          Convert to Real Trade
+                          View Details
                         </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Smart DCA - USDC Mock Trade</DialogTitle>
+                          <DialogDescription>
+                            Detailed performance of your mock trade
+                          </DialogDescription>
+                        </DialogHeader>
 
-                  <Button variant="destructive" className="w-full">
-                    Stop
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                        <div className="space-y-4 py-4">
+                          <div className="h-40 bg-slate-100 rounded-lg flex items-center justify-center">
+                            <span className="text-slate-400">
+                              Detailed Performance Chart
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm font-medium">
+                                Start Date
+                              </label>
+                              <p className="text-sm text-slate-600">
+                                {trade.createdAt}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">
+                                Initial Investment
+                              </label>
+                              <p className="text-sm text-slate-600">
+                                ${trade.totalInvested.toFixed(2)}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">
+                                Current Value
+                              </label>
+                              <p className="text-sm text-slate-600">
+                                ${trade.amount.toFixed(2)}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">
+                                Profit/Loss
+                              </label>
+                              <p
+                                className={`text-sm ${
+                                  profit >= 0
+                                    ? "text-crypto-green"
+                                    : "text-crypto-red"
+                                }`}
+                              >
+                                {profit >= 0 ? "+" : ""}${profit.toFixed(2)} (
+                                {profit >= 0 ? "+" : ""}
+                                {profitPercentage.toFixed(2)}%)
+                              </p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-sm font-medium">
+                              Trading Activity
+                            </label>
+                            {/* <div className="bg-slate-50 p-3 rounded-lg mt-1 text-sm space-y-2">
+                              <div className="flex items-center justify-between text-slate-600">
+                                <span>Apr 7, 2023</span>
+                                <span className="text-crypto-green">
+                                  Buy: $25.20
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between text-slate-600">
+                                <span>Apr 5, 2023</span>
+                                <span className="text-crypto-red">
+                                  Sell: $27.80
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between text-slate-600">
+                                <span>Apr 3, 2023</span>
+                                <span className="text-crypto-green">
+                                  Buy: $23.50
+                                </span>
+                              </div>
+                            </div> */}
+                          </div>
+                        </div>
+
+                        <DialogFooter>
+                          <Button variant="outline" className="w-full">
+                            Convert to Real Trade
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Button
+                      onClick={() =>
+                        stopMutation.mutate({ tradeId: trade._id })
+                      }
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      Stop
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
 
             {/* Add New Mock Trade Card */}
             <Dialog>

@@ -66,14 +66,13 @@ export const useStopMockTrade = () => {
   return useMutation({
     mutationFn: async ({
       tradeId,
-      data,
-    }: {
+    }: // data,
+    {
       tradeId: string;
-      data: StopMockTradeDto;
+      // data: StopMockTradeDto;
     }) => {
       const response = await axiosInstance.patch<MockTrade>(
-        `/mocktrades/${tradeId}/stop`,
-        data
+        `/mocktrades/${tradeId}/stop`
       );
       return response.data;
     },
