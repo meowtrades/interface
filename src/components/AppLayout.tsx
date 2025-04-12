@@ -66,7 +66,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
               <Cat className="w-7 h-7 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">Meowtrade</span>
+            <span className="text-xl font-bold gradient-text">Meowtrades</span>
           </Link>
         </div>
 
@@ -152,7 +152,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                   <Cat className="w-7 h-7 text-white" />
                 </div>
                 <span className="text-xl font-bold gradient-text">
-                  Meowtrade
+                  Meowtrades
                 </span>
               </Link>
               <button

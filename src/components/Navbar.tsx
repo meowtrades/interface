@@ -13,14 +13,14 @@ const Navbar = () => {
           <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2 rounded-lg">
             <Cat className="w-7 h-7 text-white" />
           </div>
-          <span className="text-2xl font-bold gradient-text">Meowtrade</span>
+          <span className="text-2xl font-bold gradient-text">Meowtrades</span>
         </Link>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
           <div className="flex gap-3">
             <Link to="/app">
-              <Button size="sm" className="bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white rounded-lg">
+              <Button size="lg" className="text-md bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white rounded-lg">
                 Launch App
               </Button>
             </Link>
