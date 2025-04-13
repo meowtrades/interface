@@ -23,7 +23,7 @@ import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserDcaPlans, useUserStatistics } from "@/api";
+import { useUserDcaPlans, useUserStatistics, useUserTransactions } from "@/api";
 
 const Dashboard = () => {
   const {
@@ -47,6 +47,10 @@ const Dashboard = () => {
   console.log("userStatistics", userStatistics);
 
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
+
+  const { data: userTransactions } = useUserTransactions();
+
+  console.log("userTransactions", userTransactions);
 
   const { data: dcaActiveStrategies } = useUserDcaPlans();
 
@@ -399,25 +403,25 @@ const Dashboard = () => {
                   {
                     id: "act1",
                     type: "Buy",
-                    token: "BTC",
-                    amount: "0.005 BTC",
-                    value: "$210.35",
+                    token: "INJ",
+                    amount: "2.5 INJ",
+                    value: "$12.75",
                     time: "2 hours ago",
                   },
                   {
                     id: "act2",
                     type: "Sell",
-                    token: "ETH",
-                    amount: "0.12 ETH",
-                    value: "$185.21",
+                    token: "INJ",
+                    amount: "3.8 INJ",
+                    value: "$38.76",
                     time: "5 hours ago",
                   },
                   {
                     id: "act3",
                     type: "Buy",
-                    token: "BTC",
-                    amount: "0.008 BTC",
-                    value: "$336.56",
+                    token: "USDT",
+                    amount: "100 USDT",
+                    value: "$100.00",
                     time: "1 day ago",
                   },
                 ].map((activity) => (
