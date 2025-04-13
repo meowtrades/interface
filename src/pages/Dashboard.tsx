@@ -42,15 +42,10 @@ const Dashboard = () => {
     getTotalBalanceUsd,
   } = useWallet();
 
-  const { data: userStatistics } = useUserStatistics();
-
-  console.log("userStatistics", userStatistics);
+  const { data: userStatistics, isLoading: userStatisticsLoading } =
+    useUserStatistics();
 
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
-
-  const { data: userTransactions } = useUserTransactions();
-
-  console.log("userTransactions", userTransactions);
 
   const { data: dcaActiveStrategies } = useUserDcaPlans();
 
@@ -62,7 +57,8 @@ const Dashboard = () => {
   const mockTradesCount = 4;
 
   // Check if data is still loading
-  const isLoading = strategiesLoading || walletsLoading;
+  const isLoading =
+    strategiesLoading || walletsLoading || userStatisticsLoading;
 
   // Check for errors
   const error = strategiesError || walletsError;

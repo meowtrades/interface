@@ -230,7 +230,7 @@ const MockTrades = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="smartDca">Smart DCA</SelectItem>
-                  <SelectItem value="gridTrading">Grid Trading</SelectItem>
+                  {/* <SelectItem value="gridTrading">Grid Trading</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>
@@ -244,8 +244,8 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select a token" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                  <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                  <SelectItem value="btc">USDC</SelectItem>
+                  <SelectItem value="eth">INJ</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -426,9 +426,12 @@ const MockTrades = () => {
       <Tabs defaultValue="active" className="mb-6">
         <TabsList>
           <TabsTrigger value="active">
-            Active Trades ({mockActiveTrades.length})
+            Active Trades ({activeMockTrades?.length})
           </TabsTrigger>
-          <TabsTrigger value="completed">Completed Trades (2)</TabsTrigger>
+          <TabsTrigger value="completed">
+            Completed Trades ({AllMockTrades?.length - activeMockTrades?.length}
+            )
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="pt-6">
@@ -652,12 +655,12 @@ const MockTrades = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Select a strategy" />
                       </SelectTrigger>
-                      <SelectContent>
+                      {/* <SelectContent>
                         <SelectItem value="smartDca">Smart DCA</SelectItem>
                         <SelectItem value="gridTrading">
                           Grid Trading
                         </SelectItem>
-                      </SelectContent>
+                      </SelectContent> */}
                     </Select>
                   </div>
 
