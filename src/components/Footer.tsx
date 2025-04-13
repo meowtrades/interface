@@ -12,17 +12,18 @@ const Footer = () => {
               <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-1.5 rounded-lg">
                 <Cat className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold gradient-text">Meowtrade</span>
+              <span className="text-lg font-bold gradient-text">Meowtrades</span>
             </Link>
           </div>
           
           <div className="text-center md:text-right">
             <p className="text-sm text-slate-400">
-              &copy; {new Date().getFullYear()} Meowtrade. All rights reserved.
+              &copy; {new Date().getFullYear()} Meowtrades. All rights reserved.
             </p>
             <div className="mt-1 text-xs">
-              <Link to="/terms" className="text-slate-400 hover:text-meow-paw mr-4">Terms</Link>
-              <Link to="/privacy" className="text-slate-400 hover:text-meow-paw">Privacy</Link>
+              {/* <Link to="/terms" className="text-slate-400 hover:text-meow-paw mr-4">Terms</Link> */}
+              {/* <Link to="/privacy" className="text-slate-400 hover:text-meow-paw">Privacy</Link> */}
+              <Link to="https://github.com/meowtrades" className="text-slate-400 hover:text-meow-paw">Github</Link>
             </div>
           </div>
         </div>
