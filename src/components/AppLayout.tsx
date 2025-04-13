@@ -31,8 +31,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const user = data?.user;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("cryptoclick_user");
+  const handleLogout = async () => {
+    await authClient.signOut();
     navigate("/");
   };
 
