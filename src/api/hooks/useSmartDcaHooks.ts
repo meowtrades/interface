@@ -22,6 +22,8 @@ export const SMART_DCA_KEYS = {
  * Create a new DCA plan
  */
 export const useCreateDcaPlan = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (planData: CreateDcaPlanDto) => {
       const response = await axiosInstance.post<DcaPlan>(
@@ -29,6 +31,11 @@ export const useCreateDcaPlan = () => {
         planData
       );
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: SMART_DCA_KEYS.plans(),
+      });
     },
   });
 };

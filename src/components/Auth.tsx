@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { authClient } from "@/lib/auth";
 
+import { API_URL } from "@/configs/env";
+
 type AuthProps = {
   onSuccess?: () => void;
 };
@@ -17,8 +19,8 @@ const Auth = ({ onSuccess }: AuthProps) => {
     setIsLoading(true);
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "http://localhost:8080",
-      errorCallbackURL: "http://localhost:8080",
+      callbackURL: `${window.location.origin}/app`,
+      errorCallbackURL: `${window.location.origin}/`,
     });
 
     // Mock auth delay
