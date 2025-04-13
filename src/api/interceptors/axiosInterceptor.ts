@@ -1,8 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { API_URL } from "@/configs/env";
 
 // Create axios instance with base URL
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Enables cookies for authentication
