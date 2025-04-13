@@ -1,27 +1,42 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 // Color map for strategy types
-const ColorMap: Record<string, { bg: string, text: string }> = {
-  'dca': { bg: 'bg-blue-100', text: 'text-crypto-blue' },
-  'grid': { bg: 'bg-purple-100', text: 'text-crypto-purple' },
-  'momentum': { bg: 'bg-amber-100', text: 'text-amber-600' },
-  'custom': { bg: 'bg-green-100', text: 'text-green-600' },
+const ColorMap: Record<string, { bg: string; text: string }> = {
+  dca: { bg: "bg-blue-100", text: "text-crypto-blue" },
+  grid: { bg: "bg-purple-100", text: "text-crypto-purple" },
+  momentum: { bg: "bg-amber-100", text: "text-amber-600" },
+  custom: { bg: "bg-green-100", text: "text-green-600" },
 };
 
 // Icon map for strategy types
 const IconMap: Record<string, React.ReactNode> = {
-  'RefreshCw': <RefreshCw size={20} />,
-  'Grid': <Grid size={20} />,
-  'TrendingUp': <TrendingUp size={20} />
+  RefreshCw: <RefreshCw size={20} />,
+  Grid: <Grid size={20} />,
+  TrendingUp: <TrendingUp size={20} />,
 };
 
 // Duration options
@@ -29,8 +44,16 @@ const durationOptions = [
   { value: "1month", label: "1 Month" },
   { value: "3months", label: "3 Months" },
   { value: "6months", label: "6 Months" },
-  { value: "1year", label: "1 Year" }
+  { value: "1year", label: "1 Year" },
 ];
+
+// Risk level enum
+export enum RiskLevel {
+  NO_RISK = "no_risk",
+  LOW_RISK = "low_risk",
+  MEDIUM_RISK = "medium_risk",
+  HIGH_RISK = "high_risk",
+}
 
 interface StartStrategyDialogProps {
   strategy: Strategy;
@@ -42,35 +65,78 @@ interface StartStrategyDialogProps {
     tokenId: string;
     amount: number;
     duration: string;
-    riskLevel?: number;
+    riskLevel?: RiskLevel;
   }) => void;
 }
 
-const StartStrategyDialog = ({ 
-  strategy, 
-  open, 
-  onClose, 
-  defaultToken = 'inj',
-  onStartStrategy
+const StartStrategyDialog = ({
+  strategy,
+  open,
+  onClose,
+  defaultToken = "inj",
+  onStartStrategy,
 }: StartStrategyDialogProps) => {
   const [tokenId, setTokenId] = useState(defaultToken);
   const [amount, setAmount] = useState("1000");
   const [duration, setDuration] = useState("3months");
-  const [riskLevel, setRiskLevel] = useState(50);
-  
+  const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.MEDIUM_RISK);
+
   // Reset form when strategy changes
   useEffect(() => {
     if (strategy) {
       setTokenId(defaultToken);
       setAmount("1000");
       setDuration("3months");
-      setRiskLevel(50);
+      setRiskLevel(RiskLevel.MEDIUM_RISK);
     }
   }, [strategy, defaultToken]);
-  
+
   // Get color scheme based on strategy type
-  const colorScheme = ColorMap[strategy.type] || { bg: 'bg-gray-100', text: 'text-gray-600' };
-  
+  const colorScheme = ColorMap[strategy.type] || {
+    bg: "bg-gray-100",
+    text: "text-gray-600",
+  };
+
+  // Convert slider value to RiskLevel enum
+  const sliderValueToRiskLevel = (value: number): RiskLevel => {
+    if (value < 25) return RiskLevel.NO_RISK;
+    if (value < 50) return RiskLevel.LOW_RISK;
+    if (value < 75) return RiskLevel.MEDIUM_RISK;
+    return RiskLevel.HIGH_RISK;
+  };
+
+  // Convert RiskLevel enum to slider value
+  const riskLevelToSliderValue = (riskLevel: RiskLevel): number => {
+    switch (riskLevel) {
+      case RiskLevel.NO_RISK:
+        return 12.5;
+      case RiskLevel.LOW_RISK:
+        return 37.5;
+      case RiskLevel.MEDIUM_RISK:
+        return 62.5;
+      case RiskLevel.HIGH_RISK:
+        return 87.5;
+      default:
+        return 62.5;
+    }
+  };
+
+  // Get display name for risk level
+  const getRiskLevelDisplayName = (riskLevel: RiskLevel): string => {
+    switch (riskLevel) {
+      case RiskLevel.NO_RISK:
+        return "No Risk";
+      case RiskLevel.LOW_RISK:
+        return "Conservative";
+      case RiskLevel.MEDIUM_RISK:
+        return "Moderate";
+      case RiskLevel.HIGH_RISK:
+        return "Aggressive";
+      default:
+        return "Moderate";
+    }
+  };
+
   const handleSubmit = () => {
     // Validate amount
     const amountNum = parseFloat(amount);
@@ -78,16 +144,16 @@ const StartStrategyDialog = ({
       toast.error("Please enter a valid amount");
       return;
     }
-    
+
     // Start the strategy
     onStartStrategy({
       strategyId: strategy.id,
       tokenId,
       amount: amountNum,
       duration,
-      ...(strategy.type === 'dca' ? { riskLevel } : {})
+      ...(strategy.type === "dca" ? { riskLevel } : {}),
     });
-    
+
     toast.success(`${strategy.name} started successfully!`);
     onClose();
   };
@@ -97,8 +163,12 @@ const StartStrategyDialog = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full ${colorScheme.bg} ${colorScheme.text} flex items-center justify-center`}>
-              {IconMap[strategy.icon as keyof typeof IconMap] || <RefreshCw size={16} />}
+            <div
+              className={`w-8 h-8 rounded-full ${colorScheme.bg} ${colorScheme.text} flex items-center justify-center`}
+            >
+              {IconMap[strategy.icon as keyof typeof IconMap] || (
+                <RefreshCw size={16} />
+              )}
             </div>
             <DialogTitle>Start {strategy.name}</DialogTitle>
           </div>
@@ -106,22 +176,19 @@ const StartStrategyDialog = ({
             Configure your strategy settings to begin automated trading.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-6 py-4">
           <div className="grid gap-4">
             <div>
               <Label htmlFor="token">Token</Label>
-              <Select
-                value={tokenId}
-                onValueChange={setTokenId}
-              >
+              <Select value={tokenId} onValueChange={setTokenId}>
                 <SelectTrigger id="token">
                   <SelectValue placeholder="Select token" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Tokens</SelectLabel>
-                    {strategy.supportedTokens.map(token => (
+                    {strategy.supportedTokens.map((token) => (
                       <SelectItem key={token} value={token}>
                         {token.toUpperCase()}
                       </SelectItem>
@@ -130,7 +197,7 @@ const StartStrategyDialog = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="investment">Investment Amount (USD)</Label>
               <Input
@@ -143,24 +210,22 @@ const StartStrategyDialog = ({
               />
               {strategy.minInvestment && (
                 <p className="text-xs text-slate-500 mt-1">
-                  Minimum investment: ${strategy.minInvestment[strategy.supportedChains[0]] || 10}
+                  Minimum investment: $
+                  {strategy.minInvestment[strategy.supportedChains[0]] || 10}
                 </p>
               )}
             </div>
-            
+
             <div>
               <Label htmlFor="duration">Duration</Label>
-              <Select
-                value={duration}
-                onValueChange={setDuration}
-              >
+              <Select value={duration} onValueChange={setDuration}>
                 <SelectTrigger id="duration">
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Duration</SelectLabel>
-                    {durationOptions.map(option => (
+                    {durationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -169,14 +234,14 @@ const StartStrategyDialog = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             {/* Risk level slider for Smart DCA strategy */}
-            {strategy.type === 'dca' && (
+            {strategy.type === "dca" && (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="risk-level">Risk Level</Label>
                   <span className="text-sm font-medium">
-                    {riskLevel < 30 ? 'Conservative' : riskLevel < 70 ? 'Moderate' : 'Aggressive'}
+                    {getRiskLevelDisplayName(riskLevel)}
                   </span>
                 </div>
                 <Slider
@@ -184,8 +249,10 @@ const StartStrategyDialog = ({
                   min={0}
                   max={100}
                   step={1}
-                  value={[riskLevel]}
-                  onValueChange={(values) => setRiskLevel(values[0])}
+                  value={[riskLevelToSliderValue(riskLevel)]}
+                  onValueChange={(values) =>
+                    setRiskLevel(sliderValueToRiskLevel(values[0]))
+                  }
                   className="py-4"
                 />
                 <div className="flex justify-between text-xs text-slate-500">
@@ -195,19 +262,18 @@ const StartStrategyDialog = ({
               </div>
             )}
           </div>
-          
+
           <div className="bg-amber-50 p-4 rounded-lg text-amber-800 text-sm">
             <p className="font-medium mb-1">Important Note</p>
-            <p>Past performance does not guarantee future results. Your investment may lose value.</p>
+            <p>
+              Past performance does not guarantee future results. Your
+              investment may lose value.
+            </p>
           </div>
         </div>
-        
+
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-          >
+          <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button
@@ -223,4 +289,4 @@ const StartStrategyDialog = ({
   );
 };
 
-export default StartStrategyDialog; 
+export default StartStrategyDialog;

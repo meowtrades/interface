@@ -28,7 +28,9 @@ export const useUserBalances = () => {
       const response = await axiosInstance.get<{ data: ChainToken[] }>(
         "/user/balance"
       );
-      return response.data.data;
+
+      const data = response.data.data;
+      return data.filter((chain) => chain.chainId === "injective");
     },
   });
 };
