@@ -1,3 +1,5 @@
+/** @format */
+
 // Types for the modular strategy architecture
 
 export type Chain = {
@@ -16,7 +18,7 @@ export type Token = {
   decimals: number;
 };
 
-export type StrategyType = 'dca' | 'grid' | 'momentum' | 'custom';
+export type StrategyType = "dca" | "grid" | "momentum" | "custom";
 
 export type StrategyPerformance = {
   year?: number;
@@ -38,7 +40,7 @@ export type Strategy = {
   supportedTokens: string[]; // token ids
   performance?: Record<string, StrategyPerformance>; // token id -> performance
   minInvestment?: Record<string, number>; // chain id -> min investment
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: "low" | "medium" | "high";
   active?: boolean;
 };
 
@@ -62,4 +64,12 @@ export type UserStrategy = {
   startDate: string;
   lastExecuted?: string;
   active: boolean;
-}; 
+};
+
+export enum Frequency {
+  DAILY = "daily",
+  WEEKLY = "weekly",
+  MONTHLY = "monthly",
+  TEST_MINUTE = "test_minute",
+  TEST_10_SECONDS = "test_10_seconds",
+}

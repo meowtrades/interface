@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -20,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Strategy } from "@/lib/types";
+import { Strategy, Frequency } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,12 +41,13 @@ const IconMap: Record<string, React.ReactNode> = {
   TrendingUp: <TrendingUp size={20} />,
 };
 
-// Duration options
-const durationOptions = [
-  { value: "1month", label: "1 Month" },
-  { value: "3months", label: "3 Months" },
-  { value: "6months", label: "6 Months" },
-  { value: "1year", label: "1 Year" },
+// Frequency options
+const frequencyOptions = [
+  { value: Frequency.DAILY, label: "Daily" },
+  { value: Frequency.WEEKLY, label: "Weekly" },
+  { value: Frequency.MONTHLY, label: "Monthly" },
+  { value: Frequency.TEST_MINUTE, label: "Test Minute" },
+  { value: Frequency.TEST_10_SECONDS, label: "Test 10 Seconds" },
 ];
 
 // Risk level enum
@@ -64,7 +67,7 @@ interface StartStrategyDialogProps {
     strategyId: string;
     tokenId: string;
     amount: number;
-    duration: string;
+    frequency: Frequency;
     riskLevel?: RiskLevel;
   }) => void;
 }
@@ -78,7 +81,7 @@ const StartStrategyDialog = ({
 }: StartStrategyDialogProps) => {
   const [tokenId, setTokenId] = useState(defaultToken);
   const [amount, setAmount] = useState("1000");
-  const [duration, setDuration] = useState("3months");
+  const [frequency, setFrequency] = useState(Frequency.DAILY);
   const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.MEDIUM_RISK);
 
   // Reset form when strategy changes
@@ -86,7 +89,7 @@ const StartStrategyDialog = ({
     if (strategy) {
       setTokenId(defaultToken);
       setAmount("1000");
-      setDuration("3months");
+      setFrequency(Frequency.DAILY);
       setRiskLevel(RiskLevel.MEDIUM_RISK);
     }
   }, [strategy, defaultToken]);
@@ -150,7 +153,7 @@ const StartStrategyDialog = ({
       strategyId: strategy.id,
       tokenId,
       amount: amountNum,
-      duration,
+      frequency,
       ...(strategy.type === "dca" ? { riskLevel } : {}),
     });
 
@@ -217,15 +220,18 @@ const StartStrategyDialog = ({
             </div>
 
             <div>
-              <Label htmlFor="duration">Duration</Label>
-              <Select value={duration} onValueChange={setDuration}>
-                <SelectTrigger id="duration">
-                  <SelectValue placeholder="Select duration" />
+              <Label htmlFor="frequency">Frequency</Label>
+              <Select
+                value={frequency}
+                onValueChange={(value) => setFrequency(value as Frequency)}
+              >
+                <SelectTrigger id="frequency">
+                  <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Duration</SelectLabel>
-                    {durationOptions.map((option) => (
+                    <SelectLabel>Frequency</SelectLabel>
+                    {frequencyOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
