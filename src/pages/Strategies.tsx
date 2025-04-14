@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,7 @@ import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useStopDcaPlan, useUserDcaPlans } from "@/api";
+import { DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
 
 const Strategies = () => {
   const {

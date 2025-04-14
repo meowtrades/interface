@@ -38,6 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserStrategy } from "@/lib/types";
 
 // Mock price data that would come from an API in a real app
 const generateMockPriceHistory = (
@@ -140,7 +141,9 @@ const StrategyDetail = () => {
     location.state?.planId || location.state?.source === "dashboard";
 
   // Find the relevant strategy data
-  const userStrategy = userStrategies.find((us) => us.id === strategyId);
+  const userStrategy = userStrategies.find(
+    (us: UserStrategy & { _id: string }) => us._id === strategyId
+  );
   const strategyTemplate = strategies.find(
     (s) => s.id === (userStrategy?.strategyId || strategyId)
   );
@@ -153,11 +156,13 @@ const StrategyDetail = () => {
   useEffect(() => {
     if (!isLoading) {
       // If no strategy found, redirect
-      console.log(!userStrategies, !strategyTemplate, !isLoading);
-      if (!userStrategy && !strategyTemplate && !isLoading) {
-        navigate("/app/strategies");
-        return;
-      }
+      // console.log(!userStrategies, !strategyTemplate, !isLoading);
+      // if (!userStrategies.find((us) => us.id === strategyId)) {
+      //   navigate("/app/strategies");
+      //   return;
+      // }
+
+      console.log(userStrategies, strategyId);
 
       // Use fixed data to match the image
       const fixedPriceData = [

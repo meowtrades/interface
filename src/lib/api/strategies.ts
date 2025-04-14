@@ -1,3 +1,5 @@
+/** @format */
+
 import { Chain, Strategy, Token, UserStrategy } from "../types";
 
 // Mock data for development
