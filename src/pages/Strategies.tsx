@@ -48,6 +48,8 @@ const Strategies = () => {
 
   const { data: allDcaActiveStrategies } = useUserDcaPlans();
 
+  console.log("dca", allDcaActiveStrategies);
+
   console.log(allDcaActiveStrategies);
 
   const dcaActiveStrategies = allDcaActiveStrategies?.filter(
@@ -73,7 +75,7 @@ const Strategies = () => {
       : [];
 
   // Get active user strategies
-  const activeStrategies = userStrategies.filter((us) => us.active);
+  // const activeStrategies = userStrategies.filter((us) => us.active);
 
   const handleViewDetails = (strategyId: string) => {
     const strategy = strategies.find((s) => s.id === strategyId);
@@ -218,7 +220,7 @@ const Strategies = () => {
               <Skeleton className="h-80 w-full" />
               <Skeleton className="h-80 w-full" />
             </div>
-          ) : activeStrategies.length > 0 ? (
+          ) : userStrategies.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {dcaActiveStrategies?.map((userStrategy) => {
                 if (!userStrategy.isActive) return null;

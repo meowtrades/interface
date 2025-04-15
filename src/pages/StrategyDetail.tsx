@@ -39,6 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserStrategy } from "@/lib/types";
+import { formatFrequency } from "@/lib/utils";
 
 // Mock price data that would come from an API in a real app
 const generateMockPriceHistory = (
@@ -132,18 +133,20 @@ const StrategyDetail = () => {
   const { strategies, userStrategies, tokens, isLoading, error } =
     useStrategies();
 
+  // const [strategry, setStrategry] = useState(null);
+
   const [timeframe, setTimeframe] = useState("all");
   const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [profit, setProfit] = useState(0);
+  const [currentValue, setCurrentValue] = useState(0);
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
     location.state?.planId || location.state?.source === "dashboard";
 
   // Find the relevant strategy data
-  const userStrategy = userStrategies.find(
-    (us: UserStrategy & { _id: string }) => us._id === strategyId
-  );
+  const userStrategy = userStrategies.find((us) => us._id === strategyId);
   const strategyTemplate = strategies.find(
     (s) => s.id === (userStrategy?.strategyId || strategyId)
   );
@@ -153,16 +156,39 @@ const StrategyDetail = () => {
     (t) => t.id === (userStrategy?.tokenId || location.state?.token || "inj")
   );
 
+  // const currentValue = userStrategy.totalInvested + userStrategy.amount;
+  // const profit = 0;
+  // const currentValue = 0;
+  // const profit = 50;
+
   useEffect(() => {
     if (!isLoading) {
       // If no strategy found, redirect
       // console.log(!userStrategies, !strategyTemplate, !isLoading);
-      // if (!userStrategies.find((us) => us.id === strategyId)) {
-      //   navigate("/app/strategies");
-      //   return;
-      // }
+      // console.log(
+      //   "strat",
+      //   userStrategies.find((us) => us.id === strategyId)
+      // );
+      if (
+        !userStrategies
+        // !userStrategies.find((us) => us._id === strategyId)
+      ) {
+        navigate("/app/strategies");
+        return;
+      }
 
-      console.log(userStrategies, strategyId);
+      // Set current value and profit
+      if (userStrategy) {
+        const currentValue = userStrategy.totalInvested + userStrategy.amount;
+        setCurrentValue(currentValue);
+        const profitPercentage = currentValue - userStrategy.initialAmount;
+        setProfit(profitPercentage);
+      } else {
+        setCurrentValue(0);
+        setProfit(0);
+      }
+
+      // console.log(userStrategies, strategyId);
 
       // Use fixed data to match the image
       const fixedPriceData = [
@@ -198,7 +224,7 @@ const StrategyDetail = () => {
     }
   }, [isLoading, strategyId, userStrategy, strategyTemplate, token]);
 
-  if (isLoading) {
+  if (isLoading || !userStrategy) {
     return (
       <AppLayout>
         <div className="space-y-4">
@@ -266,7 +292,7 @@ const StrategyDetail = () => {
   const filteredChartData = getFilteredChartData(timeframe);
 
   // Determine if we're showing profit or loss
-  const isProfitable = userStrategy ? userStrategy.profit >= 0 : true;
+  // const isProfitable = userStrategy ?  >= 0 : true;
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
@@ -360,9 +386,7 @@ const StrategyDetail = () => {
               <CardHeader className="pb-2 pt-4 px-5">
                 <CardDescription>Current Value</CardDescription>
                 <CardTitle className="text-xl">
-                  {formatCurrency(
-                    userStrategy ? userStrategy.currentValue : 645.32
-                  )}
+                  {formatCurrency(currentValue)}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -371,7 +395,7 @@ const StrategyDetail = () => {
               <CardHeader className="pb-2 pt-4 px-5">
                 <CardDescription>Starting Value</CardDescription>
                 <CardTitle className="text-xl">
-                  {formatCurrency(userStrategy ? userStrategy.invested : 600.0)}
+                  {formatCurrency(userStrategy.initialAmount)}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -381,22 +405,25 @@ const StrategyDetail = () => {
                 <CardDescription>Profit/Loss</CardDescription>
                 <CardTitle
                   className={`text-xl ${
-                    isProfitable ? "text-green-500" : "text-red-500"
+                    currentValue > userStrategy.initialAmount
+                      ? "text-green-500"
+                      : "text-red-500"
                   }`}
                 >
-                  {isProfitable ? "+" : "-"}
-                  {formatCurrency(
+                  {currentValue > userStrategy.initialAmount ? "+" : "-"}
+                  {/* {formatCurrency(
                     Math.abs(
                       userStrategy
                         ? userStrategy.currentValue - userStrategy.invested
                         : 45.32
                     )
-                  )}
-                  (
+                  )} */}
+                  {formatCurrency(profit)}
+                  {/* FIXME: MISSING VALUE (
                   {userStrategy
                     ? userStrategy.profitPercentage.toFixed(2)
                     : "7.55"}
-                  %)
+                  %) */}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -526,7 +553,13 @@ const StrategyDetail = () => {
 
             <div>
               <h4 className="text-sm text-slate-500 mb-2">Started On</h4>
-              <span className="font-medium">May 15, 2024</span>
+              <span className="font-medium">
+                {new Date(userStrategy.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                })}
+              </span>
             </div>
 
             <div>
@@ -534,11 +567,15 @@ const StrategyDetail = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Investment Duration:</span>
-                  <span className="font-medium">Every 3 days</span>
+                  <span className="font-medium">
+                    {formatFrequency(userStrategy.frequency)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Investment Amount:</span>
-                  <span className="font-medium">$50.00</span>
+                  <span className="font-medium">
+                    ${userStrategy.totalInvested.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
