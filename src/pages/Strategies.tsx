@@ -48,6 +48,8 @@ const Strategies = () => {
 
   const { data: allDcaActiveStrategies } = useUserDcaPlans();
 
+  console.log(allDcaActiveStrategies);
+
   const dcaActiveStrategies = allDcaActiveStrategies?.filter(
     (us) => us.isActive
   );

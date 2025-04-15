@@ -1,5 +1,6 @@
 /** @format */
 
+import { axiosInstance } from "@/api";
 import { Chain, Strategy, Token, UserStrategy } from "../types";
 
 // Mock data for development
@@ -172,12 +173,16 @@ export const fetchTokens = async (): Promise<Token[]> => {
 };
 
 export const fetchStrategies = async (): Promise<Strategy[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
   return strategies;
 };
 
 export const fetchUserStrategies = async (): Promise<UserStrategy[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  // await new Promise((resolve) => setTimeout(resolve, 250));
+
+  const data = (await axiosInstance.get("/user/strategies")).data;
+
+  console.log("fetch: ", data);
+  return data;
   return userStrategies;
 };
 
