@@ -180,8 +180,7 @@ export const fetchStrategies = async (): Promise<Strategy[]> => {
 export const fetchUserStrategies = async (): Promise<UserStrategyNew[]> => {
   // await new Promise((resolve) => setTimeout(resolve, 250));
 
-  const data = (await axiosInstance.get("/user/analytics/strategies/active"))
-    .data;
+  const data = (await axiosInstance.get("/user/analytics/strategies")).data;
 
   console.log("fetch: ", data.data);
   return data.data;

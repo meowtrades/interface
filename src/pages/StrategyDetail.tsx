@@ -38,8 +38,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserStrategy } from "@/lib/types";
+// import { UserStrategy } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { axiosInstance } from "@/api";
 
 // Mock price data that would come from an API in a real app
 const generateMockPriceHistory = (
@@ -125,41 +128,83 @@ interface PriceHistoryItem {
   profit: number;
 }
 
+interface UserStrategy {
+  _id: string;
+  totalInvested: number;
+  profit: number;
+  profitPercentage: number;
+  invested: number;
+  initialAmount: number;
+  frequency: string;
+  amount: number;
+  createdAt: string;
+  active: boolean;
+  currentValue: number;
+  strategyTemplate?: {
+    id: string;
+    name: string;
+    type: string;
+  };
+  token?: {
+    symbol: string;
+    name: string;
+  };
+}
+
 const StrategyDetail = () => {
   const { strategyId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { strategies, userStrategies, tokens, isLoading, error } =
-    useStrategies();
+  // const { strategies, userStrategies, tokens, isLoading, error } =
+  //   useStrategies();
 
   // const [strategry, setStrategry] = useState(null);
 
   const [timeframe, setTimeframe] = useState("all");
   const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [profit, setProfit] = useState(0);
-  const [currentValue, setCurrentValue] = useState(0);
+  // const [profit, setProfit] = useState(0);
+  // const [currentValue, setCurrentValue] = useState(0);
+  // const [userStrategy, setUserStrategy] = useState<UserStrategy | null>(null);
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
     location.state?.planId || location.state?.source === "dashboard";
 
   // Find the relevant strategy data
-  const userStrategy = userStrategies.find((us) => us._id === strategyId);
-  const strategyTemplate = strategies.find(
-    (s) => s.id === (userStrategy?.strategyId || strategyId)
-  );
+  // const userStrategy = userStrategies.find((us) => us._id === strategyId);
+  // const strategyTemplate = strategies.find(
+  //   (s) => s.id === (userStrategy?.strategyId || strategyId)
+  // );
 
-  // Get token information
-  const token = tokens.find(
-    (t) => t.id === (userStrategy?.tokenId || location.state?.token || "inj")
-  );
+  // // Get token information
+  // const token = tokens.find(
+  //   (t) => t.id === (userStrategy?.tokenId || location.state?.token || "inj")
+  // );
 
   // const currentValue = userStrategy.totalInvested + userStrategy.amount;
   // const profit = 0;
   // const currentValue = 0;
   // const profit = 50;
+
+  const {
+    data: userStrategy,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["userStrategy", strategyId],
+    queryFn: async () => {
+      const url = `/user/analytics/strategies/${strategyId}`;
+      console.log(url);
+      const d = (await axiosInstance.get<{ data: UserStrategy }>(url)).data
+        .data;
+
+      console.log("strat:", d, strategyId);
+
+      return d;
+    },
+  });
 
   useEffect(() => {
     if (!isLoading) {
@@ -170,7 +215,7 @@ const StrategyDetail = () => {
       //   userStrategies.find((us) => us.id === strategyId)
       // );
       if (
-        !userStrategies
+        !userStrategy
         // !userStrategies.find((us) => us._id === strategyId)
       ) {
         navigate("/app/strategies");
@@ -178,15 +223,15 @@ const StrategyDetail = () => {
       }
 
       // Set current value and profit
-      if (userStrategy) {
-        const currentValue = userStrategy.totalInvested + userStrategy.amount;
-        setCurrentValue(currentValue);
-        const profitPercentage = currentValue - userStrategy.initialAmount;
-        setProfit(profitPercentage);
-      } else {
-        setCurrentValue(0);
-        setProfit(0);
-      }
+      // if (userStrategy) {
+      //   const currentValue = userStrategy.totalInvested + userStrategy.amount;
+      //   setCurrentValue(currentValue);
+      //   const profitPercentage = currentValue - userStrategy.initialAmount;
+      //   setProfit(profitPercentage);
+      // } else {
+      //   setCurrentValue(0);
+      //   setProfit(0);
+      // }
 
       // console.log(userStrategies, strategyId);
 
@@ -208,21 +253,25 @@ const StrategyDetail = () => {
 
       // Generate mock transactions
       if (userStrategy) {
-        const strategyType = strategyTemplate?.type || "dca";
-        setTransactions(
-          generateMockTransactions(120, token?.symbol || "INJ", strategyType)
-        );
-      } else if (strategyTemplate) {
+        const strategyType = userStrategy.strategyTemplate?.type || "dca";
         setTransactions(
           generateMockTransactions(
             120,
-            token?.symbol || "INJ",
-            strategyTemplate.type
+            userStrategy.token?.symbol || "INJ",
+            strategyType
+          )
+        );
+      } else if (userStrategy.strategyTemplate) {
+        setTransactions(
+          generateMockTransactions(
+            120,
+            userStrategy.token?.symbol || "INJ",
+            userStrategy.strategyTemplate.type
           )
         );
       }
     }
-  }, [isLoading, strategyId, userStrategy, strategyTemplate, token]);
+  }, [isLoading, strategyId, userStrategy]);
 
   if (isLoading || !userStrategy) {
     return (
@@ -239,7 +288,7 @@ const StrategyDetail = () => {
     return (
       <AppLayout>
         <div className="p-4 bg-red-50 text-red-600 rounded-md">
-          Error loading strategy data: {error}
+          Error loading strategy data: {error.message}
         </div>
       </AppLayout>
     );
@@ -296,7 +345,7 @@ const StrategyDetail = () => {
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
-    const type = strategyTemplate?.type || "dca";
+    const type = userStrategy.strategyTemplate?.type || "dca";
     if (type === "grid") return <Grid size={18} />;
     if (type === "momentum") return <TrendingUp size={18} />;
     return <RefreshCw size={18} />;
@@ -304,7 +353,7 @@ const StrategyDetail = () => {
 
   // Get color scheme based on strategy type
   const getColorScheme = () => {
-    const type = strategyTemplate?.type || "dca";
+    const type = userStrategy.strategyTemplate?.type || "dca";
     if (type === "grid")
       return { bg: "bg-purple-100", text: "text-purple-600" };
     if (type === "momentum")
@@ -343,21 +392,21 @@ const StrategyDetail = () => {
               </div>
               <div>
                 <h2 className="text-lg font-semibold">
-                  {token?.symbol || "BTC"}{" "}
-                  {strategyTemplate?.name || "Strategy"}
+                  {userStrategy.token?.symbol || "BTC"}{" "}
+                  {userStrategy.strategyTemplate?.name || "Strategy"}
                 </h2>
                 <div
                   className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                    strategyTemplate?.type === "grid"
+                    userStrategy.strategyTemplate?.type === "grid"
                       ? "bg-purple-100 text-purple-800"
-                      : strategyTemplate?.type === "momentum"
+                      : userStrategy.strategyTemplate?.type === "momentum"
                       ? "bg-amber-100 text-amber-800"
                       : "bg-blue-100 text-blue-800"
                   }`}
                 >
-                  {strategyTemplate?.type === "grid"
+                  {userStrategy.strategyTemplate?.type === "grid"
                     ? "Grid Trading"
-                    : strategyTemplate?.type === "momentum"
+                    : userStrategy.strategyTemplate?.type === "momentum"
                     ? "Momentum"
                     : "Smart DCA"}
                 </div>
@@ -386,7 +435,7 @@ const StrategyDetail = () => {
               <CardHeader className="pb-2 pt-4 px-5">
                 <CardDescription>Current Value</CardDescription>
                 <CardTitle className="text-xl">
-                  {formatCurrency(currentValue)}
+                  {formatCurrency(userStrategy.currentValue)}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -405,12 +454,14 @@ const StrategyDetail = () => {
                 <CardDescription>Profit/Loss</CardDescription>
                 <CardTitle
                   className={`text-xl ${
-                    currentValue > userStrategy.initialAmount
+                    userStrategy.currentValue > userStrategy.initialAmount
                       ? "text-green-500"
                       : "text-red-500"
                   }`}
                 >
-                  {currentValue > userStrategy.initialAmount ? "+" : "-"}
+                  {userStrategy.currentValue > userStrategy.initialAmount
+                    ? "+"
+                    : "-"}
                   {/* {formatCurrency(
                     Math.abs(
                       userStrategy
@@ -418,8 +469,8 @@ const StrategyDetail = () => {
                         : 45.32
                     )
                   )} */}
-                  {formatCurrency(profit)}
-                  {/* FIXME: MISSING VALUE (
+                  {formatCurrency(userStrategy.profit)}
+                  {/* FIXME: MISSING VALUE (  
                   {userStrategy
                     ? userStrategy.profitPercentage.toFixed(2)
                     : "7.55"}
@@ -525,9 +576,9 @@ const StrategyDetail = () => {
               <div className="flex items-center gap-2">
                 {getStrategyIcon()}
                 <span className="font-medium">
-                  {strategyTemplate?.type === "grid"
+                  {userStrategy.strategyTemplate?.type === "grid"
                     ? "Grid Trading"
-                    : strategyTemplate?.type === "momentum"
+                    : userStrategy.strategyTemplate?.type === "momentum"
                     ? "Momentum Trading"
                     : "Smart Dollar Cost Averaging"}
                 </span>
@@ -541,7 +592,8 @@ const StrategyDetail = () => {
                   <span className="text-xs font-bold">{token?.symbol?.charAt(0) || 'B'}</span>
                 </div> */}
                 <span className="font-medium">
-                  {token?.name || "Bitcoin"} ({token?.symbol || "BTC"})
+                  {userStrategy.token?.name || "Bitcoin"} (
+                  {userStrategy.token?.symbol || "BTC"})
                 </span>
               </div>
             </div>
@@ -574,7 +626,7 @@ const StrategyDetail = () => {
                 <div className="flex justify-between">
                   <span>Investment Amount:</span>
                   <span className="font-medium">
-                    ${userStrategy.totalInvested.toFixed(2)}
+                    ${userStrategy.totalInvested}
                   </span>
                 </div>
               </div>
@@ -585,9 +637,9 @@ const StrategyDetail = () => {
             <div>
               <h4 className="text-sm text-slate-500 mb-2">Description</h4>
               <p className="text-sm text-slate-700">
-                {strategyTemplate?.type === "grid"
+                {userStrategy.strategyTemplate?.type === "grid"
                   ? "Grid trading automatically places buy and sell orders at predetermined price levels, capturing profit from price oscillations."
-                  : strategyTemplate?.type === "momentum"
+                  : userStrategy.strategyTemplate?.type === "momentum"
                   ? "Momentum trading capitalizes on market trends by buying assets that have recently shown upward price movement."
                   : "DCA reduces the impact of volatility by investing fixed amounts at regular intervals, regardless of asset price."}
               </p>
