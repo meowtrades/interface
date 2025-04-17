@@ -1,3 +1,5 @@
+/** @format */
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -11,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import StrategyDetail from "./pages/StrategyDetail";
 import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
+import Admin from "./pages/admin/Credits";
 // Route guard for authenticated routes
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const { data, isPending, error, refetch } = authClient.useSession();
@@ -106,6 +109,15 @@ const App = () => (
           element={
             <RequireAuth>
               <Wallet />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/admin/credits"
+          element={
+            <RequireAuth>
+              <Admin />
             </RequireAuth>
           }
         />
