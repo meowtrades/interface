@@ -1,0 +1,185 @@
+/** @format */
+
+import { useState } from "react";
+import { axiosInstance, useCurrentUser } from "@/api";
+import AppLayout from "@/components/AppLayout";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { toast } from "sonner";
+import NotFound from "../NotFound";
+import { AxiosError } from "axios";
+
+const adminEmails = ["kunalranarj2005@gmail.com"];
+
+const Admin = () => {
+  const { data: currentUser, isLoading } = useCurrentUser();
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const [token, setToken] = useState("USDT");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-96 w-full" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!currentUser?.email || !adminEmails.includes(currentUser.email)) {
+    return <NotFound />;
+  }
+
+  const handleSearchUser = async () => {
+    if (!email) return toast.error("Please enter a valid email");
+
+    try {
+      const { data: user } = await axiosInstance.get(`/user/${email}`);
+      console.log(user);
+      setUserDetails({ ...user.user, balance: user.balance.toFixed(2) });
+      setDialogOpen(true);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 404) toast.error("User not found");
+      }
+    }
+  };
+
+  const handleAllocateCredits = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    try {
+      // Placeholder API call
+      await fetch("/api/admin/allocate-credits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, amount, token }),
+      });
+      toast.success("Credits allocated successfully");
+      setDialogOpen(false);
+      setEmail("");
+      setAmount("");
+    } catch (error) {
+      toast.error("Error allocating credits");
+    }
+  };
+
+  return (
+    <AppLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Admin - Allocate Credits</h1>
+        <p className="text-slate-600">Allocate credits to users securely.</p>
+      </div>
+
+      <Card className="max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle>Allocate Credits</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="email">User Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter user email"
+              />
+              <Button className="mt-2" onClick={handleSearchUser}>
+                Search User
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-muted-foreground">
+            Ensure the email is correct before proceeding.
+          </p>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+          </DialogHeader>
+          {userDetails ? (
+            <div className="space-y-4">
+              <p>
+                <strong>Name:</strong> {userDetails.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {userDetails.email}
+              </p>
+              <p>
+                <strong>Balance:</strong> {userDetails.balance} USDT
+              </p>
+              <div>
+                <Label htmlFor="amount">Amount</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="amount"
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Enter amount"
+                  />
+                  <Select value={token} onValueChange={setToken}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select token" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USDT">USDT</SelectItem>
+                      <SelectItem value="Inj">Inj</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Skeleton className="h-24 w-full" />
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAllocateCredits}>Allocate</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AppLayout>
+  );
+};
+
+export default Admin;
