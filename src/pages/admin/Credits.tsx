@@ -31,6 +31,7 @@ import {
 import { toast } from "sonner";
 import NotFound from "../NotFound";
 import { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
 
 const adminEmails = ["kunalranarj2005@gmail.com"];
 
@@ -41,6 +42,39 @@ const Admin = () => {
   const [token, setToken] = useState("USDT");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
+
+  const allocateCreditsMutation = useMutation({
+    mutationFn: async ({
+      amount,
+      email,
+      tokenSymbol,
+    }: {
+      email: string;
+      amount: string;
+      tokenSymbol: string;
+    }) => {
+      const response = await axiosInstance.post(
+        "/user/balance/allocate/wallet/",
+        {
+          email,
+          amount,
+          tokenSymbol,
+        }
+      );
+
+      console.log(response.data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Credits allocated successfully");
+      setDialogOpen(false);
+      setEmail("");
+      setAmount("");
+    },
+    onError: () => {
+      toast.error("Error allocating credits");
+    },
+  });
 
   if (isLoading) {
     return (
@@ -72,26 +106,15 @@ const Admin = () => {
     }
   };
 
-  const handleAllocateCredits = async () => {
+  const handleAllocateCredits = () => {
     if (!amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
 
-    try {
-      // Placeholder API call
-      await fetch("/api/admin/allocate-credits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, amount, token }),
-      });
-      toast.success("Credits allocated successfully");
-      setDialogOpen(false);
-      setEmail("");
-      setAmount("");
-    } catch (error) {
-      toast.error("Error allocating credits");
-    }
+    console.log(token, amount, email);
+
+    allocateCreditsMutation.mutate({ email, amount, tokenSymbol: token });
   };
 
   return (
@@ -161,7 +184,7 @@ const Admin = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="USDT">USDT</SelectItem>
-                      <SelectItem value="Inj">Inj</SelectItem>
+                      <SelectItem value="INJ">INJ</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -174,7 +197,12 @@ const Admin = () => {
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAllocateCredits}>Allocate</Button>
+            <Button
+              onClick={handleAllocateCredits}
+              disabled={allocateCreditsMutation.isPending}
+            >
+              {allocateCreditsMutation.isPending ? "Allocating..." : "Allocate"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
