@@ -31,12 +31,26 @@ import {
 import { toast } from "sonner";
 import NotFound from "../NotFound";
 import { AxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
-
-const adminEmails = ["kunalranarj2005@gmail.com"];
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const Admin = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
+  const { data: isAdmin, isLoading: isAdminLoading } = useQuery({
+    queryKey: ["isAdmin", currentUser?.id],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/user/is-admin");
+      return response.data.isAdmin;
+    },
+    retry(failureCount, error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 403) {
+          return false;
+        }
+      }
+      return failureCount < 2;
+    },
+  });
+
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState("USDT");
@@ -76,7 +90,7 @@ const Admin = () => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || isAdminLoading) {
     return (
       <AppLayout>
         <div className="space-y-4">
@@ -87,7 +101,7 @@ const Admin = () => {
     );
   }
 
-  if (!currentUser?.email || !adminEmails.includes(currentUser.email)) {
+  if (!isAdmin) {
     return <NotFound />;
   }
 
