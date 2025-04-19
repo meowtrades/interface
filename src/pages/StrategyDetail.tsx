@@ -170,37 +170,14 @@ const StrategyDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // const { strategies, userStrategies, tokens, isLoading, error } =
-  //   useStrategies();
-
-  // const [strategry, setStrategry] = useState(null);
-
   const [timeframe, setTimeframe] = useState("all");
   const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
-  // const [transactions, setTransactions] = useState<Transaction[]>([]);
-  // const [profit, setProfit] = useState(0);
-  // const [currentValue, setCurrentValue] = useState(0);
-  // const [userStrategy, setUserStrategy] = useState<UserStrategy | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10); // Default page size
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
     location.state?.planId || location.state?.source === "dashboard";
-
-  // Find the relevant strategy data
-  // const userStrategy = userStrategies.find((us) => us._id === strategyId);
-  // const strategyTemplate = strategies.find(
-  //   (s) => s.id === (userStrategy?.strategyId || strategyId)
-  // );
-
-  // // Get token information
-  // const token = tokens.find(
-  //   (t) => t.id === (userStrategy?.tokenId || location.state?.token || "inj")
-  // );
-
-  // const currentValue = userStrategy.totalInvested + userStrategy.amount;
-  // const profit = 0;
-  // const currentValue = 0;
-  // const profit = 50;
 
   const {
     data: userStrategy,
@@ -222,34 +199,11 @@ const StrategyDetail = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      // If no strategy found, redirect
-      // console.log(!userStrategies, !strategyTemplate, !isLoading);
-      // console.log(
-      //   "strat",
-      //   userStrategies.find((us) => us.id === strategyId)
-      // );
-      if (
-        !userStrategy
-        // !userStrategies.find((us) => us._id === strategyId)
-      ) {
+      if (!userStrategy) {
         navigate("/app/strategies");
         return;
       }
 
-      // Set current value and profit
-      // if (userStrategy) {
-      //   const currentValue = userStrategy.totalInvested + userStrategy.amount;
-      //   setCurrentValue(currentValue);
-      //   const profitPercentage = currentValue - userStrategy.initialAmount;
-      //   setProfit(profitPercentage);
-      // } else {
-      //   setCurrentValue(0);
-      //   setProfit(0);
-      // }
-
-      // console.log(userStrategies, strategyId);
-
-      // Use fixed data to match the image
       const fixedPriceData = [
         { date: "2024-04-01", value: 600, profit: 0 },
         { date: "2024-04-15", value: 605, profit: 5 },
@@ -264,39 +218,27 @@ const StrategyDetail = () => {
       ];
 
       setPriceHistory(fixedPriceData);
-
-      // Generate mock transactions
-      // if (userStrategy) {
-      //   const strategyType = userStrategy.strategyTemplate?.type || "dca";
-      //   // setTransactions(
-      //   //   generateMockTransactions(
-      //   //     120,
-      //   //     userStrategy.token?.symbol || "INJ",
-      //   //     strategyType
-      //   //   )
-      //   // );
-      // } else if (userStrategy.strategyTemplate) {
-      //   // setTransactions(
-      //   //   generateMockTransactions(
-      //   //     120,
-      //   //     userStrategy.token?.symbol || "INJ",
-      //   //     userStrategy.strategyTemplate.type
-      //   //   )
-      //   // );
-      // }
     }
   }, [isLoading, strategyId, userStrategy]);
 
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
-    queryKey: ["transactions", strategyId],
+    queryKey: ["transactions", strategyId, currentPage],
     queryFn: async () => {
-      const url = `/user/analytics/strategies/${strategyId}/transactions`;
+      const url = `/user/analytics/strategies/${strategyId}/transactions?page=${currentPage}&limit=${pageSize}`;
       const d = (await axiosInstance.get<{ data: TransactionAttempt[] }>(url))
         .data.data;
 
       console.log("transactions:", d, strategyId);
 
       return d;
+    },
+    retry(failureCount, error) {
+      // dont retry if its a 404 error
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          return false;
+        }
+      }
     },
   });
 
@@ -366,9 +308,6 @@ const StrategyDetail = () => {
   };
 
   const filteredChartData = getFilteredChartData(timeframe);
-
-  // Determine if we're showing profit or loss
-  // const isProfitable = userStrategy ?  >= 0 : true;
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
@@ -489,19 +428,7 @@ const StrategyDetail = () => {
                   {userStrategy.currentValue > userStrategy.initialAmount
                     ? "+"
                     : "-"}
-                  {/* {formatCurrency(
-                    Math.abs(
-                      userStrategy
-                        ? userStrategy.currentValue - userStrategy.invested
-                        : 45.32
-                    )
-                  )} */}
                   {formatCurrency(userStrategy.profit)}
-                  {/* FIXME: MISSING VALUE (  
-                  {userStrategy
-                    ? userStrategy.profitPercentage.toFixed(2)
-                    : "7.55"}
-                  %) */}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -615,9 +542,6 @@ const StrategyDetail = () => {
             <div>
               <h4 className="text-sm text-slate-500 mb-2">Asset</h4>
               <div className="flex items-center gap-2">
-                {/* <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center">
-                  <span className="text-xs font-bold">{token?.symbol?.charAt(0) || 'B'}</span>
-                </div> */}
                 <span className="font-medium">
                   {userStrategy.token?.name || "Bitcoin"} (
                   {userStrategy.token?.symbol || "BTC"})
@@ -687,7 +611,7 @@ const StrategyDetail = () => {
                     Date
                   </th>
                   <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Type
+                    Status
                   </th>
                   <th className="text-left py-4 px-5 font-medium text-slate-500">
                     Amount
@@ -701,33 +625,6 @@ const StrategyDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* {transactions.map((transaction, index) => (
-                  <tr key={index} className="border-b border-slate-100">
-                    <td className="py-4 px-5 text-slate-700">
-                      {formatDate(transaction.date)}
-                    </td>
-                    <td className="py-4 px-5">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          transaction.type === "Buy"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {transaction.type}
-                      </span>
-                    </td>
-                    <td className="py-4 px-5 text-slate-700">
-                      {transaction.amount}
-                    </td>
-                    <td className="py-4 px-5 text-slate-700">
-                      {transaction.price}
-                    </td>
-                    <td className="py-4 px-5 text-right text-slate-700">
-                      {transaction.value}
-                    </td>
-                  </tr>
-                ))} */}
                 {transactionsLoading ? (
                   <tr>
                     <td colSpan={5} className="py-4 px-5 text-center">
@@ -785,6 +682,25 @@ const StrategyDetail = () => {
                 )}
               </tbody>
             </table>
+          </div>
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center p-4">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-slate-500">Page {currentPage}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </Button>
           </div>
         </Card>
       </div>
