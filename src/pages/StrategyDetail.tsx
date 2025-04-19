@@ -697,6 +697,7 @@ const StrategyDetail = () => {
             <Button
               variant="outline"
               size="sm"
+              disabled={transactions && transactions.length < pageSize}
               onClick={() => setCurrentPage((prev) => prev + 1)}
             >
               Next
