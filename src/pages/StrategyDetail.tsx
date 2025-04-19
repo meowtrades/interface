@@ -219,7 +219,7 @@ const StrategyDetail = () => {
 
       setPriceHistory(fixedPriceData);
     }
-  }, [isLoading, strategyId, userStrategy]);
+  }, [isLoading, navigate, strategyId, userStrategy]);
 
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
     queryKey: ["transactions", strategyId, currentPage],
