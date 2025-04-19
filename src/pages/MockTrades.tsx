@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import {
   TrendingUp,
   TrendingDown,
@@ -47,6 +48,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useCreateMockTrade, useStopMockTrade, useUserDcaPlans } from "@/api";
+import { RiskLevel } from "@/components/StartStrategyDialog";
+import { Frequency } from "@/lib/types";
+import { formatFrequency } from "@/lib/utils";
 
 // Mock data for performance chart
 const generateMockChartData = (timeframe) => {
@@ -114,9 +118,10 @@ const generateMockChartData = (timeframe) => {
 
 const MockTrades = () => {
   const [amount, setAmount] = useState("100");
-  const [selectedStrategy, setSelectedStrategy] = useState("smartDca");
+  const [selectedStrategy, setSelectedStrategy] = useState("smart-dca");
   const [selectedToken, setSelectedToken] = useState("btc");
-  const [riskLevel, setRiskLevel] = useState("moderate");
+  const [riskLevel, setRiskLevel] = useState(2); // Default to moderate (2)
+  const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
   const [chartTimeframe, setChartTimeframe] = useState("1y");
   const [chartData, setChartData] = useState(generateMockChartData("1y"));
 
@@ -139,11 +144,16 @@ const MockTrades = () => {
 
   const handleStartMockTrade = () => {
     mockTradeMutation.mutate({
-      strategyId: "smart-dca",
+      strategyId: selectedStrategy,
       tokenSymbol: selectedToken,
-      initialInvestment: Number(amount),
-      riskLevel: riskLevel,
-      timeframe: chartTimeframe,
+      amount: Number(amount),
+      riskLevel:
+        riskLevel === 1
+          ? RiskLevel.NO_RISK
+          : riskLevel === 2
+          ? RiskLevel.MEDIUM_RISK
+          : RiskLevel.HIGH_RISK,
+      frequency,
     });
 
     toast.success("Mock trade started successfully!", {
@@ -231,8 +241,7 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select a strategy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="smartDca">Smart DCA</SelectItem>
-                  {/* <SelectItem value="gridTrading">Grid Trading</SelectItem> */}
+                  <SelectItem value="smart-dca">Smart DCA</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -256,14 +265,44 @@ const MockTrades = () => {
               <label className="text-sm font-medium block mb-1.5 text-slate-700">
                 Risk Level
               </label>
-              <Select value={riskLevel} onValueChange={setRiskLevel}>
+              <Slider
+                value={[riskLevel]}
+                onValueChange={(value) => setRiskLevel(value[0])}
+                min={1}
+                max={3}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-slate-500 mt-1">
+                <span>Conservative</span>
+                <span>Moderate</span>
+                <span>Aggressive</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+                Frequency
+              </label>
+              <Select
+                value={frequency}
+                onValueChange={(value) => setFrequency(value as Frequency)}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select risk level" />
+                  <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="conservative">Conservative</SelectItem>
-                  <SelectItem value="moderate">Moderate</SelectItem>
-                  <SelectItem value="aggressive">Aggressive</SelectItem>
+                  {/* <SelectItem value={Frequency.TEST_MINUTE}>
+                    {formatFrequency(Frequency.TEST_MINUTE)}
+                  </SelectItem>
+                  <SelectItem value={Frequency.DAILY}>Daily</SelectItem>
+                  <SelectItem value={Frequency.WEEKLY}>Weekly</SelectItem>
+                  <SelectItem value={Frequency.MONTHLY}>Monthly</SelectItem> */}
+                  {Object.values(Frequency).map((freq) => (
+                    <SelectItem key={freq} value={freq}>
+                      {formatFrequency(freq)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

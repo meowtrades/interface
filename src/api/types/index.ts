@@ -1,3 +1,8 @@
+/** @format */
+
+import { RiskLevel } from "@/components/StartStrategyDialog";
+import { Frequency } from "@/lib/types";
+
 // Common types
 export type Pagination = {
   page: number;
@@ -171,12 +176,20 @@ export type TotalInvestment = {
 // Mock Trading types
 export type Direction = "long" | "short";
 
+// export type CreateMockTradeDto = {
+//   strategyId: string;
+//   tokenSymbol: string;
+//   initialInvestment: number;
+//   riskLevel: string;
+//   // timeframe: string;
+// };
+
 export type CreateMockTradeDto = {
   strategyId: string;
   tokenSymbol: string;
-  initialInvestment: number;
-  riskLevel: string;
-  timeframe: string;
+  amount: number;
+  riskLevel: RiskLevel;
+  frequency: Frequency;
 };
 
 export type StopMockTradeDto = {
