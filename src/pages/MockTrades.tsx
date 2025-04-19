@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -446,16 +448,20 @@ const MockTrades = () => {
                       <div className="flex items-center gap-2">
                         <div
                           className={`w-10 h-10 rounded-full ${
+                            // eslint-disable-next-line no-constant-condition
                             true
                               ? "bg-blue-100 text-crypto-blue"
                               : "bg-purple-100 text-crypto-purple"
                           } flex items-center justify-center`}
                         >
-                          {true ? (
-                            <TrendingUp size={20} />
-                          ) : (
-                            <TrendingDown size={20} />
-                          )}
+                          {
+                            // eslint-disable-next-line no-constant-condition
+                            true ? (
+                              <TrendingUp size={20} />
+                            ) : (
+                              <TrendingDown size={20} />
+                            )
+                          }
                         </div>
                         <div>
                           <CardTitle className="text-md">Smart DCA</CardTitle>
