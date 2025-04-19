@@ -122,6 +122,20 @@ interface Transaction {
   value: string;
 }
 
+interface TransactionAttempt {
+  userId: string;
+  chain: string;
+  amount: number;
+  status: "completed" | "pending" | "failed" | "retrying";
+  error?: string;
+  txHash?: string;
+  retryCount: number;
+  maxRetries: number;
+  lastAttemptTime: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface PriceHistoryItem {
   date: string;
   value: number;
@@ -163,7 +177,7 @@ const StrategyDetail = () => {
 
   const [timeframe, setTimeframe] = useState("all");
   const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // const [transactions, setTransactions] = useState<Transaction[]>([]);
   // const [profit, setProfit] = useState(0);
   // const [currentValue, setCurrentValue] = useState(0);
   // const [userStrategy, setUserStrategy] = useState<UserStrategy | null>(null);
@@ -252,26 +266,39 @@ const StrategyDetail = () => {
       setPriceHistory(fixedPriceData);
 
       // Generate mock transactions
-      if (userStrategy) {
-        const strategyType = userStrategy.strategyTemplate?.type || "dca";
-        setTransactions(
-          generateMockTransactions(
-            120,
-            userStrategy.token?.symbol || "INJ",
-            strategyType
-          )
-        );
-      } else if (userStrategy.strategyTemplate) {
-        setTransactions(
-          generateMockTransactions(
-            120,
-            userStrategy.token?.symbol || "INJ",
-            userStrategy.strategyTemplate.type
-          )
-        );
-      }
+      // if (userStrategy) {
+      //   const strategyType = userStrategy.strategyTemplate?.type || "dca";
+      //   // setTransactions(
+      //   //   generateMockTransactions(
+      //   //     120,
+      //   //     userStrategy.token?.symbol || "INJ",
+      //   //     strategyType
+      //   //   )
+      //   // );
+      // } else if (userStrategy.strategyTemplate) {
+      //   // setTransactions(
+      //   //   generateMockTransactions(
+      //   //     120,
+      //   //     userStrategy.token?.symbol || "INJ",
+      //   //     userStrategy.strategyTemplate.type
+      //   //   )
+      //   // );
+      // }
     }
   }, [isLoading, strategyId, userStrategy]);
+
+  const { data: transactions, isLoading: transactionsLoading } = useQuery({
+    queryKey: ["transactions", strategyId],
+    queryFn: async () => {
+      const url = `/user/analytics/strategies/${strategyId}/transactions`;
+      const d = (await axiosInstance.get<{ data: TransactionAttempt[] }>(url))
+        .data.data;
+
+      console.log("transactions:", d, strategyId);
+
+      return d;
+    },
+  });
 
   if (isLoading || !userStrategy) {
     return (
@@ -674,7 +701,7 @@ const StrategyDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {transactions.slice(0, 5).map((transaction, index) => (
+                {/* {transactions.map((transaction, index) => (
                   <tr key={index} className="border-b border-slate-100">
                     <td className="py-4 px-5 text-slate-700">
                       {formatDate(transaction.date)}
@@ -700,7 +727,62 @@ const StrategyDetail = () => {
                       {transaction.value}
                     </td>
                   </tr>
-                ))}
+                ))} */}
+                {transactionsLoading ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 px-5 text-center">
+                      Loading transactions...
+                    </td>
+                  </tr>
+                ) : transactions && transactions.length > 0 ? (
+                  <>
+                    {transactions.map((transaction, index) => (
+                      <tr key={index} className="border-b border-slate-100">
+                        <td className="py-4 px-5 text-slate-700">
+                          {new Date(transaction.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "2-digit",
+                            }
+                          )}
+                        </td>
+                        <td className="py-4 px-5">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              transaction.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : transaction.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : transaction.status === "failed"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {transaction.status.charAt(0).toUpperCase() +
+                              transaction.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-5 text-slate-700">
+                          {transaction.amount}
+                        </td>
+                        <td className="py-4 px-5 text-slate-700">
+                          ${transaction.amount * 10} {/* Mock price */}
+                        </td>
+                        <td className="py-4 px-5 text-right text-slate-700">
+                          ${transaction.amount * 10} {/* Mock value */}
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-4 px-5 text-center">
+                      No transactions found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
