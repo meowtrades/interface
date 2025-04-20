@@ -246,7 +246,7 @@ const StrategyDetail = () => {
 
       setPriceHistory(fixedPriceData);
     }
-  }, [isLoading, strategyId, userStrategy]);
+  }, [isLoading, navigate, strategyId, userStrategy]);
 
   if (isLoading || !userStrategy) {
     return (
