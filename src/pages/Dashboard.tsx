@@ -241,11 +241,9 @@ const Dashboard = () => {
 
               const currentValue =
                 userStrategy.totalInvested + userStrategy.amount;
-
+              const profit = currentValue - userStrategy.initialAmount;
               const profitPercentage =
-                ((currentValue - userStrategy.initialAmount) /
-                  userStrategy.initialAmount) *
-                100;
+                (profit / userStrategy.initialAmount) * 100;
 
               if (!strategy || !token || !chain) return null;
 
@@ -306,7 +304,7 @@ const Dashboard = () => {
                           }`}
                         >
                           {profitPercentage >= 0 ? "+" : "-"}$
-                          {Math.abs(profitPercentage).toFixed(2)} (
+                          {Math.abs(profit).toFixed(2)} (
                           {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
