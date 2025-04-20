@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -85,11 +87,11 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
         { label: "1 Year", value: 365 },
       ];
 
-      const durationInMonths =
-        durationOptions.find((option) => option.label === data.duration)
-          ?.value || 30;
+      // const durationInMonths =
+      //   durationOptions.find((option) => option.label === data.duration)
+      //     ?.value || 30;
 
-      const amountPerDay = data.amount / durationInMonths;
+      const amountPerDay = data.amount;
 
       dcaMutation.mutate(
         {
