@@ -40,7 +40,7 @@ import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 // import { UserStrategy } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { axiosInstance } from "@/api";
 
@@ -79,61 +79,62 @@ const generateMockPriceHistory = (
   return data;
 };
 
-// Mock transactions data
-const generateMockTransactions = (
-  days: number,
-  token: string,
-  strategyType: string
-) => {
-  const transactions = [];
-  const now = new Date();
-
-  const types = strategyType === "grid" ? ["Buy", "Sell"] : ["Buy"];
-
-  for (
-    let i = 0;
-    i < Math.min(10, days);
-    i += Math.floor(Math.random() * 5) + 1
-  ) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-
-    const type = types[Math.floor(Math.random() * types.length)];
-    const amount = (Math.random() * 0.1 + 0.001).toFixed(4);
-    const price = (Math.random() * 100 + 10).toFixed(2);
-
-    transactions.push({
-      date: date.toISOString().split("T")[0],
-      type,
-      amount: `${amount} ${token}`,
-      price: `$${price}`,
-      value: `$${price}`,
-    });
-  }
-  return transactions;
-};
-
 // Define types for our data
+// interface Transaction {
+//   date: string;
+//   type: string;
+//   amount: string;
+//   price: string;
+//   value: string;
+// }
+/**
+ * 
+_id
+:
+"6804ddc437ae81e6323695e9"
+planId
+:
+"6804dd9337ae81e6323695e4"
+userId
+:
+"68032209abe21d430cc72cfc"
+chain
+:
+"injective"
+amount
+:
+33.333333333333336
+status
+:
+"completed"
+retryCount
+:
+0
+maxRetries
+:
+3
+lastAttemptTime
+:
+"2025-04-20T11:43:00.398Z"
+createdAt
+:
+"2025-04-20T11:43:00.399Z"
+updatedAt
+:
+"2025-04-20T11:43:04.284Z"
+ */
 interface Transaction {
-  date: string;
-  type: string;
-  amount: string;
-  price: string;
-  value: string;
-}
-
-interface TransactionAttempt {
+  _id: string;
+  planId: string;
   userId: string;
   chain: string;
   amount: number;
-  status: "completed" | "pending" | "failed" | "retrying";
-  error?: string;
-  txHash?: string;
+  status: string;
   retryCount: number;
   maxRetries: number;
-  lastAttemptTime: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  lastAttemptTime: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PriceHistoryItem {
@@ -173,7 +174,9 @@ const StrategyDetail = () => {
   const [timeframe, setTimeframe] = useState("all");
   const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10); // Default page size
+  // const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const queryClient = useQueryClient();
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
@@ -187,15 +190,39 @@ const StrategyDetail = () => {
     queryKey: ["userStrategy", strategyId],
     queryFn: async () => {
       const url = `/user/analytics/strategies/${strategyId}`;
-      console.log(url);
       const d = (await axiosInstance.get<{ data: UserStrategy }>(url)).data
         .data;
-
-      console.log("strat:", d, strategyId);
 
       return d;
     },
   });
+
+  const fetchTransactions = async (page: number) => {
+    const url = `/user/analytics/strategies/${strategyId}/transactions?page=${page}&limit=5`;
+    const response = await axiosInstance.get<{
+      data: Transaction[];
+      pagination: { totalPages: number };
+    }>(url);
+    return response.data;
+  };
+
+  const {
+    data: transactions,
+    isLoading: isTransactionsLoading,
+    error: transactionError,
+  } = useQuery({
+    queryKey: ["transactions", strategyId, currentPage],
+    queryFn: () => fetchTransactions(currentPage),
+  });
+
+  // useEffect(() => {
+  //   if (currentPage < totalPages) {
+  //     queryClient.prefetchQuery(
+  //       ["transactions", strategyId, currentPage + 1],
+  //       () => fetchTransactions(currentPage + 1)
+  //     );
+  //   }
+  // }, [currentPage, totalPages, queryClient, strategyId]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -219,28 +246,7 @@ const StrategyDetail = () => {
 
       setPriceHistory(fixedPriceData);
     }
-  }, [isLoading, navigate, strategyId, userStrategy]);
-
-  const { data: transactions, isLoading: transactionsLoading } = useQuery({
-    queryKey: ["transactions", strategyId, currentPage],
-    queryFn: async () => {
-      const url = `/user/analytics/strategies/${strategyId}/transactions?page=${currentPage}&limit=${pageSize}`;
-      const d = (await axiosInstance.get<{ data: TransactionAttempt[] }>(url))
-        .data.data;
-
-      console.log("transactions:", d, strategyId);
-
-      return d;
-    },
-    retry(failureCount, error) {
-      // dont retry if its a 404 error
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          return false;
-        }
-      }
-    },
-  });
+  }, [isLoading, strategyId, userStrategy]);
 
   if (isLoading || !userStrategy) {
     return (
@@ -604,86 +610,65 @@ const StrategyDetail = () => {
         <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
         <Card className="shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-max">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Date
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Status
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Amount
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Price
-                  </th>
-                  <th className="text-right py-4 px-5 font-medium text-slate-500">
-                    Value
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactionsLoading ? (
-                  <tr>
-                    <td colSpan={5} className="py-4 px-5 text-center">
-                      Loading transactions...
-                    </td>
+            {isTransactionsLoading ? (
+              <div className="p-4">Loading transactions...</div>
+            ) : transactionError ? (
+              <div className="p-4 text-red-500">
+                Error loading transactions: {transactionError.message}
+              </div>
+            ) : (
+              <table className="w-full min-w-max">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-4 px-5 font-medium text-slate-500">
+                      Date
+                    </th>
+                    <th className="text-left py-4 px-5 font-medium text-slate-500">
+                      Type
+                    </th>
+                    <th className="text-left py-4 px-5 font-medium text-slate-500">
+                      Amount
+                    </th>
+                    <th className="text-left py-4 px-5 font-medium text-slate-500">
+                      Price
+                    </th>
+                    <th className="text-right py-4 px-5 font-medium text-slate-500">
+                      Value
+                    </th>
                   </tr>
-                ) : transactions && transactions.length > 0 ? (
-                  <>
-                    {transactions.map((transaction, index) => (
-                      <tr key={index} className="border-b border-slate-100">
-                        <td className="py-4 px-5 text-slate-700">
-                          {new Date(transaction.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "2-digit",
-                            }
-                          )}
-                        </td>
-                        <td className="py-4 px-5">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              transaction.status === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : transaction.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : transaction.status === "failed"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"
-                            }`}
-                          >
-                            {transaction.status.charAt(0).toUpperCase() +
-                              transaction.status.slice(1)}
-                          </span>
-                        </td>
-                        <td className="py-4 px-5 text-slate-700">
-                          {transaction.amount}
-                        </td>
-                        <td className="py-4 px-5 text-slate-700">
-                          ${transaction.amount * 10} {/* Mock price */}
-                        </td>
-                        <td className="py-4 px-5 text-right text-slate-700">
-                          ${transaction.amount * 10} {/* Mock value */}
-                        </td>
-                      </tr>
-                    ))}
-                  </>
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="py-4 px-5 text-center">
-                      No transactions found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {transactions.data.map((transaction, index) => (
+                    <tr key={index} className="border-b border-slate-100">
+                      <td className="py-4 px-5 text-slate-700">
+                        {formatDate(transaction.createdAt)}
+                      </td>
+                      <td className="py-4 px-5">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            transaction.status === "completed"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {transaction.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-5 text-slate-700">
+                        {transaction.amount.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-5 text-slate-700">
+                        {transaction.amount.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-5 text-right text-slate-700">
+                        {transaction.amount.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
-          {/* Pagination Controls */}
           <div className="flex justify-between items-center p-4">
             <Button
               variant="outline"
@@ -693,12 +678,16 @@ const StrategyDetail = () => {
             >
               Previous
             </Button>
-            <span className="text-sm text-slate-500">Page {currentPage}</span>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
             <Button
               variant="outline"
               size="sm"
-              disabled={transactions && transactions.length < pageSize}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
             >
               Next
             </Button>
