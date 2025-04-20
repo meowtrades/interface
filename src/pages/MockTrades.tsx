@@ -118,7 +118,7 @@ const generateMockChartData = (timeframe) => {
 
 const MockTrades = () => {
   const [amount, setAmount] = useState("100");
-  const [selectedStrategy, setSelectedStrategy] = useState("smart-dca");
+  const [selectedStrategy, setSelectedStrategy] = useState("smartDca");
   const [selectedToken, setSelectedToken] = useState("btc");
   const [riskLevel, setRiskLevel] = useState(2); // Default to moderate (2)
   const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
@@ -241,7 +241,7 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select a strategy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="smart-dca">Smart DCA</SelectItem>
+                  <SelectItem value="smartDca">Smart DCA</SelectItem>
                 </SelectContent>
               </Select>
             </div>
