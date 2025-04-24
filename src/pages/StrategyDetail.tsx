@@ -172,7 +172,7 @@ const StrategyDetail = () => {
   const location = useLocation();
 
   const [timeframe, setTimeframe] = useState("all");
-  const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
+  // const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   // const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -213,6 +213,7 @@ const StrategyDetail = () => {
   } = useQuery({
     queryKey: ["transactions", strategyId, currentPage],
     queryFn: () => fetchTransactions(currentPage),
+    retry: false,
   });
 
   // useEffect(() => {
@@ -224,6 +225,29 @@ const StrategyDetail = () => {
   //   }
   // }, [currentPage, totalPages, queryClient, strategyId]);
 
+  const { data: filteredChartData } = useQuery({
+    queryKey: ["chart", strategyId],
+    queryFn: async () => {
+      const mockTradeId =
+        strategyId.slice(0, strategyId.length - 1) +
+        String.fromCharCode(strategyId.at(-1).charCodeAt(0) - 2);
+
+      const priceData = await axiosInstance.get(
+        `/mocktrades/chart/${mockTradeId}?range=1W`
+      );
+
+      const data = priceData.data.data.map((i) => ({
+        date: new Date(i.timestamp).toISOString(),
+        value: i.price,
+      }));
+
+      console.log(data);
+
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
     if (!isLoading) {
       if (!userStrategy) {
@@ -231,20 +255,20 @@ const StrategyDetail = () => {
         return;
       }
 
-      const fixedPriceData = [
-        { date: "2024-04-01", value: 600, profit: 0 },
-        { date: "2024-04-15", value: 605, profit: 5 },
-        { date: "2024-05-01", value: 615, profit: 15 },
-        { date: "2024-05-15", value: 590, profit: -10 },
-        { date: "2024-06-01", value: 610, profit: 10 },
-        { date: "2024-06-15", value: 630, profit: 30 },
-        { date: "2024-07-01", value: 640, profit: 40 },
-        { date: "2024-07-15", value: 630, profit: 30 },
-        { date: "2024-08-01", value: 640, profit: 40 },
-        { date: "2024-08-15", value: 655, profit: 55 },
-      ];
+      // const fixedPriceData = [
+      //   { date: "2024-04-01", value: 600, profit: 0 },
+      //   { date: "2024-04-15", value: 605, profit: 5 },
+      //   { date: "2024-05-01", value: 615, profit: 15 },
+      //   { date: "2024-05-15", value: 590, profit: -10 },
+      //   { date: "2024-06-01", value: 610, profit: 10 },
+      //   { date: "2024-06-15", value: 630, profit: 30 },
+      //   { date: "2024-07-01", value: 640, profit: 40 },
+      //   { date: "2024-07-15", value: 630, profit: 30 },
+      //   { date: "2024-08-01", value: 640, profit: 40 },
+      //   { date: "2024-08-15", value: 655, profit: 55 },
+      // ];
 
-      setPriceHistory(fixedPriceData);
+      // setPriceHistory(fixedPriceData);
     }
   }, [isLoading, navigate, strategyId, userStrategy]);
 
@@ -287,33 +311,33 @@ const StrategyDetail = () => {
   };
 
   // Filter data based on timeframe
-  const getFilteredChartData = (selectedTimeframe: string) => {
-    if (!priceHistory.length) return [];
+  // const getFilteredChartData = (selectedTimeframe: string) => {
+  //   if (!priceHistory.length) return [];
 
-    const data = [...priceHistory];
+  //   const data = [...priceHistory];
 
-    if (selectedTimeframe === "7D" || selectedTimeframe === "week") {
-      return data.slice(-7);
-    } else if (selectedTimeframe === "1M" || selectedTimeframe === "month") {
-      return data.slice(-30);
-    } else if (
-      selectedTimeframe === "3M" ||
-      selectedTimeframe === "threeMonths"
-    ) {
-      return data.slice(-90);
-    } else if (
-      selectedTimeframe === "6M" ||
-      selectedTimeframe === "sixMonths"
-    ) {
-      return data.slice(-180);
-    } else if (selectedTimeframe === "1Y" || selectedTimeframe === "year") {
-      return data.slice(-365);
-    }
+  //   if (selectedTimeframe === "7D" || selectedTimeframe === "week") {
+  //     return data.slice(-7);
+  //   } else if (selectedTimeframe === "1M" || selectedTimeframe === "month") {
+  //     return data.slice(-30);
+  //   } else if (
+  //     selectedTimeframe === "3M" ||
+  //     selectedTimeframe === "threeMonths"
+  //   ) {
+  //     return data.slice(-90);
+  //   } else if (
+  //     selectedTimeframe === "6M" ||
+  //     selectedTimeframe === "sixMonths"
+  //   ) {
+  //     return data.slice(-180);
+  //   } else if (selectedTimeframe === "1Y" || selectedTimeframe === "year") {
+  //     return data.slice(-365);
+  //   }
 
-    return data;
-  };
+  //   return data;
+  // };
 
-  const filteredChartData = getFilteredChartData(timeframe);
+  // const filteredChartData = getFilteredChartData(timeframe);
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
