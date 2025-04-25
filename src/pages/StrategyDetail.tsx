@@ -228,12 +228,12 @@ const StrategyDetail = () => {
   const { data: filteredChartData } = useQuery({
     queryKey: ["chart", strategyId],
     queryFn: async () => {
-      const mockTradeId =
-        strategyId.slice(0, strategyId.length - 1) +
-        String.fromCharCode(strategyId.at(-1).charCodeAt(0) - 2);
+      // const mockTradeId =
+      //   strategyId.slice(0, strategyId.length - 1) +
+      //   String.fromCharCode(strategyId.at(-1).charCodeAt(0) - 2);
 
       const priceData = await axiosInstance.get(
-        `/mocktrades/chart/${mockTradeId}?range=1W`
+        `/mocktrades/chart/${strategyId}?range=1W`
       );
 
       const data = priceData.data.data.map((i) => ({
