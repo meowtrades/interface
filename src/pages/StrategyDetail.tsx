@@ -79,6 +79,25 @@ const generateMockPriceHistory = (
   return data;
 };
 
+const generateRandomChartData = (days: number) => {
+  const data = [];
+  let value = 1000; // Starting value
+  const now = new Date();
+
+  for (let i = days; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+
+    value = value * (1 + (Math.random() * 0.02 - 0.01)); // Random fluctuation
+    data.push({
+      date: date.toISOString().split("T")[0],
+      value: parseFloat(value.toFixed(2)),
+    });
+  }
+
+  return data;
+};
+
 // Define types for our data
 // interface Transaction {
 //   date: string;
@@ -216,32 +235,17 @@ const StrategyDetail = () => {
     retry: false,
   });
 
-  // useEffect(() => {
-  //   if (currentPage < totalPages) {
-  //     queryClient.prefetchQuery(
-  //       ["transactions", strategyId, currentPage + 1],
-  //       () => fetchTransactions(currentPage + 1)
-  //     );
-  //   }
-  // }, [currentPage, totalPages, queryClient, strategyId]);
-
-  const { data: filteredChartData } = useQuery({
+  const { data: filteredChartData, isLoading: isChartDataLoading } = useQuery({
     queryKey: ["chart", strategyId],
     queryFn: async () => {
-      // const mockTradeId =
-      //   strategyId.slice(0, strategyId.length - 1) +
-      //   String.fromCharCode(strategyId.at(-1).charCodeAt(0) - 2);
-
       const priceData = await axiosInstance.get(
         `/mocktrades/chart/${strategyId}?range=1W`
       );
 
       const data = priceData.data.data.map((i) => ({
-        date: new Date(i.timestamp).toISOString(),
+        date: i.timestamp,
         value: i.price,
       }));
-
-      console.log(data);
 
       return data;
     },
@@ -254,21 +258,6 @@ const StrategyDetail = () => {
         navigate("/app/strategies");
         return;
       }
-
-      // const fixedPriceData = [
-      //   { date: "2024-04-01", value: 600, profit: 0 },
-      //   { date: "2024-04-15", value: 605, profit: 5 },
-      //   { date: "2024-05-01", value: 615, profit: 15 },
-      //   { date: "2024-05-15", value: 590, profit: -10 },
-      //   { date: "2024-06-01", value: 610, profit: 10 },
-      //   { date: "2024-06-15", value: 630, profit: 30 },
-      //   { date: "2024-07-01", value: 640, profit: 40 },
-      //   { date: "2024-07-15", value: 630, profit: 30 },
-      //   { date: "2024-08-01", value: 640, profit: 40 },
-      //   { date: "2024-08-15", value: 655, profit: 55 },
-      // ];
-
-      // setPriceHistory(fixedPriceData);
     }
   }, [isLoading, navigate, strategyId, userStrategy]);
 
@@ -504,50 +493,70 @@ const StrategyDetail = () => {
             </div>
 
             <div className="h-72 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={filteredChartData}
-                  margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563EB" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    vertical={false}
-                    strokeDasharray="3 3"
-                    stroke="#f1f5f9"
-                  />
-                  <XAxis
-                    dataKey="date"
-                    tickFormatter={formatDate}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#64748b" }}
-                  />
-                  <YAxis
-                    tickFormatter={(value) => `$${value}`}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#64748b" }}
-                    width={60}
-                  />
-                  <Tooltip
-                    formatter={(value) => [`$${value}`, "Value"]}
-                    labelFormatter={(label) => formatDate(label)}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#2563EB"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorValue)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {isChartDataLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Skeleton className="h-full w-full" />
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={filteredChartData}
+                    margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="colorValue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#2563EB"
+                          stopOpacity={0.2}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#2563EB"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      vertical={false}
+                      strokeDasharray="3 3"
+                      stroke="#f1f5f9"
+                    />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatDate}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `$${value}`}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                      width={60}
+                    />
+                    <Tooltip
+                      formatter={(value) => [`$${value}`, "Value"]}
+                      labelFormatter={(label) => formatDate(label)}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#2563EB"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         </div>
