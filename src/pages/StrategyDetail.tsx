@@ -1,7 +1,12 @@
 /** @format */
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -146,20 +151,14 @@ const StrategyDetail = () => {
   const { strategyId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [timeframe, setTimeframe] = useState("all");
-  // const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  // const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const [range, setRange] = useState<{
-    label: string;
-    value: string;
-  }>();
   const [validRanges, setValidRanges] = useState<
     { label: string; value: string }[]
   >([]);
+
+  const range = searchParams.get("range");
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
@@ -203,11 +202,12 @@ const StrategyDetail = () => {
     data: filteredChartData,
     isLoading: isChartDataLoading,
     refetch: refetchChartData,
+    error: chartError,
   } = useQuery({
     queryKey: ["chart", strategyId, range],
     queryFn: async () => {
       const priceData = await axiosInstance.get(
-        `/mocktrades/chart/${strategyId}?range=${range.value}`
+        `/mocktrades/chart/${strategyId}?range=${range}`
       );
 
       const data = priceData.data.data.map((i) => ({
@@ -218,8 +218,15 @@ const StrategyDetail = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    retry(_failureCount, error) {
+      // Retry only if the error is a 500 or network error
+      if (axios.isAxiosError(error)) {
+        return error.response?.status === 500 || error.code === "ERR_NETWORK";
+      }
+      return false;
+    },
     enabled(query) {
-      return !!userStrategy;
+      return !!userStrategy && !!range;
     },
   });
 
@@ -233,13 +240,16 @@ const StrategyDetail = () => {
   }, [isLoading, navigate, strategyId, userStrategy]);
 
   useEffect(() => {
-    console.log(userStrategy);
     if (userStrategy) {
       const ranges = getValidRanges(userStrategy.frequency as Frequency);
       setValidRanges(ranges);
-      setRange(ranges[0]);
+
+      // Set the default range in the search params if not already set
+      if (!range) {
+        setSearchParams({ range: ranges[0].value });
+      }
     }
-  }, [userStrategy]);
+  }, [userStrategy, range, setSearchParams]);
 
   if (isLoading || !userStrategy) {
     return (
@@ -408,96 +418,104 @@ const StrategyDetail = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium text-lg">Performance</h3>
               <div className="flex gap-1 bg-slate-100 p-1 rounded-md">
-                {validRanges.map((range) => (
+                {validRanges.map((rangeOption) => (
                   <Button
-                    key={range.value}
-                    variant={timeframe === range.value ? "secondary" : "ghost"}
+                    key={rangeOption.value}
+                    variant={
+                      range === rangeOption.value ? "secondary" : "ghost"
+                    }
                     size="sm"
                     className="text-xs h-7 px-2"
                     onClick={() => {
-                      setTimeframe(range.value);
-                      setRange(range);
+                      setSearchParams({ range: rangeOption.value });
                       refetchChartData();
                     }}
                   >
-                    {range.label}
+                    {rangeOption.label}
                   </Button>
                 ))}
               </div>
             </div>
 
             <div className="h-72 w-full">
+              {chartError && (
+                <div className="p-4 bg-red-50 text-red-600 rounded-md">
+                  Error loading chart data: {chartError.message}
+                </div>
+              )}
               {isChartDataLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <Skeleton className="h-full w-full" />
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={filteredChartData}
-                    margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient
-                        id="colorValue"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#2563EB"
-                          stopOpacity={0.2}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#2563EB"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      vertical={false}
-                      strokeDasharray="3 3"
-                      stroke="#f1f5f9"
-                    />
-                    <XAxis
-                      dataKey="date"
-                      tickFormatter={formatDate}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#64748b" }}
-                    />
-                    <YAxis
-                      tickFormatter={(value) => `$${value}`}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#64748b" }}
-                      width={60}
-                    />
-                    <Tooltip />
-                    <YAxis
-                      tickFormatter={(value) => `$${value}`}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#64748b" }}
-                      width={60}
-                    />
-                    <Tooltip
-                      formatter={(value) => [`$${value}`, "Value"]}
-                      labelFormatter={(label) => formatDate(label)}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#2563EB"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill="url(#colorValue)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                !chartError && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={filteredChartData}
+                      margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient
+                          id="colorValue"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#2563EB"
+                            stopOpacity={0.2}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#2563EB"
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        vertical={false}
+                        strokeDasharray="3 3"
+                        stroke="#f1f5f9"
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={formatDate}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#64748b" }}
+                      />
+                      <YAxis
+                        tickFormatter={(value) => `$${value}`}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#64748b" }}
+                        width={60}
+                      />
+                      <Tooltip />
+                      <YAxis
+                        tickFormatter={(value) => `$${value}`}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#64748b" }}
+                        width={60}
+                      />
+                      <Tooltip
+                        formatter={(value) => [`$${value}`, "Value"]}
+                        labelFormatter={(label) => formatDate(label)}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#2563EB"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorValue)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )
               )}
             </div>
           </div>
@@ -654,14 +672,16 @@ const StrategyDetail = () => {
               Previous
             </Button>
             <span>
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {10}
             </span>
             <Button
               variant="outline"
               size="sm"
-              disabled={currentPage === totalPages}
+              disabled={currentPage === 10}
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, transactions.pagination.totalPages)
+                )
               }
             >
               Next
