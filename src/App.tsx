@@ -14,6 +14,7 @@ import StrategyDetail from "./pages/StrategyDetail";
 import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
+import { useQueryClient } from "@tanstack/react-query";
 // Route guard for authenticated routes
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const { data, isPending, error, refetch } = authClient.useSession();

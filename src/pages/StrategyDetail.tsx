@@ -39,10 +39,11 @@ import { Separator } from "@/components/ui/separator";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 // import { UserStrategy } from "@/lib/types";
-import { formatFrequency } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatFrequency, getValidRanges } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { axiosInstance } from "@/api";
+import { Frequency } from "@/lib/types";
 
 // Mock price data that would come from an API in a real app
 const generateMockPriceHistory = (
@@ -98,50 +99,6 @@ const generateRandomChartData = (days: number) => {
   return data;
 };
 
-// Define types for our data
-// interface Transaction {
-//   date: string;
-//   type: string;
-//   amount: string;
-//   price: string;
-//   value: string;
-// }
-/**
- * 
-_id
-:
-"6804ddc437ae81e6323695e9"
-planId
-:
-"6804dd9337ae81e6323695e4"
-userId
-:
-"68032209abe21d430cc72cfc"
-chain
-:
-"injective"
-amount
-:
-33.333333333333336
-status
-:
-"completed"
-retryCount
-:
-0
-maxRetries
-:
-3
-lastAttemptTime
-:
-"2025-04-20T11:43:00.398Z"
-createdAt
-:
-"2025-04-20T11:43:00.399Z"
-updatedAt
-:
-"2025-04-20T11:43:04.284Z"
- */
 interface Transaction {
   _id: string;
   planId: string;
@@ -195,7 +152,14 @@ const StrategyDetail = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const queryClient = useQueryClient();
+
+  const [range, setRange] = useState<{
+    label: string;
+    value: string;
+  }>();
+  const [validRanges, setValidRanges] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   // Check if we're viewing a user strategy or a general strategy template
   const isUserStrategy =
@@ -235,11 +199,15 @@ const StrategyDetail = () => {
     retry: false,
   });
 
-  const { data: filteredChartData, isLoading: isChartDataLoading } = useQuery({
-    queryKey: ["chart", strategyId],
+  const {
+    data: filteredChartData,
+    isLoading: isChartDataLoading,
+    refetch: refetchChartData,
+  } = useQuery({
+    queryKey: ["chart", strategyId, range],
     queryFn: async () => {
       const priceData = await axiosInstance.get(
-        `/mocktrades/chart/${strategyId}?range=1W`
+        `/mocktrades/chart/${strategyId}?range=${range.value}`
       );
 
       const data = priceData.data.data.map((i) => ({
@@ -250,6 +218,9 @@ const StrategyDetail = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    enabled(query) {
+      return !!userStrategy;
+    },
   });
 
   useEffect(() => {
@@ -260,6 +231,15 @@ const StrategyDetail = () => {
       }
     }
   }, [isLoading, navigate, strategyId, userStrategy]);
+
+  useEffect(() => {
+    console.log(userStrategy);
+    if (userStrategy) {
+      const ranges = getValidRanges(userStrategy.frequency as Frequency);
+      setValidRanges(ranges);
+      setRange(ranges[0]);
+    }
+  }, [userStrategy]);
 
   if (isLoading || !userStrategy) {
     return (
@@ -298,35 +278,6 @@ const StrategyDetail = () => {
       day: "numeric",
     }).format(date);
   };
-
-  // Filter data based on timeframe
-  // const getFilteredChartData = (selectedTimeframe: string) => {
-  //   if (!priceHistory.length) return [];
-
-  //   const data = [...priceHistory];
-
-  //   if (selectedTimeframe === "7D" || selectedTimeframe === "week") {
-  //     return data.slice(-7);
-  //   } else if (selectedTimeframe === "1M" || selectedTimeframe === "month") {
-  //     return data.slice(-30);
-  //   } else if (
-  //     selectedTimeframe === "3M" ||
-  //     selectedTimeframe === "threeMonths"
-  //   ) {
-  //     return data.slice(-90);
-  //   } else if (
-  //     selectedTimeframe === "6M" ||
-  //     selectedTimeframe === "sixMonths"
-  //   ) {
-  //     return data.slice(-180);
-  //   } else if (selectedTimeframe === "1Y" || selectedTimeframe === "year") {
-  //     return data.slice(-365);
-  //   }
-
-  //   return data;
-  // };
-
-  // const filteredChartData = getFilteredChartData(timeframe);
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
@@ -457,38 +408,21 @@ const StrategyDetail = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium text-lg">Performance</h3>
               <div className="flex gap-1 bg-slate-100 p-1 rounded-md">
-                <Button
-                  variant={timeframe === "week" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="text-xs h-7 px-2"
-                  onClick={() => setTimeframe("week")}
-                >
-                  7D
-                </Button>
-                <Button
-                  variant={timeframe === "month" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="text-xs h-7 px-2"
-                  onClick={() => setTimeframe("month")}
-                >
-                  1M
-                </Button>
-                <Button
-                  variant={timeframe === "threeMonths" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="text-xs h-7 px-2"
-                  onClick={() => setTimeframe("threeMonths")}
-                >
-                  3M
-                </Button>
-                <Button
-                  variant={timeframe === "all" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="text-xs h-7 px-2"
-                  onClick={() => setTimeframe("all")}
-                >
-                  All
-                </Button>
+                {validRanges.map((range) => (
+                  <Button
+                    key={range.value}
+                    variant={timeframe === range.value ? "secondary" : "ghost"}
+                    size="sm"
+                    className="text-xs h-7 px-2"
+                    onClick={() => {
+                      setTimeframe(range.value);
+                      setRange(range);
+                      refetchChartData();
+                    }}
+                  >
+                    {range.label}
+                  </Button>
+                ))}
               </div>
             </div>
 
@@ -535,6 +469,14 @@ const StrategyDetail = () => {
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "#64748b" }}
                     />
+                    <YAxis
+                      tickFormatter={(value) => `$${value}`}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                      width={60}
+                    />
+                    <Tooltip />
                     <YAxis
                       tickFormatter={(value) => `$${value}`}
                       axisLine={false}
