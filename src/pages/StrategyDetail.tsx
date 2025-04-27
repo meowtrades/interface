@@ -210,12 +210,19 @@ const StrategyDetail = () => {
         `/mocktrades/chart/${strategyId}?range=${range}`
       );
 
+      if (priceData.status === 202) {
+        return {
+          waiting: true,
+          estimatedCompletionTime: priceData.data.estimatedCompletionTime,
+        };
+      }
+
       const data = priceData.data.data.map((i) => ({
         date: i.timestamp,
         value: i.price,
       }));
 
-      return data;
+      return { waiting: false, data };
     },
     refetchOnWindowFocus: false,
     retry(_failureCount, error) {
@@ -308,6 +315,8 @@ const StrategyDetail = () => {
   };
 
   const colorScheme = getColorScheme();
+
+  console.log("Chart Data:", filteredChartData);
 
   return (
     <AppLayout>
@@ -447,75 +456,90 @@ const StrategyDetail = () => {
                 <div className="flex items-center justify-center h-full">
                   <Skeleton className="h-full w-full" />
                 </div>
+              ) : filteredChartData?.waiting ? ( // Handle the "waiting" state
+                <div className="flex flex-col items-center justify-center h-full">
+                  <p className="text-gray-600">
+                    Data is still being processed. Please check back later.
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Estimated completion time:{" "}
+                    {new Date(
+                      filteredChartData.estimatedCompletionTime
+                    ).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              ) : filteredChartData?.data ? ( // Ensure `data` exists before rendering the chart
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={filteredChartData.data}
+                    margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="colorValue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#2563EB"
+                          stopOpacity={0.2}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#2563EB"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      vertical={false}
+                      strokeDasharray="3 3"
+                      stroke="#f1f5f9"
+                    />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatDate}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                    />
+                    <YAxis
+                      dataKey={"value"}
+                      tickFormatter={(value) => `$${value}`}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                      width={60}
+                    />
+                    <Tooltip />
+                    <YAxis
+                      tickFormatter={(value) => `$${value}`}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#64748b" }}
+                      width={60}
+                    />
+                    <Tooltip formatter={(value) => [`$${value}`, "Value"]} />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#2563EB"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               ) : (
-                !chartError && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={filteredChartData}
-                      margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-                    >
-                      <defs>
-                        <linearGradient
-                          id="colorValue"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#2563EB"
-                            stopOpacity={0.2}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#2563EB"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        vertical={false}
-                        strokeDasharray="3 3"
-                        stroke="#f1f5f9"
-                      />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={formatDate}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#64748b" }}
-                      />
-                      <YAxis
-                        tickFormatter={(value) => `$${value}`}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#64748b" }}
-                        width={60}
-                      />
-                      <Tooltip />
-                      <YAxis
-                        tickFormatter={(value) => `$${value}`}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#64748b" }}
-                        width={60}
-                      />
-                      <Tooltip
-                        formatter={(value) => [`$${value}`, "Value"]}
-                        labelFormatter={(label) => formatDate(label)}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#2563EB"
-                        strokeWidth={2}
-                        fillOpacity={1}
-                        fill="url(#colorValue)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-600">No chart data available.</p>
+                </div>
               )}
             </div>
           </div>
@@ -609,7 +633,7 @@ const StrategyDetail = () => {
               <div className="p-4 text-red-500">
                 Error loading transactions: {transactionError.message}
               </div>
-            ) : (
+            ) : transactions && transactions.data ? ( // Add null/undefined check for transactions
               <table className="w-full min-w-max">
                 <thead>
                   <tr className="border-b border-slate-200">
@@ -660,6 +684,8 @@ const StrategyDetail = () => {
                   ))}
                 </tbody>
               </table>
+            ) : (
+              <div className="p-4">No transactions available.</div> // Handle case where transactions are empty
             )}
           </div>
           <div className="flex justify-between items-center p-4">
