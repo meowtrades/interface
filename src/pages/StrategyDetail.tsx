@@ -207,8 +207,10 @@ const StrategyDetail = () => {
     queryKey: ["chart", strategyId, range],
     queryFn: async () => {
       const priceData = await axiosInstance.get(
-        `/mocktrades/chart/${strategyId}?range=${range}`
+        `/mocktrades/chart/${strategyId}`
       );
+
+      console.log(priceData.data);
 
       if (priceData.status === 202) {
         return {
@@ -218,7 +220,11 @@ const StrategyDetail = () => {
       }
 
       const data = priceData.data.data.map((i) => ({
-        date: i.timestamp,
+        date: new Date(i.timestamp * 1000).toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+        }),
         value: i.price,
       }));
 
