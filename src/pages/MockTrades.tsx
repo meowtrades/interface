@@ -47,10 +47,16 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useCreateMockTrade, useStopMockTrade, useUserDcaPlans } from "@/api";
+import {
+  axiosInstance,
+  useCreateMockTrade,
+  useStopMockTrade,
+  useUserDcaPlans,
+} from "@/api";
 import { RiskLevel } from "@/components/StartStrategyDialog";
 import { Frequency } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
+import { useQueries } from "@tanstack/react-query";
 
 // Mock data for performance chart
 const generateMockChartData = (timeframe) => {
@@ -141,6 +147,28 @@ const MockTrades = () => {
     setChartTimeframe(timeframe);
     setChartData(generateMockChartData(timeframe));
   };
+
+  const [
+    { data: tokens, isLoading: isTokensLoading },
+    { data: strategies, isLoading: isStrategiesLoading },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["available", "tokens"],
+        queryFn: async () => {
+          const { data } = await axiosInstance.get("/available/tokens");
+          return data.tokens;
+        },
+      },
+      {
+        queryKey: ["available", "strategies"],
+        queryFn: async () => {
+          const { data } = await axiosInstance.get("/available/strategies");
+          return data.strategies;
+        },
+      },
+    ],
+  });
 
   const handleStartMockTrade = () => {
     mockTradeMutation.mutate({
@@ -241,7 +269,11 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select a strategy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="SDCA">Smart DCA</SelectItem>
+                  {strategies?.map((strategy) => (
+                    <SelectItem key={strategy} value={strategy}>
+                      {strategy}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -255,9 +287,11 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select a token" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BTC">BTC</SelectItem>
-                  <SelectItem value="USDT">USDT</SelectItem>
-                  <SelectItem value="ETH">ETH</SelectItem>
+                  {tokens?.map((token) => (
+                    <SelectItem key={token} value={token}>
+                      {token}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
