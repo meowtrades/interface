@@ -53,8 +53,7 @@ import {
   useStopMockTrade,
   useUserDcaPlans,
 } from "@/api";
-import { RiskLevel } from "@/components/StartStrategyDialog";
-import { Frequency } from "@/lib/types";
+import { Frequency, RiskLevel } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
 import { useQueries } from "@tanstack/react-query";
 
@@ -188,39 +187,6 @@ const MockTrades = () => {
       description: "You can track its performance in the Active Trades tab.",
     });
   };
-
-  const mockActiveTrades = [
-    {
-      id: "mock1",
-      type: "Smart DCA",
-      token: "BTC",
-      startDate: "Mar 28, 2023",
-      startAmount: 100,
-      currentValue: 145.32,
-      profit: 45.32,
-      profitPercentage: 45.32,
-    },
-    {
-      id: "mock2",
-      type: "Grid Trading",
-      token: "ETH",
-      startDate: "Apr 1, 2023",
-      startAmount: 100,
-      currentValue: 124.8,
-      profit: 24.8,
-      profitPercentage: 24.8,
-    },
-    {
-      id: "mock3",
-      type: "Smart DCA",
-      token: "ETH",
-      startDate: "Apr 3, 2023",
-      startAmount: 100,
-      currentValue: 98.5,
-      profit: -1.5,
-      profitPercentage: -1.5,
-    },
-  ];
 
   return (
     <AppLayout>

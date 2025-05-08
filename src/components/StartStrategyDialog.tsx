@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Strategy, Frequency } from "@/lib/types";
+import { Strategy, Frequency, RiskLevel } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,14 +49,6 @@ const frequencyOptions = [
   { value: Frequency.TEST_MINUTE, label: "Test Minute" },
   { value: Frequency.TEST_10_SECONDS, label: "Test 10 Seconds" },
 ];
-
-// Risk level enum
-export enum RiskLevel {
-  NO_RISK = "no_risk",
-  LOW_RISK = "low_risk",
-  MEDIUM_RISK = "medium_risk",
-  HIGH_RISK = "high_risk",
-}
 
 interface StartStrategyDialogProps {
   strategy: Strategy;

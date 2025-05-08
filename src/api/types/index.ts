@@ -1,7 +1,6 @@
 /** @format */
 
-import { RiskLevel } from "@/components/StartStrategyDialog";
-import { Frequency } from "@/lib/types";
+import { Frequency, RiskLevel } from "@/lib/types";
 
 // Common types
 export type Pagination = {

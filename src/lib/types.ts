@@ -74,6 +74,13 @@ export enum Frequency {
   TEST_10_SECONDS = "test_10_seconds",
 }
 
+export enum RiskLevel {
+  NO_RISK = "no_risk",
+  LOW_RISK = "low_risk",
+  MEDIUM_RISK = "medium_risk",
+  HIGH_RISK = "high_risk",
+}
+
 export const FREQUENCY_RANGE_MAP: Record<
   Frequency,
   { label: string; value: string }[]
