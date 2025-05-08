@@ -2,6 +2,20 @@
 
 import { Frequency, RiskLevel } from "@/lib/types";
 
+export interface Transaction {
+  _id: string;
+  planId: string;
+  userId: string;
+  chain: string;
+  amount: number;
+  status: string;
+  retryCount: number;
+  maxRetries: number;
+  lastAttemptTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Common types
 export type Pagination = {
   page: number;

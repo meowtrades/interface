@@ -11,24 +11,18 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
   TrendingUp,
-  TrendingDown,
   RefreshCw,
   Grid,
-  Info,
   RefreshCcw,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -36,92 +30,19 @@ import {
   AreaChart,
   Area,
   Tooltip,
-  Legend,
-  BarChart,
-  Bar,
 } from "recharts";
 import { Separator } from "@/components/ui/separator";
-import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { UserStrategy } from "@/lib/types";
 import { formatFrequency, getValidRanges } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { axiosInstance } from "@/api";
+import { axiosInstance, Transaction } from "@/api";
 import { Frequency } from "@/lib/types";
 
 // Mock price data that would come from an API in a real app
-const generateMockPriceHistory = (
-  days: number,
-  startValue: number,
-  trend: "up" | "down" | "sideways"
-) => {
-  const data = [];
-  let value = startValue;
-
-  const now = new Date();
-  for (let i = days; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-
-    // Generate some random price movement
-    let change = 0;
-    if (trend === "up") {
-      change = (Math.random() * 5 - 1) / 100; // -1% to +4%
-    } else if (trend === "down") {
-      change = (Math.random() * 5 - 4) / 100; // -4% to +1%
-    } else {
-      change = (Math.random() * 4 - 2) / 100; // -2% to +2%
-    }
-
-    value = value * (1 + change);
-
-    data.push({
-      date: date.toISOString().split("T")[0],
-      value: parseFloat(value.toFixed(2)),
-      profit: parseFloat((value - startValue).toFixed(2)),
-    });
-  }
-  return data;
-};
-
-const generateRandomChartData = (days: number) => {
-  const data = [];
-  let value = 1000; // Starting value
-  const now = new Date();
-
-  for (let i = days; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-
-    value = value * (1 + (Math.random() * 0.02 - 0.01)); // Random fluctuation
-    data.push({
-      date: date.toISOString().split("T")[0],
-      value: parseFloat(value.toFixed(2)),
-    });
-  }
-
-  return data;
-};
-
-interface Transaction {
-  _id: string;
-  planId: string;
-  userId: string;
-  chain: string;
-  amount: number;
-  status: string;
-  retryCount: number;
-  maxRetries: number;
-  lastAttemptTime: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface PriceHistoryItem {
-  date: string;
-  value: number;
-  profit: number;
+interface DataPoint {
+  timestamp: number;
+  price: number;
 }
 
 interface UserStrategy {
@@ -196,6 +117,7 @@ const StrategyDetail = () => {
     queryKey: ["transactions", strategyId, currentPage],
     queryFn: () => fetchTransactions(currentPage),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -206,16 +128,16 @@ const StrategyDetail = () => {
   } = useQuery({
     queryKey: ["chart", strategyId, range],
     queryFn: async () => {
-      const priceData = await axiosInstance.get(
-        `/mocktrades/chart/${strategyId}`
-      );
+      const priceData = await axiosInstance.get<{
+        totalInvestment: number;
+        data: DataPoint[];
+      }>(`/mocktrades/chart/${strategyId}`);
 
       console.log(priceData.data);
 
       if (priceData.status === 202) {
         return {
           waiting: true,
-          estimatedCompletionTime: priceData.data.estimatedCompletionTime,
         };
       }
 
@@ -467,20 +389,13 @@ const StrategyDetail = () => {
                   <p className="text-gray-600">
                     Data is still being processed. Please check back later.
                   </p>
-                  <p className="text-gray-500 text-sm">
-                    Estimated completion time:{" "}
-                    {new Date(
-                      filteredChartData.estimatedCompletionTime
-                    ).toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
                 </div>
               ) : filteredChartData?.data ? ( // Ensure `data` exists before rendering the chart
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
-                    data={filteredChartData.data}
+                    data={filteredChartData.data.slice(
+                      -parseInt(searchParams.get("range")!.split("d")[0])
+                    )}
                     margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
                   >
                     <defs>
