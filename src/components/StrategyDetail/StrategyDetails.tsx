@@ -79,11 +79,7 @@ export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Description</h4>
           <p className="text-sm text-slate-700">
-            {userStrategy.strategyTemplate?.type === "grid"
-              ? "Grid trading automatically places buy and sell orders at predetermined price levels, capturing profit from price oscillations."
-              : userStrategy.strategyTemplate?.type === "momentum"
-              ? "Momentum trading capitalizes on market trends by buying assets that have recently shown upward price movement."
-              : "DCA reduces the impact of volatility by investing fixed amounts at regular intervals, regardless of asset price."}
+            {userStrategy.strategyTemplate.description}
           </p>
         </div>
       </div>

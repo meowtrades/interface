@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
+import { Transaction } from "@/api/types/dtos";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { AxiosError } from "axios";
 
 export const TransactionList = () => {
   const { strategyId } = useParams();
@@ -15,10 +17,18 @@ export const TransactionList = () => {
     data: transactionsData,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<
+    any,
+    AxiosError,
+    {
+      data: Transaction[];
+      pagination: {
+        totalPages: number;
+      };
+    }
+  >({
     queryKey: ["transactions", strategyId, currentPage],
     queryFn: async () => {
-      if (!strategyId) throw new Error("Strategy ID is required");
       return (
         await api.strategies.getTransactions(strategyId, {
           page: currentPage,
@@ -70,9 +80,11 @@ export const TransactionList = () => {
           {isLoading ? (
             <div className="p-4">Loading transactions...</div>
           ) : error ? (
-            <div className="p-4 text-red-500">
-              Error loading transactions: {error.message}
-            </div>
+            error.status === 404 ? (
+              <div className="p-4">No transactions available.</div>
+            ) : (
+              <div className="p-4">Error loading transactions</div>
+            )
           ) : transactionsData?.data && transactionsData.data.length > 0 ? (
             <table className="w-full min-w-max">
               <thead>

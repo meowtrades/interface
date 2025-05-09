@@ -122,23 +122,12 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
           </div>
           <div>
             <h2 className="text-lg font-semibold">
-              {userStrategy.token?.symbol || "BTC"}{" "}
-              {userStrategy.strategyTemplate?.name || "Strategy"}
+              {userStrategy.token.symbol} {userStrategy.strategyTemplate?.name}
             </h2>
             <div
-              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                userStrategy.strategyTemplate?.type === "grid"
-                  ? "bg-purple-100 text-purple-800"
-                  : userStrategy.strategyTemplate?.type === "momentum"
-                  ? "bg-amber-100 text-amber-800"
-                  : "bg-blue-100 text-blue-800"
-              }`}
+              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colorScheme.bg}`}
             >
-              {userStrategy.strategyTemplate?.type === "grid"
-                ? "Grid Trading"
-                : userStrategy.strategyTemplate?.type === "momentum"
-                ? "Momentum"
-                : "Smart DCA"}
+              {userStrategy.strategyTemplate?.name}
             </div>
           </div>
         </div>
