@@ -1,3 +1,5 @@
+/** @format */
+
 import { Grid, RefreshCw, TrendingUp } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { formatFrequency } from "@/lib/utils";
@@ -8,6 +10,7 @@ interface StrategyDetailsProps {
 }
 
 export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
+  console.log(userStrategy);
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
     const type = userStrategy.strategyTemplate?.type || "dca";
@@ -25,11 +28,7 @@ export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
           <div className="flex items-center gap-2">
             {getStrategyIcon()}
             <span className="font-medium">
-              {userStrategy.strategyTemplate?.type === "grid"
-                ? "Grid Trading"
-                : userStrategy.strategyTemplate?.type === "momentum"
-                ? "Momentum Trading"
-                : "Smart Dollar Cost Averaging"}
+              {userStrategy.strategyTemplate.name}
             </span>
           </div>
         </div>
@@ -38,8 +37,7 @@ export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
           <h4 className="text-sm text-slate-500 mb-2">Asset</h4>
           <div className="flex items-center gap-2">
             <span className="font-medium">
-              {userStrategy.token?.name || "Bitcoin"} (
-              {userStrategy.token?.symbol || "BTC"})
+              {userStrategy.token.name} ({userStrategy.token.symbol})
             </span>
           </div>
         </div>
@@ -71,9 +69,7 @@ export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
             </div>
             <div className="flex justify-between">
               <span>Investment Amount:</span>
-              <span className="font-medium">
-                ${userStrategy.totalInvested}
-              </span>
+              <span className="font-medium">${userStrategy.totalInvested}</span>
             </div>
           </div>
         </div>
@@ -93,4 +89,4 @@ export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
       </div>
     </div>
   );
-}; 
+};

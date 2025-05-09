@@ -5,7 +5,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { api, axiosInstance } from "@/api";
+import { api } from "@/api";
 import { StrategyHeader } from "@/components/StrategyDetail/StrategyHeader";
 import { StrategyOverview } from "@/components/StrategyDetail/StrategyOverview";
 import { StrategyDetails } from "@/components/StrategyDetail/StrategyDetails";

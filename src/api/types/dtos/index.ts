@@ -34,6 +34,9 @@ export type Transaction = {
   lastAttemptTime: string;
   createdAt: string;
   updatedAt: string;
+  type: string;
+  tokenSymbol: string;
+  price: number;
 };
 
 export type DepositFundsDto = {

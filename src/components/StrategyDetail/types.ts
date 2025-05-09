@@ -1,8 +1,13 @@
+/** @format */
+
 export interface UserStrategy {
   id: string;
   strategyId: string;
-  chainId: string;
-  tokenId: string;
+  chain: string;
+  token: {
+    symbol: string;
+    name: string;
+  };
   startDate: string;
   _id: string;
   totalInvested: number;
@@ -20,10 +25,6 @@ export interface UserStrategy {
     name: string;
     type: string;
   };
-  token?: {
-    symbol: string;
-    name: string;
-  };
 }
 
 export interface ChartData {
@@ -32,4 +33,4 @@ export interface ChartData {
     date: string;
     value: number;
   }[];
-} 
+}

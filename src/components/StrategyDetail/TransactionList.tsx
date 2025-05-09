@@ -40,6 +40,28 @@ export const TransactionList = () => {
     }).format(date);
   };
 
+  // Format currency values
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  // Get transaction type label and color
+  const getTransactionType = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "buy":
+        return { label: "Buy", color: "bg-green-100 text-green-800" };
+      case "sell":
+        return { label: "Sell", color: "bg-red-100 text-red-800" };
+      default:
+        return { label: type, color: "bg-slate-100 text-slate-800" };
+    }
+  };
+
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
@@ -73,33 +95,33 @@ export const TransactionList = () => {
                 </tr>
               </thead>
               <tbody>
-                {transactionsData.data.map((transaction, index) => (
-                  <tr key={index} className="border-b border-slate-100">
-                    <td className="py-4 px-5 text-slate-700">
-                      {formatDate(transaction.createdAt)}
-                    </td>
-                    <td className="py-4 px-5">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          transaction.status === "completed"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {transaction.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-5 text-slate-700">
-                      {transaction.amount.toFixed(2)}
-                    </td>
-                    <td className="py-4 px-5 text-slate-700">
-                      {transaction.amount.toFixed(2)}
-                    </td>
-                    <td className="py-4 px-5 text-right text-slate-700">
-                      {transaction.amount.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
+                {transactionsData.data.map((transaction, index) => {
+                  const type = getTransactionType(transaction.type);
+                  return (
+                    <tr key={index} className="border-b border-slate-100">
+                      <td className="py-4 px-5 text-slate-700">
+                        {formatDate(transaction.createdAt)}
+                      </td>
+                      <td className="py-4 px-5">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${type.color}`}
+                        >
+                          {type.label}
+                        </span>
+                      </td>
+                      <td className="py-4 px-5 text-slate-700">
+                        {transaction.amount.toFixed(4)}{" "}
+                        {transaction.tokenSymbol}
+                      </td>
+                      <td className="py-4 px-5 text-slate-700">
+                        {formatCurrency(transaction.price)}
+                      </td>
+                      <td className="py-4 px-5 text-right text-slate-700">
+                        {formatCurrency(transaction.amount * transaction.price)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ) : (
