@@ -1,3 +1,5 @@
+/** @format */
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -10,24 +12,89 @@ import {
   Tooltip,
 } from "recharts";
 import { ChartData } from "./types";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/api";
+import { useParams, useSearchParams } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import { Frequency } from "@/lib/types";
+import { getValidRanges } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
-interface StrategyChartProps {
-  data: ChartData;
-  isLoading: boolean;
-  error: any;
-  validRanges: { label: string; value: string }[];
-  currentRange: string;
-  onRangeChange: (range: string) => void;
-}
+export const StrategyChart = () => {
+  const { strategyId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [validRanges, setValidRanges] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const range = searchParams.get("range");
 
-export const StrategyChart = ({
-  data,
-  isLoading,
-  error,
-  validRanges,
-  currentRange,
-  onRangeChange,
-}: StrategyChartProps) => {
+  const { data: userStrategy, isLoading: isStrategyLoading } = useQuery({
+    queryKey: ["userStrategy", strategyId],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      const response = await api.strategies.getDetails(strategyId);
+      return response.data.data;
+    },
+    enabled: !!strategyId,
+  });
+
+  useEffect(() => {
+    if (userStrategy) {
+      const ranges = getValidRanges(userStrategy.frequency as Frequency);
+      setValidRanges(ranges);
+
+      // Set the default range in the search params if not already set
+      if (!range) {
+        setSearchParams({ range: ranges[0].value }, { replace: true });
+      }
+    }
+  }, [userStrategy, range, setSearchParams]);
+
+  const {
+    data: chartData,
+    isLoading: isChartLoading,
+    error,
+    refetch,
+    failureCount,
+  } = useQuery({
+    queryKey: ["chart", strategyId, range],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      const priceData = await api.strategies.getChartData(strategyId);
+
+      if (priceData.status === 202) {
+        return {
+          waiting: true,
+        };
+      }
+
+      const data = priceData.data.data.map((i) => ({
+        date: new Date(i.timestamp * 1000).toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+        }),
+        value: i.price,
+      }));
+
+      return { waiting: false, data };
+    },
+    retry: (failureCount, error) => {
+      // Only retry on network errors or 500s, and only up to 3 times
+      if (axios.isAxiosError(error)) {
+        return (
+          (error.code === "ERR_NETWORK" || error.response?.status === 500) &&
+          failureCount < 3
+        );
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    refetchOnWindowFocus: false,
+    enabled: !!strategyId && !!range,
+  });
+
   // Format dates for chart
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -37,6 +104,51 @@ export const StrategyChart = ({
     }).format(date);
   };
 
+  const ChartError = () => {
+    if (!error) return null;
+
+    const isNetworkError =
+      axios.isAxiosError(error) && error.code === "ERR_NETWORK";
+    const isServerError =
+      axios.isAxiosError(error) && error.response?.status === 500;
+    const isMaxRetries = failureCount >= 3;
+
+    return (
+      <div className="flex flex-col items-center justify-center h-full space-y-4 p-4">
+        <div className="flex items-center gap-2 text-red-600">
+          <AlertCircle size={20} />
+          <span className="font-medium">Failed to load chart data</span>
+        </div>
+        <p className="text-sm text-slate-600 text-center">
+          {isMaxRetries
+            ? "We've tried multiple times but couldn't load the data. Please try again."
+            : isNetworkError
+            ? "Please check your internet connection and try again."
+            : isServerError
+            ? "Our servers are having trouble. Please try again later."
+            : "Something went wrong while loading the chart data."}
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => refetch()}
+        >
+          <RefreshCw size={14} />
+          Try Again
+        </Button>
+      </div>
+    );
+  };
+
+  if (isStrategyLoading) {
+    return (
+      <div className="h-72 w-full">
+        <Skeleton className="h-full w-full" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -45,10 +157,12 @@ export const StrategyChart = ({
           {validRanges.map((rangeOption) => (
             <Button
               key={rangeOption.value}
-              variant={currentRange === rangeOption.value ? "secondary" : "ghost"}
+              variant={range === rangeOption.value ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-7 px-2"
-              onClick={() => onRangeChange(rangeOption.value)}
+              onClick={() =>
+                setSearchParams({ range: rangeOption.value }, { replace: true })
+              }
             >
               {rangeOption.label}
             </Button>
@@ -57,25 +171,24 @@ export const StrategyChart = ({
       </div>
 
       <div className="h-72 w-full">
-        {error && (
-          <div className="p-4 bg-red-50 text-red-600 rounded-md">
-            Error loading chart data: {error.message}
-          </div>
-        )}
-        {isLoading ? (
+        {error ? (
+          <ChartError />
+        ) : isChartLoading ? (
           <div className="flex items-center justify-center h-full">
             <Skeleton className="h-full w-full" />
           </div>
-        ) : data?.waiting ? (
+        ) : chartData?.waiting ? (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-gray-600">
               Data is still being processed. Please check back later.
             </p>
           </div>
-        ) : data?.data ? (
+        ) : chartData?.data ? (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={data.data.slice(-parseInt(currentRange.split("d")[0]))}
+              data={chartData.data.slice(
+                -parseInt(range?.split("d")[0] || "7")
+              )}
               margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
             >
               <defs>
@@ -123,4 +236,4 @@ export const StrategyChart = ({
       </div>
     </div>
   );
-}; 
+};

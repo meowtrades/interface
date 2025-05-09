@@ -61,6 +61,25 @@ export const api = {
         `/user/analytics/statistics/platform`
       ),
   },
+  strategies: {
+    getDetails: (strategyId: string) =>
+      axiosInstance.get<{ data: { frequency: string } }>(
+        `/user/analytics/strategies/${strategyId}`
+      ),
+    getChartData: (strategyId: string) =>
+      axiosInstance.get<{
+        totalInvestment: number;
+        data: { timestamp: number; price: number }[];
+      }>(`/mocktrades/chart/${strategyId}`),
+    getTransactions: (
+      strategyId: string,
+      params: { page: number; limit: number }
+    ) =>
+      axiosInstance.get<{
+        data: Transaction[];
+        pagination: { totalPages: number };
+      }>(`/user/analytics/strategies/${strategyId}/transactions`, { params }),
+  },
   admin: {
     getActivePlans: () => axiosInstance.get<DcaPlan[]>(`/admin/active-plans`),
     stopAllPlans: () => axiosInstance.post(`/admin/stop-all-plans`),

@@ -1,3 +1,5 @@
+/** @format */
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +11,7 @@ import { Grid, RefreshCcw, RefreshCw, TrendingUp } from "lucide-react";
 import { StrategyChart } from "./StrategyChart";
 import { UserStrategy, ChartData } from "./types";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/api";
+import { api } from "@/api";
 import axios from "axios";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Frequency } from "@/lib/types";
@@ -23,7 +25,9 @@ interface StrategyOverviewProps {
 export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
   const { strategyId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [validRanges, setValidRanges] = useState<{ label: string; value: string }[]>([]);
+  const [validRanges, setValidRanges] = useState<
+    { label: string; value: string }[]
+  >([]);
   const range = searchParams.get("range");
 
   useEffect(() => {
@@ -32,9 +36,12 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
 
     // Set the default range in the search params if not already set
     if (!range) {
-     setSearchParams({ range: ranges[0].value }, {
-       replace: true
-      });
+      setSearchParams(
+        { range: ranges[0].value },
+        {
+          replace: true,
+        }
+      );
     }
   }, [userStrategy.frequency, range, setSearchParams]);
 
@@ -47,10 +54,7 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
     queryKey: ["chart", strategyId, range],
     queryFn: async () => {
       if (!strategyId) throw new Error("Strategy ID is required");
-      const priceData = await axiosInstance.get<{
-        totalInvestment: number;
-        data: { timestamp: number; price: number }[];
-      }>(`/mocktrades/chart/${strategyId}`);
+      const priceData = await api.strategies.getChartData(strategyId);
 
       if (priceData.status === 202) {
         return {
@@ -140,7 +144,12 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="gap-1" onClick={() => refetchChartData()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={() => refetchChartData()}
+          >
             <RefreshCcw size={14} />
             Refresh
           </Button>
@@ -191,19 +200,7 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
           </CardHeader>
         </Card>
       </div>
-
-      <StrategyChart
-        data={filteredChartData}
-        isLoading={isChartDataLoading}
-        error={chartError}
-        validRanges={validRanges}
-        currentRange={range || ""}
-        onRangeChange={(newRange) => {
-         setSearchParams({ range: newRange }, {
-           replace: true
-          });
-        }}
-      />
+      <StrategyChart />
     </div>
   );
-}; 
+};

@@ -1,8 +1,9 @@
+/** @format */
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/api";
+import { api } from "@/api";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -18,12 +19,12 @@ export const TransactionList = () => {
     queryKey: ["transactions", strategyId, currentPage],
     queryFn: async () => {
       if (!strategyId) throw new Error("Strategy ID is required");
-      const url = `/user/analytics/strategies/${strategyId}/transactions?page=${currentPage}&limit=5`;
-      const response = await axiosInstance.get<{
-        data: Transaction[];
-        pagination: { totalPages: number };
-      }>(url);
-      return response.data;
+      return (
+        await api.strategies.getTransactions(strategyId, {
+          page: currentPage,
+          limit: 5,
+        })
+      ).data;
     },
     retry: false,
     refetchOnWindowFocus: false,
@@ -120,8 +121,17 @@ export const TransactionList = () => {
           <Button
             variant="outline"
             size="sm"
-            disabled={currentPage === (transactionsData?.pagination.totalPages || 1)}
-            onClick={() => setCurrentPage(Math.min(currentPage + 1, transactionsData?.pagination.totalPages || 1))}
+            disabled={
+              currentPage === (transactionsData?.pagination.totalPages || 1)
+            }
+            onClick={() =>
+              setCurrentPage(
+                Math.min(
+                  currentPage + 1,
+                  transactionsData?.pagination.totalPages || 1
+                )
+              )
+            }
           >
             Next
           </Button>
@@ -129,4 +139,4 @@ export const TransactionList = () => {
       </Card>
     </div>
   );
-}; 
+};

@@ -1,3 +1,5 @@
+/** @format */
+
 // Export all hooks
 export * from "./hooks";
 
@@ -12,3 +14,6 @@ export { default as queryClient } from "./queryClient";
 
 // Export error utils
 export * from "./utils/errorHandler";
+
+// Export API client
+export { api } from "./client";
