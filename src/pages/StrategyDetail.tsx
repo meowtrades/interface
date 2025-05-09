@@ -5,12 +5,11 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/api";
+import { api, axiosInstance } from "@/api";
 import { StrategyHeader } from "@/components/StrategyDetail/StrategyHeader";
 import { StrategyOverview } from "@/components/StrategyDetail/StrategyOverview";
 import { StrategyDetails } from "@/components/StrategyDetail/StrategyDetails";
 import { TransactionList } from "@/components/StrategyDetail/TransactionList";
-import { UserStrategy } from "@/components/StrategyDetail/types";
 
 const StrategyDetail = () => {
   const { strategyId } = useParams();
@@ -18,7 +17,8 @@ const StrategyDetail = () => {
   const location = useLocation();
 
   // Check if we're viewing a user strategy or a general strategy template
-  const isUserStrategy = location.state?.planId || location.state?.source === "dashboard";
+  const isUserStrategy =
+    location.state?.planId || location.state?.source === "dashboard";
 
   const {
     data: userStrategy,
@@ -28,9 +28,11 @@ const StrategyDetail = () => {
     queryKey: ["userStrategy", strategyId],
     queryFn: async () => {
       if (!strategyId) throw new Error("Strategy ID is required");
-      const url = `/user/analytics/strategies/${strategyId}`;
-      const d = (await axiosInstance.get<{ data: UserStrategy }>(url)).data.data;
-      return d;
+      // const url = `/user/analytics/strategies/${strategyId}`;
+      const {
+        data: { data },
+      } = await api.strategies.getDetails(strategyId);
+      return data;
     },
     enabled: !!strategyId,
   });

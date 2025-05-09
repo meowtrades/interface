@@ -1,5 +1,6 @@
 /** @format */
 
+import { UserStrategy } from "@/components/StrategyDetail/types";
 import axiosInstance from "./interceptors/axiosInterceptor";
 import {
   CreateDcaPlanDto,
@@ -63,7 +64,7 @@ export const api = {
   },
   strategies: {
     getDetails: (strategyId: string) =>
-      axiosInstance.get<{ data: { frequency: string } }>(
+      axiosInstance.get<{ data: UserStrategy }>(
         `/user/analytics/strategies/${strategyId}`
       ),
     getChartData: (strategyId: string) =>
