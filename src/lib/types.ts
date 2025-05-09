@@ -101,8 +101,6 @@ export const FREQUENCY_RANGE_MAP: Record<
     { label: "14D", value: "14d" },
     { label: "30D", value: "30d" },
     { label: "90D", value: "90d" },
-    { label: "6M", value: "6M" },
-    { label: "1Y", value: "1y" },
   ],
   [Frequency.WEEKLY]: [
     { label: "1M", value: "1M" },
