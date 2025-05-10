@@ -18,17 +18,17 @@ import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
-interface StrategyOverviewProps {
-  userStrategy: UserStrategy;
-}
-
-export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
+export const StrategyOverview = () => {
   const { strategyId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [validRanges, setValidRanges] = useState<
+  const [_validRanges, setValidRanges] = useState<
     { label: string; value: string }[]
   >([]);
   const range = searchParams.get("range");
+
+  const { data: userStrategy } = useQuery<UserStrategy>({
+    queryKey: ["userStrategy", strategyId],
+  });
 
   useEffect(() => {
     const ranges = getValidRanges(userStrategy.frequency as Frequency);
@@ -44,44 +44,6 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
       );
     }
   }, [userStrategy.frequency, range, setSearchParams]);
-
-  const {
-    data: filteredChartData,
-    isLoading: isChartDataLoading,
-    refetch: refetchChartData,
-    error: chartError,
-  } = useQuery({
-    queryKey: ["chart", strategyId, range],
-    queryFn: async () => {
-      if (!strategyId) throw new Error("Strategy ID is required");
-      const priceData = await api.strategies.getChartData(strategyId);
-
-      if (priceData.status === 202) {
-        return {
-          waiting: true,
-        };
-      }
-
-      const data = priceData.data.data.map((i) => ({
-        date: new Date(i.timestamp * 1000).toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        }),
-        value: i.price,
-      }));
-
-      return { waiting: false, data };
-    },
-    refetchOnWindowFocus: false,
-    retry(_failureCount, error) {
-      if (axios.isAxiosError(error)) {
-        return error.response?.status === 500 || error.code === "ERR_NETWORK";
-      }
-      return false;
-    },
-    enabled: !!strategyId && !!range,
-  });
 
   // Helper to format as currency
   const formatCurrency = (value: number) => {
@@ -133,12 +95,7 @@ export const StrategyOverview = ({ userStrategy }: StrategyOverviewProps) => {
         </div>
 
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => refetchChartData()}
-          >
+          <Button variant="outline" size="sm" className="gap-1">
             <RefreshCcw size={14} />
             Refresh
           </Button>

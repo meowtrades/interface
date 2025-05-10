@@ -4,13 +4,15 @@ import { Grid, RefreshCw, TrendingUp } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { formatFrequency } from "@/lib/utils";
 import { UserStrategy } from "./types";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
-interface StrategyDetailsProps {
-  userStrategy: UserStrategy;
-}
+export const StrategyDetails = () => {
+  const { strategyId } = useParams();
+  const { data: userStrategy } = useQuery<UserStrategy>({
+    queryKey: ["userStrategy", strategyId],
+  });
 
-export const StrategyDetails = ({ userStrategy }: StrategyDetailsProps) => {
-  console.log(userStrategy);
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
     const type = userStrategy.strategyTemplate?.type || "dca";

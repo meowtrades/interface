@@ -38,11 +38,8 @@ const StrategyDetail = () => {
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!userStrategy) {
-        navigate("/app/strategies");
-        return;
-      }
+    if (!isLoading && !userStrategy) {
+      navigate("/app/strategies");
     }
   }, [isLoading, navigate, strategyId, userStrategy]);
 
@@ -73,8 +70,8 @@ const StrategyDetail = () => {
 
       {/* Strategy Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <StrategyOverview userStrategy={userStrategy} />
-        <StrategyDetails userStrategy={userStrategy} />
+        <StrategyOverview />
+        <StrategyDetails />
       </div>
 
       <TransactionList />
