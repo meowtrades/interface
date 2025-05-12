@@ -129,7 +129,7 @@ export const TransactionList = () => {
                         {formatCurrency(transaction.price)}
                       </td>
                       <td className="py-4 px-5 text-right text-slate-700">
-                        {formatCurrency(transaction.amount * transaction.price)}
+                        {formatCurrency(transaction.value)}
                       </td>
                     </tr>
                   );

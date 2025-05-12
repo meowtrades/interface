@@ -37,6 +37,7 @@ export type Transaction = {
   type: string;
   tokenSymbol: string;
   price: number;
+  value: number;
 };
 
 export type DepositFundsDto = {
