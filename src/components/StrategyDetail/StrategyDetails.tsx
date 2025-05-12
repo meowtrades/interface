@@ -46,7 +46,7 @@ export const StrategyDetails = () => {
 
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Network</h4>
-          <span className="font-medium">Injective</span>
+          <span className="font-medium">{userStrategy.chain}</span>
         </div>
 
         <div>
