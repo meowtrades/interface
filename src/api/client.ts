@@ -80,6 +80,21 @@ export const api = {
         data: Transaction[];
         pagination: { totalPages: number };
       }>(`/user/analytics/strategies/${strategyId}/transactions`, { params }),
+    getActive: async () =>
+      (
+        await axiosInstance.get<{ data: UserStrategy[] }>(
+          `/user/analytics/strategies/active`
+        )
+      ).data.data,
+    getActiveSeparated: async () =>
+      (
+        await axiosInstance.get<{
+          data: {
+            mockStrategies: UserStrategy[];
+            realStrategies: UserStrategy[];
+          };
+        }>(`/user/analytics/strategies/active/separated`)
+      ).data.data,
   },
   admin: {
     getActivePlans: () => axiosInstance.get<DcaPlan[]>(`/admin/active-plans`),

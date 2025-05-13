@@ -25,7 +25,13 @@ import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserDcaPlans, useUserStatistics, useUserTransactions } from "@/api";
+import {
+  api,
+  useUserDcaPlans,
+  useUserStatistics,
+  useUserTransactions,
+} from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const {
@@ -50,6 +56,13 @@ const Dashboard = () => {
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
 
   const { data: dcaActiveStrategies } = useUserDcaPlans();
+
+  const { data: strats } = useQuery({
+    queryKey: ["strategies"],
+    queryFn: () => api.strategies.getActiveSeparated(),
+  });
+
+  console.log("strats", strats);
 
   // Filter active user strategies
   const activeUserStrategies = dcaActiveStrategies?.filter((us) => us.isActive);
@@ -227,7 +240,7 @@ const Dashboard = () => {
               <Skeleton className="h-64 w-full" />
             </>
           ) : activeUserStrategies?.length > 0 ? (
-            activeUserStrategies.map((userStrategy) => {
+            strats.realStrategies.map((userStrategy) => {
               // const strategy = strategies.find(
               //   (s) => s.id === userStrategy.strategyId
               // );
@@ -364,6 +377,141 @@ const Dashboard = () => {
                 <Link to="/app/strategies">
                   <Button className="bg-blue-600 hover:bg-blue-700">
                     One Click Start
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Mock Plans</h2>
+          <Link
+            to="/app/strategies"
+            className="text-blue-600 text-sm flex items-center"
+          >
+            View all <ArrowRight size={16} className="ml-1" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {!activeUserStrategies ? (
+            <>
+              <Skeleton className="h-64 w-full" />
+              <Skeleton className="h-64 w-full" />
+            </>
+          ) : strats.mockStrategies.length > 0 ? (
+            strats.mockStrategies.map((userStrategy) => {
+              const strategy = strategies.find((s) => s.id === "smart-dca");
+              const token = tokens.find((t) => t.id === "inj");
+              const chain = chains.find((c) => c.id === "injective");
+
+              const currentValue =
+                userStrategy.totalInvested + userStrategy.amount;
+              const profit = currentValue - userStrategy.initialAmount;
+              const profitPercentage =
+                (profit / userStrategy.initialAmount) * 100;
+
+              if (!strategy || !token || !chain) return null;
+
+              return (
+                <Card key={userStrategy._id} className="shadow-sm">
+                  <CardHeader className="pb-2 pt-4 px-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardDescription>{strategy.name}</CardDescription>
+                        <CardTitle className="text-xl">
+                          {token.symbol}
+                        </CardTitle>
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
+                          strategy.type === "dca"
+                            ? "bg-blue-600"
+                            : strategy.type === "grid"
+                            ? "bg-purple-600"
+                            : "bg-amber-600"
+                        }`}
+                      >
+                        {strategy.type === "dca"
+                          ? "DCA"
+                          : strategy.type === "grid"
+                          ? "Grid"
+                          : "Momentum"}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="px-5 pb-3">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Current Value
+                        </span>
+                        <span className="font-medium">
+                          ${currentValue.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Starting Value
+                        </span>
+                        <span className="font-medium">
+                          ${userStrategy.initialAmount.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">
+                          Profit/Loss
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            profitPercentage >= 0
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {profitPercentage >= 0 ? "+" : "-"}$
+                          {Math.abs(profit).toFixed(2)} (
+                          {profitPercentage.toFixed(2)}%)
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="px-5 pt-0 pb-4">
+                    <Link
+                      to={`/app/strategies/${userStrategy._id}`}
+                      state={{
+                        source: "dashboard",
+                        planId: userStrategy._id,
+                      }}
+                      className="w-full"
+                    >
+                      <Button variant="outline" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              );
+            })
+          ) : (
+            <Card className="border-dashed border-2 border-slate-200 shadow-sm">
+              <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
+                <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+                  <Zap size={24} />
+                </div>
+                <h3 className="text-lg font-medium mb-3">
+                  Start Your First Mock Strategy
+                </h3>
+                <p className="text-slate-500 mb-5">
+                  Try out our strategies in mock mode to test them risk-free
+                  before using real funds.
+                </p>
+                <Link to="/app/strategies">
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    Start Mock Strategy
                   </Button>
                 </Link>
               </CardContent>
