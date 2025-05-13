@@ -56,8 +56,6 @@ const Dashboard = () => {
 
   const isProfitable = userStatistics?.profitLossPercentage > 0;
 
-  const mockTradesCount = 4;
-
   // Check if data is still loading
   const isLoading =
     strategiesLoading || walletsLoading || userStatisticsLoading;
@@ -73,6 +71,7 @@ const Dashboard = () => {
       localStorage.removeItem("showStrategyPopup");
     }
   }, []);
+  console.log("userStatistics", userStatistics);
 
   const handleStrategyStart = (strategyData: {
     amount: number;
@@ -198,13 +197,13 @@ const Dashboard = () => {
               <Skeleton className="h-8 w-8" />
             ) : (
               <CardTitle className="text-2xl">
-                {userStatistics?.activeTrades}
+                {userStatistics?.activeStrategies.total}
               </CardTitle>
             )}
           </CardHeader>
           <CardContent className="pb-4 px-5">
             <div className="text-sm text-slate-500">
-              {mockTradesCount} mock trades
+              {userStatistics?.activeStrategies.mock} mock trades
             </div>
           </CardContent>
         </Card>

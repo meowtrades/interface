@@ -62,6 +62,11 @@ export type PerformanceHistory = {
 };
 
 export type UserStatistics = {
+  activeStrategies: {
+    mock: number;
+    real: number;
+    total: number;
+  };
   activeTrades: number;
   bestPerformingStrategy: string | null;
   completedTrades: number;
