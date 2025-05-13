@@ -62,6 +62,10 @@ export const TransactionList = () => {
 
   // Get transaction type label and color
   const getTransactionType = (type: string) => {
+    if (!type) {
+      return { label: "Unknown", color: "bg-slate-100 text-slate-800" };
+    }
+
     switch (type.toLowerCase()) {
       case "buy":
         return { label: "Buy", color: "bg-green-100 text-green-800" };
@@ -71,6 +75,8 @@ export const TransactionList = () => {
         return { label: type, color: "bg-slate-100 text-slate-800" };
     }
   };
+
+  console.log(transactionsData);
 
   return (
     <div className="mb-6">
@@ -122,7 +128,7 @@ export const TransactionList = () => {
                         </span>
                       </td>
                       <td className="py-4 px-5 text-slate-700">
-                        {transaction.amount.toFixed(4)}{" "}
+                        {transaction.amount.toFixed(1)}{" "}
                         {transaction.tokenSymbol}
                       </td>
                       <td className="py-4 px-5 text-slate-700">

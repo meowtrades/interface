@@ -6,11 +6,20 @@ import { formatFrequency } from "@/lib/utils";
 import { UserStrategy } from "./types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import { api } from "@/api";
 
 export const StrategyDetails = () => {
   const { strategyId } = useParams();
   const { data: userStrategy } = useQuery<UserStrategy>({
     queryKey: ["userStrategy", strategyId],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      // const url = `/user/analytics/strategies/${strategyId}`;
+      const {
+        data: { data },
+      } = await api.strategies.getDetails(strategyId);
+      return data;
+    },
   });
 
   // Get the proper icon based on strategy type

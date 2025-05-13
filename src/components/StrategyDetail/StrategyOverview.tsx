@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Grid, RefreshCcw, RefreshCw, TrendingUp } from "lucide-react";
 import { StrategyChart } from "./StrategyChart";
-import { UserStrategy, ChartData } from "./types";
+import { UserStrategy } from "./types";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
-import axios from "axios";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
@@ -28,6 +27,13 @@ export const StrategyOverview = () => {
 
   const { data: userStrategy } = useQuery<UserStrategy>({
     queryKey: ["userStrategy", strategyId],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      const {
+        data: { data },
+      } = await api.strategies.getDetails(strategyId);
+      return data;
+    },
   });
 
   useEffect(() => {
@@ -141,7 +147,7 @@ export const StrategyOverview = () => {
               {userStrategy.currentValue > userStrategy.initialAmount
                 ? "+"
                 : "-"}
-              {formatCurrency(userStrategy.profit)}
+              {formatCurrency(Math.abs(userStrategy.profit))}
             </CardTitle>
           </CardHeader>
         </Card>

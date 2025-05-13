@@ -80,17 +80,7 @@ export const StrategyChart = () => {
 
       return { waiting: false, data };
     },
-    retry: (failureCount, error) => {
-      // Only retry on network errors or 500s, and only up to 3 times
-      if (axios.isAxiosError(error)) {
-        return (
-          (error.code === "ERR_NETWORK" || error.response?.status === 500) &&
-          failureCount < 3
-        );
-      }
-      return false;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retry: false,
     refetchOnWindowFocus: false,
     enabled: !!strategyId && !!range,
   });
@@ -149,6 +139,30 @@ export const StrategyChart = () => {
     );
   }
 
+  // For non-mock chains, show waiting message
+  if (userStrategy?.chain !== "mock") {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-medium text-lg">Performance</h3>
+        </div>
+        <div className="h-72 w-full flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <p className="text-gray-600">
+              We're currently processing your strategy data. This may take a few
+              moments as we gather and analyze your transaction history.
+            </p>
+            <p className="text-sm text-gray-500">
+              You'll be able to see your performance metrics once the data is
+              ready.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // For mock chains, show the chart as is
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -180,7 +194,9 @@ export const StrategyChart = () => {
         ) : chartData?.waiting ? (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-gray-600">
-              Data is still being processed. Please check back later.
+              {
+                "We're processing your data. We'll reach out to you soon with the results."
+              }
             </p>
           </div>
         ) : chartData?.data ? (
