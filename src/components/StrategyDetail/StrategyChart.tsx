@@ -139,8 +139,7 @@ export const StrategyChart = () => {
     );
   }
 
-  // For non-mock chains, show waiting message
-  if (userStrategy?.chain !== "mock") {
+  if (!chartData || chartData.data.length === 0) {
     return (
       <div>
         <div className="flex items-center justify-between mb-4">

@@ -75,11 +75,16 @@ export const api = {
       axiosInstance.get<{ data: UserStrategy }>(
         `/user/analytics/strategies/${strategyId}`
       ),
+    getMockChartData: (strategyId: string) =>
+      axiosInstance.get<{
+        data: { timestamp: number; price: number }[];
+        totalInvestment: number;
+      }>(`/mocktrades/chart/${strategyId}`),
     getChartData: (strategyId: string) =>
       axiosInstance.get<{
-        totalInvestment: number;
         data: { timestamp: number; price: number }[];
-      }>(`/mocktrades/chart/${strategyId}`),
+        totalInvestment: number;
+      }>(`/user/analytics/strategies/chart/${strategyId}`),
     getTransactions: (
       strategyId: string,
       params: { page: number; limit: number }
