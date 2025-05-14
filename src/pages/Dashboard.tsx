@@ -27,6 +27,7 @@ import { useWallet } from "@/lib/context/WalletContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   api,
+  axiosInstance,
   useUserDcaPlans,
   useUserStatistics,
   useUserTransactions,
@@ -68,13 +69,6 @@ const Dashboard = () => {
 
   const isProfitable = userStatistics?.profitLossPercentage > 0;
 
-  // Check if data is still loading
-  const isLoading =
-    strategiesLoading ||
-    walletsLoading ||
-    userStatisticsLoading ||
-    analyticsLoading;
-
   // Check for errors
   const error = strategiesError || walletsError;
 
@@ -95,6 +89,18 @@ const Dashboard = () => {
     console.log("Starting strategy with:", strategyData);
     // In a real app, this would call the API to start a strategy
   };
+
+  const { data: overview, isLoading: overviewLoading } = useQuery({
+    queryKey: ["overview"],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/user/analytics/overview");
+      return response.data.data;
+    },
+  });
+
+  const isLoading = overviewLoading || userStatisticsLoading;
+
+  console.log("overview", overview);
 
   if (error) {
     return (
@@ -129,7 +135,7 @@ const Dashboard = () => {
               <Skeleton className="h-8 w-24" />
             ) : (
               <CardTitle className="text-2xl">
-                ${userStatistics?.totalCurrentValue.toFixed(2)}
+                ${overview?.totalPortfolioValue.toFixed(2)}
               </CardTitle>
             )}
           </CardHeader>
@@ -147,7 +153,7 @@ const Dashboard = () => {
                 ) : (
                   <TrendingDown size={16} />
                 )}
-                <span>{userStatistics?.profitLossPercentage.toFixed(2)}%</span>
+                <span>{overview?.profitLossPercentage.toFixed(2)}%</span>
               </div>
             )}
           </CardContent>
@@ -160,7 +166,7 @@ const Dashboard = () => {
               <Skeleton className="h-8 w-24" />
             ) : (
               <CardTitle className="text-2xl">
-                ${userStatistics?.totalInvestment.toFixed(2)}
+                ${overview?.totalInvested.toFixed(2)}
               </CardTitle>
             )}
           </CardHeader>
@@ -181,7 +187,7 @@ const Dashboard = () => {
                 }`}
               >
                 {isProfitable ? "+" : "-"}$
-                {Math.abs(userStatistics?.totalProfitLoss).toFixed(2)}
+                {Math.abs(overview?.totalProfitLoss).toFixed(2)}
               </CardTitle>
             )}
           </CardHeader>
@@ -212,13 +218,13 @@ const Dashboard = () => {
               <Skeleton className="h-8 w-8" />
             ) : (
               <CardTitle className="text-2xl">
-                {userStatistics?.activeStrategies.total}
+                {overview?.activeStrategies.total}
               </CardTitle>
             )}
           </CardHeader>
           <CardContent className="pb-4 px-5">
             <div className="text-sm text-slate-500">
-              {userStatistics?.activeStrategies.mock} mock trades
+              {overview?.activeStrategies.mock} mock trades
             </div>
           </CardContent>
         </Card>
