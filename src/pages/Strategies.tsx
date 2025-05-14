@@ -51,24 +51,30 @@ const Strategies = () => {
 
   const { data: allDcaActiveStrategies } = useUserDcaPlans();
 
-  console.log("dca", allDcaActiveStrategies);
+  // console.log("dca", allDcaActiveStrategies);
 
-  console.log(allDcaActiveStrategies);
+  // console.log(allDcaActiveStrategies);
 
   const dcaActiveStrategies = allDcaActiveStrategies?.filter(
     (us) => us.isActive
   );
 
-  const { data: activeStrategiesAnalytics } = useQuery({
+  const {
+    data: activeStrategiesAnalytics,
+    isLoading: activeStrategiesAnalyticsLoading,
+  } = useQuery({
     queryKey: ["activeStrategiesAnalytics"],
     queryFn: async () => {
       const {
         data: { data },
       } = await api.analytics.getActiveStrategiesAnalytics();
       // zip both arrays according to time of creation
-      return [...data.real, ...data.mock];
+      return data;
     },
+    refetchOnWindowFocus: false,
   });
+
+  console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
 
   // console.log(dcaActiveStrategies);
 
@@ -121,6 +127,16 @@ const Strategies = () => {
       availableTabTrigger.click();
     }
   };
+
+  if (activeStrategiesAnalyticsLoading) {
+    return (
+      <AppLayout>
+        <div className="p-4 bg-slate-50 text-slate-600 rounded-md">
+          Loading active strategies analytics...
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (error) {
     return (
@@ -212,7 +228,10 @@ const Strategies = () => {
             }
             value="active"
           >
-            Active Strategies ({activeStrategiesAnalytics?.length})
+            Active Strategies (
+            {activeStrategiesAnalytics?.real.length +
+              activeStrategiesAnalytics?.mock.length}
+            )
           </TabsTrigger>
         </TabsList>
 
@@ -258,7 +277,10 @@ const Strategies = () => {
             </div>
           ) : userStrategies.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {activeStrategiesAnalytics?.map((userStrategy) => {
+              {[
+                ...activeStrategiesAnalytics?.real,
+                ...activeStrategiesAnalytics?.mock,
+              ].map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}

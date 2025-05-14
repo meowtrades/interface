@@ -61,7 +61,11 @@ const Dashboard = () => {
   const { data: activeStrategiesAnalytics, isLoading: analyticsLoading } =
     useQuery({
       queryKey: ["activeStrategiesAnalytics"],
-      queryFn: () => api.analytics.getActiveStrategiesAnalytics(),
+      queryFn: async () => {
+        const { data } = await api.analytics.getActiveStrategiesAnalytics();
+        return data.data;
+      },
+      refetchOnWindowFocus: false,
     });
 
   console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
@@ -82,13 +86,12 @@ const Dashboard = () => {
       localStorage.removeItem("showStrategyPopup");
     }
   }, []);
-  console.log("userStatistics", userStatistics);
 
   const handleStrategyStart = (strategyData: {
     amount: number;
     token: string;
   }) => {
-    console.log("Starting strategy with:", strategyData);
+    // console.log("Starting strategy with:", strategyData);
     // In a real app, this would call the API to start a strategy
   };
 
@@ -100,9 +103,10 @@ const Dashboard = () => {
     },
   });
 
-  const isLoading = overviewLoading || userStatisticsLoading;
+  const isLoading =
+    overviewLoading || userStatisticsLoading || analyticsLoading;
 
-  console.log("overview", overview);
+  // console.log("overview", overview);
 
   if (error) {
     return (
@@ -251,8 +255,8 @@ const Dashboard = () => {
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : activeStrategiesAnalytics?.data.data.real.length > 0 ? (
-            activeStrategiesAnalytics.data.data.real.map((strategy) => {
+          ) : activeStrategiesAnalytics?.real.length > 0 ? (
+            activeStrategiesAnalytics.real.map((strategy) => {
               const isProfitable = strategy.profit >= 0;
               const profitPercentage =
                 (strategy.profit / strategy.totalInvested) * 100;
@@ -366,8 +370,8 @@ const Dashboard = () => {
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : activeStrategiesAnalytics?.data.data.mock.length > 0 ? (
-            activeStrategiesAnalytics.data.data.mock.map((strategy) => {
+          ) : activeStrategiesAnalytics?.mock.length > 0 ? (
+            activeStrategiesAnalytics.mock.map((strategy) => {
               const isProfitable = strategy.profit >= 0;
               const profitPercentage =
                 (strategy.profit / strategy.totalInvested) * 100;
