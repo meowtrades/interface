@@ -19,7 +19,7 @@ import StrategyCard from "@/components/StrategyCard";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
 
 const Strategies = () => {
@@ -39,6 +39,8 @@ const Strategies = () => {
     getStrategiesForChainAndToken,
   } = useStrategies();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "available";
   const [simulationDialogOpen, setSimulationDialogOpen] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
     null
@@ -172,10 +174,32 @@ const Strategies = () => {
         </Select>
       </div>
 
-      <Tabs defaultValue="available" className="mb-8">
+      <Tabs defaultValue={tab} className="mb-8">
         <TabsList>
-          <TabsTrigger value="available">Available Strategies</TabsTrigger>
-          <TabsTrigger value="active">
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "available" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="available"
+          >
+            Available Strategies
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "active" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="active"
+          >
             Active Strategies ({dcaActiveStrategies?.length})
           </TabsTrigger>
         </TabsList>

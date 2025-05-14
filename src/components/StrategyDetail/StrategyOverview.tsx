@@ -36,6 +36,8 @@ export const StrategyOverview = () => {
     },
   });
 
+  console.log(userStrategy);
+
   useEffect(() => {
     const ranges = getValidRanges(userStrategy.frequency as Frequency);
     setValidRanges(ranges);
@@ -139,14 +141,10 @@ export const StrategyOverview = () => {
             <CardDescription>Profit/Loss</CardDescription>
             <CardTitle
               className={`text-xl ${
-                userStrategy.currentValue > userStrategy.initialAmount
-                  ? "text-green-500"
-                  : "text-red-500"
+                userStrategy.profit > 0 ? "text-green-500" : "text-red-500"
               }`}
             >
-              {userStrategy.currentValue > userStrategy.initialAmount
-                ? "+"
-                : "-"}
+              {userStrategy.profit > 0 ? "+" : "-"}
               {formatCurrency(Math.abs(userStrategy.profit))}
             </CardTitle>
           </CardHeader>

@@ -57,12 +57,11 @@ const Dashboard = () => {
 
   const { data: dcaActiveStrategies } = useUserDcaPlans();
 
-  const { data: strats } = useQuery({
-    queryKey: ["strategies"],
-    queryFn: () => api.strategies.getActiveSeparated(),
-  });
-
-  console.log("strats", strats);
+  const { data: activeStrategiesAnalytics, isLoading: analyticsLoading } =
+    useQuery({
+      queryKey: ["activeStrategiesAnalytics"],
+      queryFn: () => api.analytics.getActiveStrategiesAnalytics(),
+    });
 
   // Filter active user strategies
   const activeUserStrategies = dcaActiveStrategies?.filter((us) => us.isActive);
@@ -71,7 +70,10 @@ const Dashboard = () => {
 
   // Check if data is still loading
   const isLoading =
-    strategiesLoading || walletsLoading || userStatisticsLoading;
+    strategiesLoading ||
+    walletsLoading ||
+    userStatisticsLoading ||
+    analyticsLoading;
 
   // Check for errors
   const error = strategiesError || walletsError;
@@ -234,55 +236,34 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {!activeUserStrategies ? (
+          {isLoading ? (
             <>
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : activeUserStrategies?.length > 0 ? (
-            strats.realStrategies.map((userStrategy) => {
-              // const strategy = strategies.find(
-              //   (s) => s.id === userStrategy.strategyId
-              // );
-              // const token = tokens.find((t) => t.id === userStrategy.tokenId);
-              // const chain = chains.find((c) => c.id === userStrategy.chainId);
-
-              const strategy = strategies.find((s) => s.id === "smart-dca");
-              const token = tokens.find((t) => t.id === "inj");
-              const chain = chains.find((c) => c.id === "injective");
-
-              const currentValue =
-                userStrategy.totalInvested + userStrategy.amount;
-              const profit = currentValue - userStrategy.initialAmount;
+          ) : activeStrategiesAnalytics?.data.data.real.length > 0 ? (
+            activeStrategiesAnalytics.data.data.real.map((strategy) => {
+              const isProfitable = strategy.totalProfitLoss >= 0;
               const profitPercentage =
-                (profit / userStrategy.initialAmount) * 100;
-
-              if (!strategy || !token || !chain) return null;
+                (strategy.totalProfitLoss / strategy.startingValue) * 100;
 
               return (
-                <Card key={userStrategy._id} className="shadow-sm">
+                <Card
+                  key={strategy.strategyType.shortName}
+                  className="shadow-sm"
+                >
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardDescription>{strategy.name}</CardDescription>
+                        <CardDescription>
+                          {strategy.strategyType.fullName}
+                        </CardDescription>
                         <CardTitle className="text-xl">
-                          {token.symbol}
+                          {strategy.tokenSymbol}
                         </CardTitle>
                       </div>
-                      <div
-                        className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
-                          strategy.type === "dca"
-                            ? "bg-blue-600"
-                            : strategy.type === "grid"
-                            ? "bg-purple-600"
-                            : "bg-amber-600"
-                        }`}
-                      >
-                        {strategy.type === "dca"
-                          ? "DCA"
-                          : strategy.type === "grid"
-                          ? "Grid"
-                          : "Momentum"}
+                      <div className="px-3 py-1 rounded-full text-white text-xs font-medium bg-blue-600">
+                        {strategy.strategyType.shortName}
                       </div>
                     </div>
                   </CardHeader>
@@ -293,7 +274,7 @@ const Dashboard = () => {
                           Current Value
                         </span>
                         <span className="font-medium">
-                          ${currentValue.toFixed(2)}
+                          ${strategy.totalValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -301,7 +282,7 @@ const Dashboard = () => {
                           Starting Value
                         </span>
                         <span className="font-medium">
-                          ${userStrategy.initialAmount.toFixed(2)}
+                          ${strategy.startingValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -310,13 +291,11 @@ const Dashboard = () => {
                         </span>
                         <span
                           className={`font-medium ${
-                            profitPercentage >= 0
-                              ? "text-green-500"
-                              : "text-red-500"
+                            isProfitable ? "text-green-500" : "text-red-500"
                           }`}
                         >
-                          {profitPercentage >= 0 ? "+" : "-"}$
-                          {Math.abs(profit).toFixed(2)} (
+                          {isProfitable ? "+" : "-"}$
+                          {Math.abs(strategy.totalProfitLoss).toFixed(2)} (
                           {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
@@ -324,10 +303,10 @@ const Dashboard = () => {
                   </CardContent>
                   <CardFooter className="px-5 pt-0 pb-4">
                     <Link
-                      to={`/app/strategies/${userStrategy._id}`}
+                      to={`/app/strategies/${strategy.id}`}
                       state={{
                         source: "dashboard",
-                        planId: userStrategy._id,
+                        strategyId: strategy.id,
                       }}
                       className="w-full"
                     >
@@ -360,28 +339,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           )}
-
-          {activeUserStrategies?.length === 0 && (
-            <Card className="border-dashed border-2 border-slate-200 shadow-sm">
-              <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
-                  <Zap size={24} />
-                </div>
-                <h3 className="text-lg font-medium mb-3">
-                  Start a New Strategy
-                </h3>
-                <p className="text-slate-500 mb-5">
-                  Add another strategy to diversify your automated trading
-                  portfolio.
-                </p>
-                <Link to="/app/strategies">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    One Click Start
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
 
@@ -397,49 +354,34 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {!activeUserStrategies ? (
+          {isLoading ? (
             <>
               <Skeleton className="h-64 w-full" />
               <Skeleton className="h-64 w-full" />
             </>
-          ) : strats.mockStrategies.length > 0 ? (
-            strats.mockStrategies.map((userStrategy) => {
-              const strategy = strategies.find((s) => s.id === "smart-dca");
-              const token = tokens.find((t) => t.id === "inj");
-              const chain = chains.find((c) => c.id === "injective");
-
-              const currentValue =
-                userStrategy.totalInvested + userStrategy.amount;
-              const profit = currentValue - userStrategy.initialAmount;
+          ) : activeStrategiesAnalytics?.data.data.mock.length > 0 ? (
+            activeStrategiesAnalytics.data.data.mock.map((strategy) => {
+              const isProfitable = strategy.totalProfitLoss >= 0;
               const profitPercentage =
-                (profit / userStrategy.initialAmount) * 100;
-
-              if (!strategy || !token || !chain) return null;
+                (strategy.totalProfitLoss / strategy.startingValue) * 100;
 
               return (
-                <Card key={userStrategy._id} className="shadow-sm">
+                <Card
+                  key={strategy.strategyType.shortName}
+                  className="shadow-sm"
+                >
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardDescription>{strategy.name}</CardDescription>
+                        <CardDescription>
+                          {strategy.strategyType.fullName}
+                        </CardDescription>
                         <CardTitle className="text-xl">
-                          {token.symbol}
+                          {strategy.tokenSymbol}
                         </CardTitle>
                       </div>
-                      <div
-                        className={`px-3 py-1 rounded-full text-white text-xs font-medium ${
-                          strategy.type === "dca"
-                            ? "bg-blue-600"
-                            : strategy.type === "grid"
-                            ? "bg-purple-600"
-                            : "bg-amber-600"
-                        }`}
-                      >
-                        {strategy.type === "dca"
-                          ? "DCA"
-                          : strategy.type === "grid"
-                          ? "Grid"
-                          : "Momentum"}
+                      <div className="px-3 py-1 rounded-full text-white text-xs font-medium bg-purple-600">
+                        {strategy.strategyType.shortName}
                       </div>
                     </div>
                   </CardHeader>
@@ -450,7 +392,7 @@ const Dashboard = () => {
                           Current Value
                         </span>
                         <span className="font-medium">
-                          ${currentValue.toFixed(2)}
+                          ${strategy.totalValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -458,7 +400,7 @@ const Dashboard = () => {
                           Starting Value
                         </span>
                         <span className="font-medium">
-                          ${userStrategy.initialAmount.toFixed(2)}
+                          ${strategy.startingValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -467,13 +409,11 @@ const Dashboard = () => {
                         </span>
                         <span
                           className={`font-medium ${
-                            profitPercentage >= 0
-                              ? "text-green-500"
-                              : "text-red-500"
+                            isProfitable ? "text-green-500" : "text-red-500"
                           }`}
                         >
-                          {profitPercentage >= 0 ? "+" : "-"}$
-                          {Math.abs(profit).toFixed(2)} (
+                          {isProfitable ? "+" : "-"}$
+                          {Math.abs(strategy.totalProfitLoss).toFixed(2)} (
                           {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
@@ -481,10 +421,10 @@ const Dashboard = () => {
                   </CardContent>
                   <CardFooter className="px-5 pt-0 pb-4">
                     <Link
-                      to={`/app/strategies/${userStrategy._id}`}
+                      to={`/app/strategies/${strategy.id}`}
                       state={{
                         source: "dashboard",
-                        planId: userStrategy._id,
+                        strategyId: strategy.id,
                       }}
                       className="w-full"
                     >
@@ -499,19 +439,19 @@ const Dashboard = () => {
           ) : (
             <Card className="border-dashed border-2 border-slate-200 shadow-sm">
               <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="h-14 w-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
-                  <Zap size={24} />
+                <div className="h-14 w-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
+                  <Grid size={24} />
                 </div>
                 <h3 className="text-lg font-medium mb-3">
                   Start Your First Mock Strategy
                 </h3>
                 <p className="text-slate-500 mb-5">
-                  Try out our strategies in mock mode to test them risk-free
-                  before using real funds.
+                  Try out our strategies in mock mode to test your trading
+                  strategies risk-free.
                 </p>
                 <Link to="/app/strategies">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    Start Mock Strategy
+                  <Button className="bg-purple-600 hover:bg-purple-700">
+                    Explore Mock Strategies
                   </Button>
                 </Link>
               </CardContent>

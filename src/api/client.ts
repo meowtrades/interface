@@ -12,6 +12,7 @@ import {
   PerformanceHistory,
   PlatformStatistics,
 } from "./types/dtos";
+import { ActiveStrategyAnalytics } from "./types";
 
 export const api = {
   plans: {
@@ -61,6 +62,13 @@ export const api = {
       axiosInstance.get<PlatformStatistics>(
         `/user/analytics/statistics/platform`
       ),
+    getActiveStrategiesAnalytics: () =>
+      axiosInstance.get<{
+        data: {
+          mock: ActiveStrategyAnalytics[];
+          real: ActiveStrategyAnalytics[];
+        };
+      }>(`/user/analytics/strategies/active/analytics`),
   },
   strategies: {
     getDetails: (strategyId: string) =>
@@ -94,6 +102,12 @@ export const api = {
             realStrategies: UserStrategy[];
           };
         }>(`/user/analytics/strategies/active/separated`)
+      ).data.data,
+    getActiveAnalytics: async () =>
+      (
+        await axiosInstance.get<{ data: UserStrategy[] }>(
+          `/user/analytics/strategies/active/analytics`
+        )
       ).data.data,
   },
   admin: {

@@ -1,3 +1,5 @@
+/** @format */
+
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -15,9 +17,7 @@ export const StrategyHeader = ({ isUserStrategy }: StrategyHeaderProps) => {
         variant="outline"
         size="sm"
         className="gap-1"
-        onClick={() =>
-          navigate(isUserStrategy ? "/app/dashboard" : "/app/strategies")
-        }
+        onClick={() => navigate(-1)}
       >
         <ArrowLeft size={16} />
         Back
@@ -25,4 +25,4 @@ export const StrategyHeader = ({ isUserStrategy }: StrategyHeaderProps) => {
       <h1 className="text-2xl font-bold">Your Strategy</h1>
     </div>
   );
-}; 
+};

@@ -22,22 +22,43 @@ export type DcaPlan = {
   updatedAt: string;
 };
 
+// export type Transaction = {
+//   id: string;
+//   planId: string;
+//   userId: string;
+//   chain: string;
+//   amount: number;
+//   status: string;
+//   retryCount: number;
+//   maxRetries: number;
+//   lastAttemptTime: string;
+//   createdAt: string;
+//   updatedAt: string;
+//   type: string;
+//   tokenSymbol: string;
+//   price: number;
+//   value: number;
+// };
+
 export type Transaction = {
   id: string;
-  planId: string;
-  userId: string;
-  chain: string;
-  amount: number;
-  status: string;
-  retryCount: number;
-  maxRetries: number;
-  lastAttemptTime: string;
-  createdAt: string;
-  updatedAt: string;
   type: string;
-  tokenSymbol: string;
+  from: {
+    token: string;
+    amount: number;
+  };
+  to: {
+    token: string;
+    amount: number;
+  };
   price: number;
   value: number;
+  invested: number;
+  planId: string;
+  userId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type DepositFundsDto = {

@@ -78,6 +78,19 @@ export type UserStatistics = {
   worstPerformingStrategy: string | null;
 };
 
+export type ActiveStrategyAnalytics = {
+  chain: string;
+  totalProfitLoss: number;
+  totalValue: number;
+  startingValue: number;
+  tokenSymbol: string;
+  strategyType: {
+    fullName: string;
+    shortName: string;
+  };
+  id: string;
+};
+
 export type PlatformStatistics = {
   totalUsers: number;
   totalVolume: number;

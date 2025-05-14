@@ -128,8 +128,8 @@ export const TransactionList = () => {
                         </span>
                       </td>
                       <td className="py-4 px-5 text-slate-700">
-                        {transaction.amount.toFixed(1)}{" "}
-                        {transaction.tokenSymbol}
+                        {transaction.to.amount.toFixed(5)}{" "}
+                        {transaction.to.token}
                       </td>
                       <td className="py-4 px-5 text-slate-700">
                         {formatCurrency(transaction.price)}
