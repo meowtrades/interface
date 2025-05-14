@@ -20,7 +20,8 @@ import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
+import { api, DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const Strategies = () => {
   const {
@@ -58,7 +59,18 @@ const Strategies = () => {
     (us) => us.isActive
   );
 
-  console.log(dcaActiveStrategies);
+  const { data: activeStrategiesAnalytics } = useQuery({
+    queryKey: ["activeStrategiesAnalytics"],
+    queryFn: async () => {
+      const {
+        data: { data },
+      } = await api.analytics.getActiveStrategiesAnalytics();
+      // zip both arrays according to time of creation
+      return [...data.real, ...data.mock];
+    },
+  });
+
+  // console.log(dcaActiveStrategies);
 
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
@@ -200,7 +212,7 @@ const Strategies = () => {
             }
             value="active"
           >
-            Active Strategies ({dcaActiveStrategies?.length})
+            Active Strategies ({activeStrategiesAnalytics?.length})
           </TabsTrigger>
         </TabsList>
 
@@ -246,22 +258,7 @@ const Strategies = () => {
             </div>
           ) : userStrategies.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {dcaActiveStrategies?.map((userStrategy) => {
-                if (!userStrategy.isActive) return null;
-                const strategy = strategies.find((s) => s.id === "smart-dca");
-                const token = tokens.find((t) => t.id === "inj");
-                const chain = chains.find((c) => c.id === "injective");
-
-                if (!strategy || !token || !chain) return null;
-
-                const currentValue =
-                  userStrategy.totalInvested + userStrategy.amount;
-
-                const profitPercentage =
-                  ((currentValue - userStrategy.initialAmount) /
-                    userStrategy.initialAmount) *
-                  100;
-
+              {activeStrategiesAnalytics?.map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}
@@ -270,30 +267,33 @@ const Strategies = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                          {strategy.icon === "RefreshCw" && (
+                          {userStrategy.strategyTemplate.id === "SDCA" && (
                             <RefreshCw size={20} />
                           )}
-                          {strategy.icon === "Grid" && <Grid size={20} />}
-                          {strategy.icon === "TrendingUp" && (
-                            <TrendingUp size={20} />
+                          {userStrategy.strategyTemplate.id === "Grid" && (
+                            <Grid size={20} />
                           )}
+                          {userStrategy.strategyTemplate.id ===
+                            "TrendingUp" && <TrendingUp size={20} />}
                         </div>
                         <div>
-                          <h3 className="font-medium">{strategy.name}</h3>
+                          <h3 className="font-medium">
+                            {userStrategy.strategyTemplate.name}
+                          </h3>
                           <p className="text-sm text-slate-500">
-                            {chain.name} • {token.symbol}
+                            {userStrategy.chain} • {userStrategy.token.symbol}
                           </p>
                         </div>
                       </div>
                       <div
                         className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          profitPercentage >= 0
+                          userStrategy.profitPercentage >= 0
                             ? "bg-green-100 text-green-600"
                             : "bg-red-100 text-red-600"
                         }`}
                       >
-                        {profitPercentage >= 0 ? "+" : ""}
-                        {profitPercentage}%
+                        {userStrategy.profitPercentage >= 0 ? "+" : ""}
+                        {userStrategy.profitPercentage}%
                       </div>
                     </div>
 
@@ -301,7 +301,7 @@ const Strategies = () => {
                       <div className="bg-slate-50 p-3 rounded">
                         <div className="text-sm text-slate-500">Invested</div>
                         <div className="font-medium">
-                          {currentValue} {token.symbol}
+                          ${userStrategy.totalInvested}{" "}
                         </div>
                       </div>
                       <div className="bg-slate-50 p-3 rounded">
@@ -309,7 +309,7 @@ const Strategies = () => {
                           Current Value
                         </div>
                         <div className="font-medium">
-                          {currentValue} {token.symbol}
+                          ${userStrategy.currentValue}
                         </div>
                       </div>
                     </div>
