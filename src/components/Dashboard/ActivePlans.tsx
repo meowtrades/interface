@@ -46,8 +46,6 @@ const ActivePlans = () => {
         ) : activeStrategiesAnalytics?.real.length > 0 ? (
           activeStrategiesAnalytics.real.map((strategy) => {
             const isProfitable = strategy.profit >= 0;
-            const profitPercentage =
-              (strategy.profit / strategy.totalInvested) * 100;
 
             return (
               <Card key={strategy._id} className="shadow-sm">
@@ -95,7 +93,7 @@ const ActivePlans = () => {
                       >
                         {isProfitable ? "+" : "-"}$
                         {Math.abs(strategy.profit).toFixed(2)} (
-                        {profitPercentage.toFixed(2)}%)
+                        {strategy.profitPercentage.toFixed(2)}%)
                       </span>
                     </div>
                   </div>
