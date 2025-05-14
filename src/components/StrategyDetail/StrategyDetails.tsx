@@ -80,7 +80,9 @@ export const StrategyDetails = () => {
             </div>
             <div className="flex justify-between">
               <span>Investment Amount:</span>
-              <span className="font-medium">${userStrategy.totalInvested}</span>
+              <span className="font-medium">
+                ${userStrategy.initialAmount.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>

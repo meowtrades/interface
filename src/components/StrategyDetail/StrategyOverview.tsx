@@ -131,7 +131,7 @@ export const StrategyOverview = () => {
           <CardHeader className="pb-2 pt-4 px-5">
             <CardDescription>Starting Value</CardDescription>
             <CardTitle className="text-xl">
-              {formatCurrency(userStrategy.initialAmount)}
+              {formatCurrency(userStrategy.totalInvested)}
             </CardTitle>
           </CardHeader>
         </Card>
