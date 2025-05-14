@@ -12,51 +12,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  BarChart2,
-  Zap,
-  RefreshCw,
-  Grid,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRight, Zap, Grid } from "lucide-react";
 import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  api,
-  axiosInstance,
-  useUserDcaPlans,
-  useUserStatistics,
-  useUserTransactions,
-} from "@/api";
+import { api, axiosInstance } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
-  const {
-    userStrategies,
-    strategies,
-    tokens,
-    chains,
-    isLoading: strategiesLoading,
-    error: strategiesError,
-  } = useStrategies();
+  const { error: strategiesError } = useStrategies();
 
-  const {
-    wallets,
-    isLoading: walletsLoading,
-    error: walletsError,
-    getTotalBalanceUsd,
-  } = useWallet();
-
-  const { data: userStatistics, isLoading: userStatisticsLoading } =
-    useUserStatistics();
+  const { error: walletsError } = useWallet();
 
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
-
-  const { data: dcaActiveStrategies } = useUserDcaPlans();
 
   const { data: activeStrategiesAnalytics, isLoading: analyticsLoading } =
     useQuery({
@@ -70,12 +39,6 @@ const Dashboard = () => {
 
   console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
 
-  // Filter active user strategies
-  const activeUserStrategies = dcaActiveStrategies?.filter((us) => us.isActive);
-
-  const isProfitable = userStatistics?.profitLossPercentage > 0;
-
-  // Check for errors
   const error = strategiesError || walletsError;
 
   useEffect(() => {
@@ -87,10 +50,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  const handleStrategyStart = (strategyData: {
-    amount: number;
-    token: string;
-  }) => {
+  const handleStrategyStart = () => {
     // console.log("Starting strategy with:", strategyData);
     // In a real app, this would call the API to start a strategy
   };
@@ -103,8 +63,7 @@ const Dashboard = () => {
     },
   });
 
-  const isLoading =
-    overviewLoading || userStatisticsLoading || analyticsLoading;
+  const isLoading = overviewLoading || analyticsLoading;
 
   // console.log("overview", overview);
 
@@ -151,10 +110,12 @@ const Dashboard = () => {
             ) : (
               <div
                 className={`flex items-center gap-1 text-sm ${
-                  isProfitable ? "text-green-500" : "text-red-500"
+                  overview?.profitLossPercentage >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
               >
-                {isProfitable ? (
+                {overview?.profitLossPercentage >= 0 ? (
                   <TrendingUp size={16} />
                 ) : (
                   <TrendingDown size={16} />
@@ -189,10 +150,12 @@ const Dashboard = () => {
             ) : (
               <CardTitle
                 className={`text-2xl ${
-                  isProfitable ? "text-green-500" : "text-red-500"
+                  overview?.profitLossPercentage >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
               >
-                {isProfitable ? "+" : "-"}$
+                {overview?.profitLossPercentage >= 0 ? "+" : "-"}$
                 {Math.abs(overview?.totalProfitLoss).toFixed(2)}
               </CardTitle>
             )}
@@ -208,7 +171,7 @@ const Dashboard = () => {
                     : "text-red-500"
                 }`}
               >
-                {isProfitable ? (
+                {overview?.profitLossPercentage >= 0 ? (
                   <TrendingUp size={16} />
                 ) : (
                   <TrendingDown size={16} />
