@@ -64,6 +64,8 @@ const Dashboard = () => {
       queryFn: () => api.analytics.getActiveStrategiesAnalytics(),
     });
 
+  console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
+
   // Filter active user strategies
   const activeUserStrategies = dcaActiveStrategies?.filter((us) => us.isActive);
 
@@ -197,7 +199,9 @@ const Dashboard = () => {
             ) : (
               <div
                 className={`flex items-center gap-1 text-sm ${
-                  isProfitable ? "text-green-500" : "text-red-500"
+                  overview?.profitLossPercentage >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
               >
                 {isProfitable ? (
@@ -205,7 +209,7 @@ const Dashboard = () => {
                 ) : (
                   <TrendingDown size={16} />
                 )}
-                <span>{userStatistics?.profitLossPercentage.toFixed(2)}%</span>
+                <span>{overview?.profitLossPercentage.toFixed(2)}%</span>
               </div>
             )}
           </CardContent>
@@ -249,27 +253,24 @@ const Dashboard = () => {
             </>
           ) : activeStrategiesAnalytics?.data.data.real.length > 0 ? (
             activeStrategiesAnalytics.data.data.real.map((strategy) => {
-              const isProfitable = strategy.totalProfitLoss >= 0;
+              const isProfitable = strategy.profit >= 0;
               const profitPercentage =
-                (strategy.totalProfitLoss / strategy.startingValue) * 100;
+                (strategy.profit / strategy.totalInvested) * 100;
 
               return (
-                <Card
-                  key={strategy.strategyType.shortName}
-                  className="shadow-sm"
-                >
+                <Card key={strategy._id} className="shadow-sm">
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
                         <CardDescription>
-                          {strategy.strategyType.fullName}
+                          {strategy.strategyTemplate.name}
                         </CardDescription>
                         <CardTitle className="text-xl">
-                          {strategy.tokenSymbol}
+                          {strategy.token.symbol}
                         </CardTitle>
                       </div>
                       <div className="px-3 py-1 rounded-full text-white text-xs font-medium bg-blue-600">
-                        {strategy.strategyType.shortName}
+                        {strategy.strategyTemplate.id}
                       </div>
                     </div>
                   </CardHeader>
@@ -280,7 +281,7 @@ const Dashboard = () => {
                           Current Value
                         </span>
                         <span className="font-medium">
-                          ${strategy.totalValue.toFixed(2)}
+                          ${strategy.currentValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -288,7 +289,7 @@ const Dashboard = () => {
                           Starting Value
                         </span>
                         <span className="font-medium">
-                          ${strategy.startingValue.toFixed(2)}
+                          ${strategy.totalInvested.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -301,7 +302,7 @@ const Dashboard = () => {
                           }`}
                         >
                           {isProfitable ? "+" : "-"}$
-                          {Math.abs(strategy.totalProfitLoss).toFixed(2)} (
+                          {Math.abs(strategy.profit).toFixed(2)} (
                           {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
@@ -309,10 +310,10 @@ const Dashboard = () => {
                   </CardContent>
                   <CardFooter className="px-5 pt-0 pb-4">
                     <Link
-                      to={`/app/strategies/${strategy.id}`}
+                      to={`/app/strategies/${strategy._id}`}
                       state={{
                         source: "dashboard",
-                        strategyId: strategy.id,
+                        strategyId: strategy._id,
                       }}
                       className="w-full"
                     >
@@ -367,27 +368,24 @@ const Dashboard = () => {
             </>
           ) : activeStrategiesAnalytics?.data.data.mock.length > 0 ? (
             activeStrategiesAnalytics.data.data.mock.map((strategy) => {
-              const isProfitable = strategy.totalProfitLoss >= 0;
+              const isProfitable = strategy.profit >= 0;
               const profitPercentage =
-                (strategy.totalProfitLoss / strategy.startingValue) * 100;
+                (strategy.profit / strategy.totalInvested) * 100;
 
               return (
-                <Card
-                  key={strategy.strategyType.shortName}
-                  className="shadow-sm"
-                >
+                <Card key={strategy._id} className="shadow-sm">
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
                       <div>
                         <CardDescription>
-                          {strategy.strategyType.fullName}
+                          {strategy.strategyTemplate.name}
                         </CardDescription>
                         <CardTitle className="text-xl">
-                          {strategy.tokenSymbol}
+                          {strategy.token.symbol}
                         </CardTitle>
                       </div>
                       <div className="px-3 py-1 rounded-full text-white text-xs font-medium bg-purple-600">
-                        {strategy.strategyType.shortName}
+                        {strategy.strategyTemplate.id}
                       </div>
                     </div>
                   </CardHeader>
@@ -398,7 +396,7 @@ const Dashboard = () => {
                           Current Value
                         </span>
                         <span className="font-medium">
-                          ${strategy.totalValue.toFixed(2)}
+                          ${strategy.currentValue.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -406,7 +404,7 @@ const Dashboard = () => {
                           Starting Value
                         </span>
                         <span className="font-medium">
-                          ${strategy.startingValue.toFixed(2)}
+                          ${strategy.totalInvested.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -419,7 +417,7 @@ const Dashboard = () => {
                           }`}
                         >
                           {isProfitable ? "+" : "-"}$
-                          {Math.abs(strategy.totalProfitLoss).toFixed(2)} (
+                          {Math.abs(strategy.profit).toFixed(2)} (
                           {profitPercentage.toFixed(2)}%)
                         </span>
                       </div>
@@ -427,10 +425,10 @@ const Dashboard = () => {
                   </CardContent>
                   <CardFooter className="px-5 pt-0 pb-4">
                     <Link
-                      to={`/app/strategies/${strategy.id}`}
+                      to={`/app/strategies/${strategy._id}`}
                       state={{
                         source: "dashboard",
-                        strategyId: strategy.id,
+                        strategyId: strategy._id,
                       }}
                       className="w-full"
                     >

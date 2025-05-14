@@ -78,17 +78,109 @@ export type UserStatistics = {
   worstPerformingStrategy: string | null;
 };
 
+/**
+ * active
+: 
+true
+amount
+: 
+1000
+analytics
+: 
+averageBuyPrice
+: 
+0
+currentTokenPrice
+: 
+0.999942
+portfolioValue
+: 
+0
+profit
+: 
+0
+profitPercentage
+: 
+null
+tokensHeld
+: 
+0
+totalTransactions
+: 
+0
+[[Prototype]]
+: 
+Object
+chain
+: 
+"injective"
+createdAt
+: 
+"2025-05-13T19:13:48.557Z"
+currentValue
+: 
+0
+frequency
+: 
+"test_minute"
+initialAmount
+: 
+1000
+invested
+: 
+1000
+profit
+: 
+0
+profitPercentage
+: 
+null
+strategyTemplate
+: 
+{id: 'SDCA', name: 'Smart Dollar Cost Averaging', type: 'dca', description: 'DCA reduces the impact of volatility by investing … at regular intervals, regardless of asset price.'}
+token
+: 
+{symbol: 'USDT', name: 'Tether', currentPrice: 0.999942}
+totalInvested
+: 
+0
+_id
+: 
+"682399ec7f41b4978187af43"
+ */
 export type ActiveStrategyAnalytics = {
   chain: string;
-  totalProfitLoss: number;
-  totalValue: number;
-  startingValue: number;
-  tokenSymbol: string;
-  strategyType: {
-    fullName: string;
-    shortName: string;
+  _id: string;
+  currentValue: number;
+  token: {
+    symbol: string;
+    name: string;
+    currentPrice: number;
   };
-  id: string;
+  strategyTemplate: {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+  };
+  totalInvested: number;
+  invested: number;
+  profit: number;
+  profitPercentage: number;
+  initialAmount: number;
+  frequency: string;
+  amount: number;
+  createdAt: string;
+  active: boolean;
+  analytics: {
+    tokensHeld: number;
+    averageBuyPrice: number;
+    currentTokenPrice: number;
+    portfolioValue: number;
+    profit: number;
+    profitPercentage: number;
+    totalTransactions: number;
+  };
 };
 
 export type PlatformStatistics = {
