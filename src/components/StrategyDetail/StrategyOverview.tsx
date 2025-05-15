@@ -120,7 +120,7 @@ export const StrategyOverview = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Card className="shadow-sm">
           <CardHeader className="pb-2 pt-4 px-5">
-            <CardDescription>Current Value</CardDescription>
+            <CardDescription>Current Position</CardDescription>
             <CardTitle className="text-xl">
               {formatCurrency(userStrategy.currentValue)}
             </CardTitle>
@@ -129,7 +129,7 @@ export const StrategyOverview = () => {
 
         <Card className="shadow-sm">
           <CardHeader className="pb-2 pt-4 px-5">
-            <CardDescription>Starting Value</CardDescription>
+            <CardDescription>Total Invested</CardDescription>
             <CardTitle className="text-xl">
               {formatCurrency(userStrategy.totalInvested)}
             </CardTitle>
