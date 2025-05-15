@@ -11,12 +11,11 @@ import {
   Area,
   Tooltip,
 } from "recharts";
-import { ChartData } from "./types";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
 import { useParams, useSearchParams } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -85,6 +84,8 @@ export const StrategyChart = () => {
     enabled: !!strategyId && !!range,
   });
 
+  console.log(chartData);
+
   // Format dates for chart
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -139,7 +140,7 @@ export const StrategyChart = () => {
     );
   }
 
-  if (!chartData || chartData.data.length === 0) {
+  if (!isChartLoading && (!chartData || chartData.data.length === 0)) {
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
