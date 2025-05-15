@@ -141,10 +141,10 @@ export const StrategyOverview = () => {
             <CardDescription>Profit/Loss</CardDescription>
             <CardTitle
               className={`text-xl ${
-                userStrategy.profit > 0 ? "text-green-500" : "text-red-500"
+                userStrategy.profit >= 0 ? "text-green-500" : "text-red-500"
               }`}
             >
-              {userStrategy.profit > 0 ? "+" : "-"}
+              {userStrategy.profit >= 0 ? "+" : "-"}
               {formatCurrency(Math.abs(userStrategy.profit))}
             </CardTitle>
           </CardHeader>

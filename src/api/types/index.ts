@@ -242,7 +242,8 @@ export type FrequencyOption =
   | "daily"
   | "weekly"
   | "monthly"
-  | "test_minute";
+  | "test_minute"
+  | "test_10_seconds";
 export type ThresholdComparison = "lessThan" | "greaterThan" | "equals";
 
 export type DcaPlanCustomSettings = {

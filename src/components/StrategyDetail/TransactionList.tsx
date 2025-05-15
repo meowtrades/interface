@@ -117,7 +117,10 @@ export const TransactionList = () => {
                   const type = getTransactionType(transaction.type);
                   return (
                     <tr key={index} className="border-b border-slate-100">
-                      <td className="py-4 px-5 text-slate-700">
+                      <td
+                        className="py-4 px-5 text-slate-700"
+                        title={new Date(transaction.createdAt).toLocaleString()}
+                      >
                         {formatDate(transaction.createdAt)}
                       </td>
                       <td className="py-4 px-5">

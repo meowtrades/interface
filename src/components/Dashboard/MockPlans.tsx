@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
+import { PlanCard } from "./PlanCard";
 
 const MockPlans = () => {
   const { data: activeStrategiesAnalytics, isLoading } = useQuery({
@@ -45,77 +46,7 @@ const MockPlans = () => {
           </>
         ) : activeStrategiesAnalytics?.mock.length > 0 ? (
           activeStrategiesAnalytics.mock.map((strategy) => {
-            const isProfitable = strategy.profit >= 0;
-            const profitPercentage =
-              (strategy.profit / strategy.totalInvested) * 100;
-
-            return (
-              <Card key={strategy._id} className="shadow-sm">
-                <CardHeader className="pb-2 pt-4 px-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardDescription>
-                        {strategy.strategyTemplate.name}
-                      </CardDescription>
-                      <CardTitle className="text-xl">
-                        {strategy.token.symbol}
-                      </CardTitle>
-                    </div>
-                    <div className="px-3 py-1 rounded-full text-white text-xs font-medium bg-purple-600">
-                      {strategy.strategyTemplate.id}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-5 pb-3">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Current Value
-                      </span>
-                      <span className="font-medium">
-                        ${strategy.currentValue.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Starting Value
-                      </span>
-                      <span className="font-medium">
-                        ${strategy.totalInvested.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-sm">
-                        Profit/Loss
-                      </span>
-                      <span
-                        className={`font-medium ${
-                          isProfitable ? "text-green-500" : "text-red-500"
-                        }`}
-                      >
-                        {isProfitable ? "+" : "-"}$
-                        {Math.abs(strategy.profit).toFixed(2)} (
-                        {profitPercentage.toFixed(2)}%)
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="px-5 pt-0 pb-4">
-                  <Link
-                    to={`/app/strategies/${strategy._id}`}
-                    state={{
-                      source: "dashboard",
-                      strategyId: strategy._id,
-                    }}
-                    className="w-full"
-                  >
-                    <Button variant="outline" className="w-full">
-                      View Details
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            );
+            return <PlanCard key={strategy._id} {...strategy} />;
           })
         ) : (
           <Card className="border-dashed border-2 border-slate-200 shadow-sm">
