@@ -328,7 +328,7 @@ const Strategies = () => {
                       </div>
                       <div className="bg-slate-50 p-3 rounded">
                         <div className="text-sm text-slate-500">
-                          Current Value
+                          Current Position
                         </div>
                         <div className="font-medium">
                           ${userStrategy.currentValue}
