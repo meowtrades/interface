@@ -8,6 +8,7 @@ import { Transaction } from "@/api/types/dtos";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { AxiosError } from "axios";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 
 export const TransactionList = () => {
   const { strategyId } = useParams();
@@ -92,6 +93,7 @@ export const TransactionList = () => {
               <div className="p-4">Error loading transactions</div>
             )
           ) : transactionsData?.data && transactionsData.data.length > 0 ? (
+
             <table className="w-full min-w-max">
               <thead>
                 <tr className="border-b border-slate-200">
@@ -112,6 +114,7 @@ export const TransactionList = () => {
                   </th>
                 </tr>
               </thead>
+              <TooltipProvider>
               <tbody>
                 {transactionsData.data.map((transaction, index) => {
                   const type = getTransactionType(transaction.type);
@@ -119,9 +122,16 @@ export const TransactionList = () => {
                     <tr key={index} className="border-b border-slate-100">
                       <td
                         className="py-4 px-5 text-slate-700"
-                        title={new Date(transaction.createdAt).toLocaleString()}
+                        // title={new Date(transaction.createdAt).toLocaleString()}
                       >
-                        {formatDate(transaction.createdAt)}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            {formatDate(transaction.createdAt)}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {new Date(transaction.createdAt).toLocaleString()}
+                          </TooltipContent>
+                        </Tooltip>
                       </td>
                       <td className="py-4 px-5">
                         <span
@@ -144,7 +154,9 @@ export const TransactionList = () => {
                   );
                 })}
               </tbody>
+              </TooltipProvider>
             </table>
+
           ) : (
             <div className="p-4">No transactions available.</div>
           )}
