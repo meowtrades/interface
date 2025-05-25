@@ -51,6 +51,18 @@ export const TransactionList = () => {
     }).format(date);
   };
 
+  // Format date and time for tooltips
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
   // Format currency values
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -129,7 +141,7 @@ export const TransactionList = () => {
                             {formatDate(transaction.createdAt)}
                           </TooltipTrigger>
                           <TooltipContent>
-                            {new Date(transaction.createdAt).toLocaleString()}
+                            {formatDateTime(transaction.createdAt)}
                           </TooltipContent>
                         </Tooltip>
                       </td>
@@ -141,8 +153,16 @@ export const TransactionList = () => {
                         </span>
                       </td>
                       <td className="py-4 px-5 text-slate-700">
-                        {transaction.to.amount.toFixed(5)}{" "}
-                        {transaction.to.token}
+                        <Tooltip>
+                        <TooltipTrigger>
+                          {transaction.from.amount.toFixed(3)}{" "}
+                          {transaction.from.token}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Sold: {transaction.from.amount}{" "}
+                          {transaction.from.token}
+                        </TooltipContent>
+                        </Tooltip>
                       </td>
                       <td className="py-4 px-5 text-slate-700">
                         {formatCurrency(transaction.price)}
