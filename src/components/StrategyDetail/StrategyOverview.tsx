@@ -38,6 +38,42 @@ export const StrategyOverview = () => {
 
   console.log(userStrategy);
 
+  const { refetch: refetchChart } = useQuery({
+    queryKey: ["chart", strategyId, range],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      const priceData = await api.strategies.getChartData(strategyId);
+
+      if (priceData.status === 202) {
+        return {
+          waiting: true,
+        };
+      }
+
+      const data = priceData.data.data.map((i) => ({
+        date: new Date(i.timestamp * 1000).toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+        }),
+        value: i.price,
+      }));
+
+      return { waiting: false, data };
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: !!strategyId && !!range,
+  });
+
+  const refreshData = async () => {
+    try {
+      await refetchChart();
+    } catch (error) {
+      console.error("Failed to refresh chart data:", error);
+    }
+  };
+
   useEffect(() => {
     const ranges = getValidRanges(userStrategy.frequency as Frequency);
     setValidRanges(ranges);
@@ -103,7 +139,12 @@ export const StrategyOverview = () => {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={refreshData}
+          >
             <RefreshCcw size={14} />
             Refresh
           </Button>

@@ -8,7 +8,12 @@ import { Transaction } from "@/api/types/dtos";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { AxiosError } from "axios";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
 
 export const TransactionList = () => {
   const { strategyId } = useParams();
@@ -19,7 +24,7 @@ export const TransactionList = () => {
     isLoading,
     error,
   } = useQuery<
-    any,
+    unknown,
     AxiosError,
     {
       data: Transaction[];
@@ -60,6 +65,8 @@ export const TransactionList = () => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     }).format(date);
   };
 
@@ -105,7 +112,6 @@ export const TransactionList = () => {
               <div className="p-4">Error loading transactions</div>
             )
           ) : transactionsData?.data && transactionsData.data.length > 0 ? (
-
             <table className="w-full min-w-max">
               <thead>
                 <tr className="border-b border-slate-200">
@@ -127,56 +133,55 @@ export const TransactionList = () => {
                 </tr>
               </thead>
               <TooltipProvider>
-              <tbody>
-                {transactionsData.data.map((transaction, index) => {
-                  const type = getTransactionType(transaction.type);
-                  return (
-                    <tr key={index} className="border-b border-slate-100">
-                      <td
-                        className="py-4 px-5 text-slate-700"
-                        // title={new Date(transaction.createdAt).toLocaleString()}
-                      >
-                        <Tooltip>
-                          <TooltipTrigger>
-                            {formatDate(transaction.createdAt)}
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {formatDateTime(transaction.createdAt)}
-                          </TooltipContent>
-                        </Tooltip>
-                      </td>
-                      <td className="py-4 px-5">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${type.color}`}
+                <tbody>
+                  {transactionsData.data.map((transaction, index) => {
+                    const type = getTransactionType(transaction.type);
+                    return (
+                      <tr key={index} className="border-b border-slate-100">
+                        <td
+                          className="py-4 px-5 text-slate-700"
+                          // title={new Date(transaction.createdAt).toLocaleString()}
                         >
-                          {type.label}
-                        </span>
-                      </td>
-                      <td className="py-4 px-5 text-slate-700">
-                        <Tooltip>
-                        <TooltipTrigger>
-                          {transaction.from.amount.toFixed(3)}{" "}
-                          {transaction.from.token}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Sold: {transaction.from.amount}{" "}
-                          {transaction.from.token}
-                        </TooltipContent>
-                        </Tooltip>
-                      </td>
-                      <td className="py-4 px-5 text-slate-700">
-                        {formatCurrency(transaction.price)}
-                      </td>
-                      <td className="py-4 px-5 text-right text-slate-700">
-                        {formatCurrency(transaction.value)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              {formatDate(transaction.createdAt)}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {formatDateTime(transaction.createdAt)}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="py-4 px-5">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${type.color}`}
+                          >
+                            {type.label}
+                          </span>
+                        </td>
+                        <td className="py-4 px-5 text-slate-700">
+                          <Tooltip>
+                            <TooltipTrigger>
+                              {transaction.from.amount.toFixed(3)}{" "}
+                              {transaction.from.token}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Sold: {transaction.from.amount}{" "}
+                              {transaction.from.token}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="py-4 px-5 text-slate-700">
+                          {formatCurrency(transaction.price)}
+                        </td>
+                        <td className="py-4 px-5 text-right text-slate-700">
+                          {formatCurrency(transaction.value)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </TooltipProvider>
             </table>
-
           ) : (
             <div className="p-4">No transactions available.</div>
           )}
