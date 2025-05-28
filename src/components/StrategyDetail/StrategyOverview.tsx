@@ -11,11 +11,12 @@ import { Grid, RefreshCcw, RefreshCw, TrendingUp } from "lucide-react";
 import { StrategyChart } from "./StrategyChart";
 import { UserStrategy } from "./types";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/api";
+import { api, Transaction } from "@/api";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { AxiosError } from "axios";
 
 export const StrategyOverview = () => {
   const { strategyId } = useParams();
@@ -25,18 +26,44 @@ export const StrategyOverview = () => {
   >([]);
   const range = searchParams.get("range");
 
-  const { data: userStrategy } = useQuery<UserStrategy>({
-    queryKey: ["userStrategy", strategyId],
-    queryFn: async () => {
-      if (!strategyId) throw new Error("Strategy ID is required");
-      const {
-        data: { data },
-      } = await api.strategies.getDetails(strategyId);
-      return data;
-    },
-  });
+  const { data: userStrategy, refetch: refetchUserStrategy } =
+    useQuery<UserStrategy>({
+      queryKey: ["userStrategy", strategyId],
+      queryFn: async () => {
+        if (!strategyId) throw new Error("Strategy ID is required");
+        const {
+          data: { data },
+        } = await api.strategies.getDetails(strategyId);
+        return data;
+      },
+    });
 
   console.log(userStrategy);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { refetch: refetchTransactions } = useQuery<
+    unknown,
+    AxiosError,
+    {
+      data: Transaction[];
+      pagination: {
+        totalPages: number;
+      };
+    }
+  >({
+    queryKey: ["transactions", strategyId, currentPage],
+    queryFn: async () => {
+      return (
+        await api.strategies.getTransactions(strategyId, {
+          page: currentPage,
+          limit: 5,
+        })
+      ).data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: !!strategyId,
+  });
 
   const { refetch: refetchChart } = useQuery({
     queryKey: ["chart", strategyId, range],
@@ -69,6 +96,8 @@ export const StrategyOverview = () => {
   const refreshData = async () => {
     try {
       await refetchChart();
+      await refetchUserStrategy();
+      await refetchTransactions();
     } catch (error) {
       console.error("Failed to refresh chart data:", error);
     }
