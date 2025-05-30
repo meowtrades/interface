@@ -161,12 +161,12 @@ export const TransactionList = () => {
                         <td className="py-4 px-5 text-slate-700">
                           <Tooltip>
                             <TooltipTrigger>
-                              {transaction.from.amount.toFixed(3)}{" "}
-                              {transaction.from.token}
+                              {transaction.to.amount.toFixed(3)}{" "}
+                              {transaction.to.token}
                             </TooltipTrigger>
                             <TooltipContent>
-                              Sold: {transaction.from.amount}{" "}
-                              {transaction.from.token}
+                              Sold: {transaction.to.amount}{" "}
+                              {transaction.to.token}
                             </TooltipContent>
                           </Tooltip>
                         </td>
