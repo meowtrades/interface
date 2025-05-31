@@ -145,15 +145,7 @@ const MockTrades = () => {
 
   const mockTradeMutation = useCreateMockTrade();
 
-  const { data: allData } = useUserDcaPlans();
-
   const stopMutation = useStopMockTrade();
-
-  const AllMockTrades = allData?.filter((trade) => trade.chain === "mock");
-
-  const activeMockTrades = AllMockTrades?.filter((trade) => trade.isActive);
-
-  console.log("activeMockTrades", activeMockTrades);
 
   const handleTimeframeChange = (timeframe) => {
     setChartTimeframe(timeframe);
@@ -183,15 +175,14 @@ const MockTrades = () => {
   });
 
   const {
-    data: activeStrategiesAnalytics,
-    isLoading: activeStrategiesAnalyticsLoading,
+    data: activeMockStrategiesWithAnalytics,
+    isLoading: isLoadingActiveMockStrategiesAnalytics,
   } = useQuery({
-    queryKey: ["activeStrategiesAnalytics"],
+    queryKey: ["activeStrategiesAnalytics", "mock"],
     queryFn: async () => {
       const {
         data: { data },
-      } = await api.analytics.getActiveStrategiesAnalytics();
-      // zip both arrays according to time of creation
+      } = await api.analytics.getActiveMockStrategies();
       return data;
     },
     refetchOnWindowFocus: false,
@@ -496,13 +487,13 @@ const MockTrades = () => {
       <Tabs defaultValue="active" className="mb-2">
         <TabsContent value="active" className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeStrategiesAnalyticsLoading ? (
+            {isLoadingActiveMockStrategiesAnalytics ? (
               <>
                 <Skeleton className="h-80 w-full" />
                 <Skeleton className="h-80 w-full" />
               </>
             ) : (
-              activeStrategiesAnalytics.mock?.map((trade) => {
+              activeMockStrategiesWithAnalytics?.map((trade) => {
                 const startedAt = Intl.DateTimeFormat("en-US", {
                   year: "numeric",
                   month: "short",

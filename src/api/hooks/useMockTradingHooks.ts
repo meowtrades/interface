@@ -30,10 +30,10 @@ export const useCreateMockTrade = () => {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+        queryKey: ["activeStrategiesAnalytics", "mock"], // Invalidate the list of mock trades
       });
       await queryClient.refetchQueries({
-        queryKey: ["activeStrategiesAnalytics"],
+        queryKey: ["activeStrategiesAnalytics", "mock"],
       });
       // Invalidate old data
     },
@@ -94,10 +94,10 @@ export const useStopMockTrade = () => {
     onSuccess: async () => {
       // Invalidate the list of mock trades to refresh data
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+        queryKey: ["activeStrategiesAnalytics", "mock"], // Invalidate the list of mock trades
       });
       await queryClient.refetchQueries({
-        queryKey: ["activeStrategiesAnalytics"],
+        queryKey: ["activeStrategiesAnalytics", "mock"],
       });
     },
   });

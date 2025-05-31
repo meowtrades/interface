@@ -36,10 +36,10 @@ export const useCreateDcaPlan = () => {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of DCA plans
+        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of DCA plans
       });
       await queryClient.refetchQueries({
-        queryKey: ["activeStrategiesAnalytics"],
+        queryKey: ["activeStrategiesAnalytics", "real"],
       });
     },
   });
@@ -60,11 +60,11 @@ export const useStopDcaPlan = () => {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of real trades
       });
 
       await queryClient.refetchQueries({
-        queryKey: ["activeStrategiesAnalytics"],
+        queryKey: ["activeStrategiesAnalytics", "real"],
       });
 
       toast.success("Plan stopped successfully");

@@ -18,9 +18,9 @@ import { PlanCard } from "./PlanCard";
 
 const MockPlans = () => {
   const { data: activeStrategiesAnalytics, isLoading } = useQuery({
-    queryKey: ["activeStrategiesAnalytics"],
+    queryKey: ["activeStrategiesAnalytics", "mock"],
     queryFn: async () => {
-      const { data } = await api.analytics.getActiveStrategiesAnalytics();
+      const { data } = await api.analytics.getActiveMockStrategies();
       return data.data;
     },
     refetchOnWindowFocus: false,
@@ -44,8 +44,8 @@ const MockPlans = () => {
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
           </>
-        ) : activeStrategiesAnalytics?.mock.length > 0 ? (
-          activeStrategiesAnalytics.mock.map((strategy) => {
+        ) : activeStrategiesAnalytics?.length > 0 ? (
+          activeStrategiesAnalytics.map((strategy) => {
             return <PlanCard key={strategy._id} {...strategy} />;
           })
         ) : (

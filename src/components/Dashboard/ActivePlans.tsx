@@ -18,9 +18,9 @@ import { PlanCard } from "./PlanCard";
 
 const ActivePlans = () => {
   const { data: activeStrategiesAnalytics, isLoading } = useQuery({
-    queryKey: ["activeStrategiesAnalytics"],
+    queryKey: ["activeStrategiesAnalytics", "real"],
     queryFn: async () => {
-      const { data } = await api.analytics.getActiveStrategiesAnalytics();
+      const { data } = await api.analytics.getActiveLiveStrategies();
       return data.data;
     },
     refetchOnWindowFocus: false,
@@ -44,8 +44,8 @@ const ActivePlans = () => {
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
           </>
-        ) : activeStrategiesAnalytics?.real.length > 0 ? (
-          activeStrategiesAnalytics.real.map((strategy) => (
+        ) : activeStrategiesAnalytics?.length > 0 ? (
+          activeStrategiesAnalytics.map((strategy) => (
             <PlanCard key={strategy._id} {...strategy} />
           ))
         ) : (
