@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+import { act, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,10 +51,6 @@ const Strategies = () => {
 
   const { data: allDcaActiveStrategies } = useUserDcaPlans();
 
-  // console.log("dca", allDcaActiveStrategies);
-
-  // console.log(allDcaActiveStrategies);
-
   const dcaActiveStrategies = allDcaActiveStrategies?.filter(
     (us) => us.isActive
   );
@@ -75,8 +71,6 @@ const Strategies = () => {
   });
 
   console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
-
-  // console.log(dcaActiveStrategies);
 
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
@@ -120,23 +114,13 @@ const Strategies = () => {
 
   // Switch to available strategies tab
   const switchToAvailableTab = () => {
-    const availableTabTrigger = document.querySelector(
-      '[data-state="inactive"][value="available"]'
+    setSearchParams(
+      { tab: "available" },
+      {
+        replace: true,
+      }
     );
-    if (availableTabTrigger && availableTabTrigger instanceof HTMLElement) {
-      availableTabTrigger.click();
-    }
   };
-
-  if (activeStrategiesAnalyticsLoading) {
-    return (
-      <AppLayout>
-        <div className="p-4 bg-slate-50 text-slate-600 rounded-md">
-          Loading active strategies analytics...
-        </div>
-      </AppLayout>
-    );
-  }
 
   if (error) {
     return (
@@ -202,7 +186,7 @@ const Strategies = () => {
         </Select>
       </div>
 
-      <Tabs defaultValue={tab} className="mb-8">
+      <Tabs value={tab} className="mb-8">
         <TabsList>
           <TabsTrigger
             onClick={() =>
@@ -228,15 +212,26 @@ const Strategies = () => {
             }
             value="active"
           >
-            Active Strategies (
-            {activeStrategiesAnalytics?.real.length +
-              activeStrategiesAnalytics?.mock.length}
-            )
+            Live Strategies ({activeStrategiesAnalytics?.real.length ?? 0})
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "paper" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="paper"
+          >
+            Paper Trading Strategies (
+            {activeStrategiesAnalytics?.mock.length ?? 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="available" className="pt-6">
-          {isLoading ? (
+          {activeStrategiesAnalyticsLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-96 w-full" />
               <Skeleton className="h-96 w-full" />
@@ -270,17 +265,14 @@ const Strategies = () => {
         </TabsContent>
 
         <TabsContent value="active" className="pt-6">
-          {isLoading ? (
+          {activeStrategiesAnalyticsLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-80 w-full" />
               <Skeleton className="h-80 w-full" />
             </div>
-          ) : userStrategies.length > 0 ? (
+          ) : activeStrategiesAnalytics!.real.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {[
-                ...activeStrategiesAnalytics?.real,
-                ...activeStrategiesAnalytics?.mock,
-              ].map((userStrategy) => {
+              {activeStrategiesAnalytics!.real.map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}
@@ -360,14 +352,114 @@ const Strategies = () => {
             </div>
           ) : (
             <div className="p-12 text-center bg-slate-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">No active strategies</h3>
+              <h3 className="text-lg font-medium mb-2">No Live strategies</h3>
               <p className="text-slate-600 mb-4">
-                You haven't started any strategies yet. Go to the Available
+                You haven't started any live strategies yet. Go to the Available
                 Strategies tab to get started.
               </p>
+
               <Button variant="outline" onClick={switchToAvailableTab}>
                 View Available Strategies
               </Button>
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="paper" className="pt-6">
+          {activeStrategiesAnalyticsLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Skeleton className="h-80 w-full" />
+              <Skeleton className="h-80 w-full" />
+            </div>
+          ) : activeStrategiesAnalytics!.mock.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {activeStrategiesAnalytics!.mock.map((userStrategy) => {
+                return (
+                  <div
+                    key={userStrategy._id}
+                    className="border rounded-lg p-6 bg-white"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                          {userStrategy.strategyTemplate.id === "SDCA" && (
+                            <RefreshCw size={20} />
+                          )}
+                          {userStrategy.strategyTemplate.id === "Grid" && (
+                            <Grid size={20} />
+                          )}
+                          {userStrategy.strategyTemplate.id ===
+                            "TrendingUp" && <TrendingUp size={20} />}
+                        </div>
+                        <div>
+                          <h3 className="font-medium">
+                            {userStrategy.strategyTemplate.name}
+                          </h3>
+                          <p className="text-sm text-slate-500">
+                            Paper Trade • {userStrategy.token.symbol}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          userStrategy.profitPercentage >= 0
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
+                      >
+                        {userStrategy.profitPercentage >= 0 ? "+" : ""}
+                        {userStrategy.profitPercentage}%
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">Invested</div>
+                        <div className="font-medium">
+                          ${userStrategy.totalInvested}{" "}
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">
+                          Current Position
+                        </div>
+                        <div className="font-medium">
+                          ${userStrategy.currentValue}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => stopMutatoin.mutate(userStrategy._id)}
+                        className="flex-1"
+                        variant="destructive"
+                      >
+                        Stop Strategy
+                      </Button>
+                      <Link
+                        to={`/app/strategies/${userStrategy._id}`}
+                        state={{ planId: userStrategy._id }}
+                        className="flex-1"
+                      >
+                        <Button className="w-full" variant="outline">
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-slate-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">No Paper Trades</h3>
+              <p className="text-slate-600 mb-4">
+                You haven't started any paper trades. Go to the Available
+                Strategies tab to get started.
+              </p>
+              <Link to="/app/mock-trades">
+                <Button variant="outline">View Available Strategies</Button>
+              </Link>
             </div>
           )}
         </TabsContent>
