@@ -47,13 +47,7 @@ const Strategies = () => {
     null
   );
 
-  const stopMutatoin = useStopDcaPlan();
-
-  const { data: allDcaActiveStrategies } = useUserDcaPlans();
-
-  const dcaActiveStrategies = allDcaActiveStrategies?.filter(
-    (us) => us.isActive
-  );
+  const stopDcaPlanMutation = useStopDcaPlan();
 
   const {
     data: activeStrategiesAnalytics,
@@ -329,7 +323,9 @@ const Strategies = () => {
 
                     <div className="flex gap-3">
                       <Button
-                        onClick={() => stopMutatoin.mutate(userStrategy._id)}
+                        onClick={() =>
+                          stopDcaPlanMutation.mutate(userStrategy._id)
+                        }
                         className="flex-1"
                         variant="destructive"
                       >
@@ -429,7 +425,9 @@ const Strategies = () => {
 
                     <div className="flex gap-3">
                       <Button
-                        onClick={() => stopMutatoin.mutate(userStrategy._id)}
+                        onClick={() =>
+                          stopDcaPlanMutation.mutate(userStrategy._id)
+                        }
                         className="flex-1"
                         variant="destructive"
                       >

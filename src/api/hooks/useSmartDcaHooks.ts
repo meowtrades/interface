@@ -1,3 +1,5 @@
+/** @format */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
 import {
@@ -34,7 +36,7 @@ export const useCreateDcaPlan = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: SMART_DCA_KEYS.plans(),
+        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of DCA plans
       });
     },
   });
@@ -55,7 +57,7 @@ export const useStopDcaPlan = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: SMART_DCA_KEYS.plans(),
+        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of DCA plans
       });
 
       toast.success("Plan stopped successfully");

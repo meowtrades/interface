@@ -1,4 +1,6 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+/** @format */
+
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
 import { CreateMockTradeDto, MockTrade, StopMockTradeDto } from "../types";
 
@@ -14,6 +16,8 @@ export const MOCK_TRADING_KEYS = {
  * Create a new mock trade
  */
 export const useCreateMockTrade = () => {
+  const queryClient = new QueryClient();
+
   return useMutation({
     mutationFn: async (tradeData: CreateMockTradeDto) => {
       const response = await axiosInstance.post<MockTrade>(
@@ -21,6 +25,12 @@ export const useCreateMockTrade = () => {
         tradeData
       );
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+      });
+      // Invalidate old data
     },
   });
 };
@@ -75,6 +85,12 @@ export const useStopMockTrade = () => {
         `/mocktrades/${tradeId}/stop`
       );
       return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate the list of mock trades to refresh data
+      new QueryClient().invalidateQueries({
+        queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+      });
     },
   });
 };
