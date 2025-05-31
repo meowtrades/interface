@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -51,7 +53,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     },
     {
       icon: <CircleDollarSign size={20} />,
-      label: "Mock Trades",
+      label: "Paper Trades",
       path: "/app/mock-trades",
     },
     { icon: <Wallet size={20} />, label: "Wallet", path: "/app/wallet" },
