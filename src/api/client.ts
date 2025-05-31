@@ -69,6 +69,11 @@ export const api = {
           real: ActiveStrategyAnalytics[];
         };
       }>(`/user/analytics/strategies/active/analytics`),
+    getActivities: () => {
+      return axiosInstance.get<{ data: Transaction[] }>(
+        `/user/analytics/activities`
+      );
+    },
   },
   strategies: {
     getDetails: (strategyId: string) =>

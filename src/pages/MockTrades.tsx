@@ -230,7 +230,7 @@ const MockTrades = () => {
           <CardHeader>
             <CardTitle>Start a Paper Trade</CardTitle>
             <CardDescription>
-              Simulate how a strategy would perform with $100 in virtual funds
+              Simulate how a strategy would perform with virtual funds
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -359,7 +359,7 @@ const MockTrades = () => {
           <CardHeader>
             <CardTitle>SDCA Performance</CardTitle>
             <CardDescription>
-              How a $1000 investment would have performed over time
+              How a $1000 daily investment would have performed over time
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,7 +48,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     },
     {
       icon: <LineChart size={20} />,
-      label: "Strategies",
+      label: "Live Strategies",
       path: "/app/strategies",
     },
     {
@@ -131,7 +131,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <div className="flex items-center gap-5">
             <button className="p-2.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
               <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-meow-paw rounded-full"></span>
+              {/* <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-meow-paw rounded-full"></span> */}
             </button>
 
             <div className="flex items-center gap-3">

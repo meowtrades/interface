@@ -12,11 +12,13 @@ export const MOCK_TRADING_KEYS = {
     [...MOCK_TRADING_KEYS.all, "details", tradeId] as const,
 };
 
+const queryClient = new QueryClient();
+
 /**
  * Create a new mock trade
  */
 export const useCreateMockTrade = () => {
-  const queryClient = new QueryClient();
+  // const queryClient = new QueryClient();
 
   return useMutation({
     mutationFn: async (tradeData: CreateMockTradeDto) => {
@@ -26,9 +28,12 @@ export const useCreateMockTrade = () => {
       );
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+      });
+      await queryClient.refetchQueries({
+        queryKey: ["activeStrategiesAnalytics"],
       });
       // Invalidate old data
     },
@@ -86,10 +91,13 @@ export const useStopMockTrade = () => {
       );
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       // Invalidate the list of mock trades to refresh data
-      new QueryClient().invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics"], // Invalidate the list of mock trades
+      });
+      await queryClient.refetchQueries({
+        queryKey: ["activeStrategiesAnalytics"],
       });
     },
   });
