@@ -50,21 +50,34 @@ const Strategies = () => {
   const stopDcaPlanMutation = useStopDcaPlan();
 
   const {
-    data: activeStrategiesAnalytics,
-    isLoading: activeStrategiesAnalyticsLoading,
+    data: activeMockStrategiesAnalytics,
+    isLoading: isFetchingActiveMockStrategies,
   } = useQuery({
-    queryKey: ["activeStrategiesAnalytics"],
+    queryKey: ["activeStrategiesAnalytics", "mock"],
     queryFn: async () => {
       const {
         data: { data },
-      } = await api.analytics.getActiveStrategiesAnalytics();
-      // zip both arrays according to time of creation
+      } = await api.analytics.getActiveMockStrategies();
       return data;
     },
     refetchOnWindowFocus: false,
   });
 
-  console.log("activeStrategiesAnalytics", activeStrategiesAnalytics);
+  const {
+    data: activeRealStrategiesAnalytics,
+    isLoading: isFetchingActiveRealStrategies,
+  } = useQuery({
+    queryKey: ["activeStrategiesAnalytics", "real"],
+    queryFn: async () => {
+      const {
+        data: { data },
+      } = await api.analytics.getActiveLiveStrategies();
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  // console.log("activeStrategiesAnalytics", activeMockStrategiesAnalytics);
 
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
@@ -206,7 +219,7 @@ const Strategies = () => {
             }
             value="active"
           >
-            Live Strategies ({activeStrategiesAnalytics?.real.length ?? 0})
+            Live Strategies ({activeRealStrategiesAnalytics?.length ?? 0})
           </TabsTrigger>
           <TabsTrigger
             onClick={() =>
@@ -219,12 +232,12 @@ const Strategies = () => {
             }
             value="paper"
           >
-            Paper Trades ({activeStrategiesAnalytics?.mock.length ?? 0})
+            Paper Trades ({activeMockStrategiesAnalytics?.length ?? 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="available" className="pt-6">
-          {activeStrategiesAnalyticsLoading ? (
+          {isFetchingActiveMockStrategies ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-96 w-full" />
               <Skeleton className="h-96 w-full" />
@@ -258,14 +271,14 @@ const Strategies = () => {
         </TabsContent>
 
         <TabsContent value="active" className="pt-6">
-          {activeStrategiesAnalyticsLoading ? (
+          {isFetchingActiveRealStrategies ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-80 w-full" />
               <Skeleton className="h-80 w-full" />
             </div>
-          ) : activeStrategiesAnalytics!.real.length > 0 ? (
+          ) : activeRealStrategiesAnalytics!.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {activeStrategiesAnalytics!.real.map((userStrategy) => {
+              {activeRealStrategiesAnalytics!.map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}
@@ -360,14 +373,14 @@ const Strategies = () => {
           )}
         </TabsContent>
         <TabsContent value="paper" className="pt-6">
-          {activeStrategiesAnalyticsLoading ? (
+          {isFetchingActiveMockStrategies ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-80 w-full" />
               <Skeleton className="h-80 w-full" />
             </div>
-          ) : activeStrategiesAnalytics!.mock.length > 0 ? (
+          ) : activeMockStrategiesAnalytics!.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {activeStrategiesAnalytics!.mock.map((userStrategy) => {
+              {activeMockStrategiesAnalytics!.map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}

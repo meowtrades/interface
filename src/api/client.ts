@@ -69,6 +69,16 @@ export const api = {
           real: ActiveStrategyAnalytics[];
         };
       }>(`/user/analytics/strategies/active/analytics`),
+    getActiveMockStrategies: () => {
+      return axiosInstance.get<{
+        data: ActiveStrategyAnalytics[];
+      }>(`/user/analytics/strategies/active/mock`);
+    },
+    getActiveLiveStrategies: () => {
+      return axiosInstance.get<{
+        data: ActiveStrategyAnalytics[];
+      }>(`/user/analytics/strategies/active/live`);
+    },
     getActivities: () => {
       return axiosInstance.get<{ data: Transaction[] }>(
         `/user/analytics/activities`
