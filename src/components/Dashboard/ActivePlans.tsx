@@ -29,7 +29,7 @@ const ActivePlans = () => {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Active Plans</h2>
+        <h2 className="text-xl font-semibold">Live Strategies</h2>
         <Link
           to="/app/strategies"
           className="text-blue-600 text-sm flex items-center"

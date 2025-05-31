@@ -225,8 +225,7 @@ const Strategies = () => {
             }
             value="paper"
           >
-            Paper Trading Strategies (
-            {activeStrategiesAnalytics?.mock.length ?? 0})
+            Paper Trades ({activeStrategiesAnalytics?.mock.length ?? 0})
           </TabsTrigger>
         </TabsList>
 
