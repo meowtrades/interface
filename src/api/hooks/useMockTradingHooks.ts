@@ -2,7 +2,7 @@
 
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
-import { CreateMockTradeDto, MockTrade, StopMockTradeDto } from "../types";
+import { CreateMockTradeDto, MockTrade } from "../types";
 
 // Query keys for cache management
 export const MOCK_TRADING_KEYS = {
@@ -34,6 +34,7 @@ export const useCreateMockTrade = () => {
       });
       await queryClient.refetchQueries({
         queryKey: ["activeStrategiesAnalytics", "mock"],
+        exact: true,
       });
       // Invalidate old data
     },
@@ -95,9 +96,11 @@ export const useStopMockTrade = () => {
       // Invalidate the list of mock trades to refresh data
       queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "mock"], // Invalidate the list of mock trades
+        exact: true,
       });
       await queryClient.refetchQueries({
         queryKey: ["activeStrategiesAnalytics", "mock"],
+        exact: true,
       });
     },
   });

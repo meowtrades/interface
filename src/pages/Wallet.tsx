@@ -1,5 +1,7 @@
+/** @format */
+
 import { useEffect, useState } from "react";
-import { LoaderPinwheel, Wallet as WalletIcon } from "lucide-react";
+import { Wallet as WalletIcon } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import {
   Card,

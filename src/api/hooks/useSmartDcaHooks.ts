@@ -37,9 +37,11 @@ export const useCreateDcaPlan = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of DCA plans
+        exact: true,
       });
-      await queryClient.refetchQueries({
+      await queryClient.resetQueries({
         queryKey: ["activeStrategiesAnalytics", "real"],
+        exact: true,
       });
     },
   });
@@ -61,10 +63,12 @@ export const useStopDcaPlan = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of real trades
+        exact: true,
       });
 
       await queryClient.refetchQueries({
         queryKey: ["activeStrategiesAnalytics", "real"],
+        exact: true,
       });
 
       toast.success("Plan stopped successfully");

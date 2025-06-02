@@ -1,6 +1,6 @@
 /** @format */
 
-import { act, useState } from "react";
+import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,15 +20,13 @@ import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { api, DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
+import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
 const Strategies = () => {
   const {
     strategies,
     chains,
-    tokens,
-    userStrategies,
     isLoading,
     error,
     selectedChain,
@@ -36,7 +34,6 @@ const Strategies = () => {
     setSelectedChain,
     setSelectedToken,
     getSupportedTokensForChain,
-    getSupportedChainsForToken,
     getStrategiesForChainAndToken,
   } = useStrategies();
 
@@ -85,9 +82,6 @@ const Strategies = () => {
     : [];
 
   // Get supported chains for the current token
-  const supportedChains = selectedToken
-    ? getSupportedChainsForToken(selectedToken)
-    : [];
 
   // Get strategies for the current chain and token
   const availableStrategies =

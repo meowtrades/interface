@@ -15,6 +15,7 @@ import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
 import { useQueryClient } from "@tanstack/react-query";
+import Testnet from "./pages/Test";
 // Route guard for authenticated routes
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const { data, isPending, error, refetch } = authClient.useSession();
@@ -63,6 +64,15 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/test"
+          element={
+            <RequireAuth>
+              <Testnet />
+            </RequireAuth>
+          }
+        />
 
         {/* App routes */}
         <Route

@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+/** @format */
+
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -15,7 +17,6 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Cat, PawPrint } from "lucide-react";
 import MockTradingChart from "@/components/charts/MockTradingChart";
 
 // Define the global styles as a constant
@@ -263,26 +264,49 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section 
+      <section
         ref={heroRef}
         className="pt-32 pb-20 px-6 bg-gradient-to-b from-blue-500/10 via-blue-400/5 to-meow-cream relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-400/20 rounded-full filter blur-3xl"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-meow-paw/20 rounded-full filter blur-3xl"></div>
-        
+
         {/* Flowing lines effect */}
-        <div className="absolute top-1/4 left-[20%] w-12 h-12 bg-meow-paw/10 rounded-full animate-float" style={{animationDelay: '0.5s'}}></div>
-        <div className="absolute bottom-1/3 right-[38%] w-8 h-8 bg-meow-tabby/10 rounded-full animate-float" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 right-[30%] w-6 h-6 border border-meow-paw/20 rounded-full animate-float" style={{animationDelay: '1.5s'}}></div>
-        <div className="absolute bottom-1/4 left-[28%] w-10 h-10 border border-meow-tabby/20 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
-        
+        <div
+          className="absolute top-1/4 left-[20%] w-12 h-12 bg-meow-paw/10 rounded-full animate-float"
+          style={{ animationDelay: "0.5s" }}
+        ></div>
+        <div
+          className="absolute bottom-1/3 right-[38%] w-8 h-8 bg-meow-tabby/10 rounded-full animate-float"
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 right-[30%] w-6 h-6 border border-meow-paw/20 rounded-full animate-float"
+          style={{ animationDelay: "1.5s" }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 left-[28%] w-10 h-10 border border-meow-tabby/20 rounded-full animate-float"
+          style={{ animationDelay: "2s" }}
+        ></div>
+
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="none">
-            <path d="M0,800 C300,700 600,750 1200,600 L1200,0 L0,0 Z" fill="url(#blue-gradient)" opacity="0.2">
-              <animate attributeName="d" 
-                dur="20s" 
-                repeatCount="indefinite" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="100%"
+            height="100%"
+            viewBox="0 0 1200 800"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,800 C300,700 600,750 1200,600 L1200,0 L0,0 Z"
+              fill="url(#blue-gradient)"
+              opacity="0.2"
+            >
+              <animate
+                attributeName="d"
+                dur="20s"
+                repeatCount="indefinite"
                 values="
                   M0,800 C300,700 600,750 1200,600 L1200,0 L0,0 Z;
                   M0,800 C500,650 800,700 1200,550 L1200,0 L0,0 Z;
@@ -291,7 +315,13 @@ const Index = () => {
               />
             </path>
             <defs>
-              <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient
+                id="blue-gradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="#2563EB" />
                 <stop offset="100%" stopColor="#1E40AF" />
               </linearGradient>
@@ -299,7 +329,7 @@ const Index = () => {
           </svg>
         </div>
 
-      {/* Floating elements */}
+        {/* Floating elements */}
         <div className="container mx-auto relative z-10">
           <div className="max-w-3xl mx-auto text-center animate-on-scroll">
             <div className="mb-10 flex justify-center">

@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -30,13 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import {
-  TrendingUp,
-  TrendingDown,
-  Plus,
-  AlertCircle,
-  BarChart2,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   AreaChart,
@@ -52,7 +46,6 @@ import {
   axiosInstance,
   useCreateMockTrade,
   useStopMockTrade,
-  useUserDcaPlans,
 } from "@/api";
 import { Frequency, RiskLevel } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
