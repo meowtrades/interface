@@ -65,14 +65,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/test"
-          element={
-            <RequireAuth>
-              <Testnet />
-            </RequireAuth>
-          }
-        />
+        <Route path="/test" element={<Testnet />} />
 
         {/* App routes */}
         <Route
