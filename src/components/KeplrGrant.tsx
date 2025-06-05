@@ -1,21 +1,18 @@
 /** @format */
 
-import {
-  getEthereumAddress,
-  getGenericAuthorizationFromMessageType,
-  MsgGrant,
-  MsgSend,
-} from "@injectivelabs/sdk-ts";
-import { ChainId } from "@injectivelabs/ts-types";
-import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
-import { WalletStrategy } from "@injectivelabs/wallet-strategy";
+import { MsgGrant } from "@injectivelabs/sdk-ts";
+import { Network } from "@injectivelabs/networks";
+import { getNetworkEndpoints } from "@injectivelabs/networks";
+import { getGenericAuthorizationFromMessageType } from "@injectivelabs/sdk-ts";
 import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
+import { ChainId } from "@injectivelabs/ts-types";
 import { Button } from "./ui/button";
+import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 
 declare global {
   interface Window {
-    leap?: {
+    keplr?: {
       enable: (chainId: string) => Promise<void>;
       getAccounts: () => Promise<{ address: string }[]>;
       signAndBroadcast: (
@@ -28,18 +25,15 @@ declare global {
   }
 }
 
-const LeapGrant = () => {
+const KeplGrant = () => {
   const run = async () => {
-    if (!window.leap) {
-      console.error("Leap wallet is not installed or not available.");
-      return;
+    if (window.keplr) {
+      console.log("Keplr is installed");
     }
-
-    console.log("Leap wallet is installed");
 
     const walletStrategy = new WalletStrategy({
       chainId: ChainId.Testnet,
-      wallet: Wallet.Leap,
+      wallet: Wallet.Keplr,
       strategies: {},
     });
 
@@ -47,26 +41,18 @@ const LeapGrant = () => {
 
     const [granter] = await walletStrategy.getAddresses();
 
-    // console.log("Granter Address:", granter);
-
-    console.log(
-      "Authorization: ",
-      getGenericAuthorizationFromMessageType(
-        "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
-      )
-    );
+    console.log("Granter Address:", granter);
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    const expirationInSeconds = 30 * 24 * 60 * 60; // 30 days
 
     const msg = MsgGrant.fromJSON({
-      granter,
+      granter: granter,
       grantee: "inj1g8lwgz26ej7crwt906wp6wsnwjteh2qk0h4n2n",
       authorization: getGenericAuthorizationFromMessageType(
         "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
       ),
-      expiration:
-        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).getTime() / 1000, // 30 days
+      expiration: nowInSeconds + expirationInSeconds,
     });
-
-    // console.dir(boardcastOptions, { depth: null });
 
     const broadcaster = new MsgBroadcaster({
       walletStrategy,
@@ -91,12 +77,12 @@ const LeapGrant = () => {
     <div className="w-full flex flex-col items-center">
       <Button
         onClick={run}
-        className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition-all duration-150"
+        className="w-full bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow transition-all duration-150"
       >
-        Grant with Leap Wallet
+        Grant with Keplr Wallet
       </Button>
     </div>
   );
 };
 
-export default LeapGrant;
+export default KeplGrant;

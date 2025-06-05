@@ -8,6 +8,12 @@ import { nodePolyfills } from "@bangjelkoski/vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  define: {
+    global: "globalThis",
+  },
+  optimizeDeps: {
+    include: ["buffer"],
+  },
   server: {
     host: "::",
     port: 8080,
