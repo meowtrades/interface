@@ -165,16 +165,32 @@ export const TransactionList = () => {
                               {transaction.to.token}
                             </TooltipTrigger>
                             <TooltipContent>
-                              Sold: {transaction.to.amount}{" "}
+                              Bought: {transaction.to.amount}{" "}
                               {transaction.to.token}
                             </TooltipContent>
                           </Tooltip>
                         </td>
                         <td className="py-4 px-5 text-slate-700">
-                          {formatCurrency(transaction.price)}
+                          <Tooltip>
+                            <TooltipTrigger>
+                              {transaction.price.toFixed(2)} USD
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Price per {transaction.to.token}:{" "}
+                              {transaction.price} USD
+                            </TooltipContent>
+                          </Tooltip>
                         </td>
                         <td className="py-4 px-5 text-right text-slate-700">
-                          {formatCurrency(transaction.value)}
+                          <Tooltip>
+                            <TooltipTrigger>
+                              {formatCurrency(transaction.value)}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Total value in {transaction.to.token}:{" "}
+                              {formatCurrency(transaction.value)}
+                            </TooltipContent>
+                          </Tooltip>
                         </td>
                       </tr>
                     );
