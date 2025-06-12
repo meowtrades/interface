@@ -139,4 +139,8 @@ export const api = {
       tokenSymbol: string;
     }) => axiosInstance.post(`/user/balance/allocate/wallet/`, data),
   },
+  user: {
+    updateAddress: (newAddress: string) =>
+      axiosInstance.patch(`/user/address`, { newAddress }),
+  },
 };

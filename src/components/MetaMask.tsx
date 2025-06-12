@@ -1,18 +1,14 @@
 /** @format */
 
-import {
-  getEthereumAddress,
-  getInjectiveAddress,
-  MsgGrant,
-} from "@injectivelabs/sdk-ts";
+import { getInjectiveAddress, MsgGrant } from "@injectivelabs/sdk-ts";
 import { Network } from "@injectivelabs/networks";
 import { getNetworkEndpoints } from "@injectivelabs/networks";
 import { getGenericAuthorizationFromMessageType } from "@injectivelabs/sdk-ts";
 import { Wallet } from "@injectivelabs/wallet-base";
-import { BaseWalletStrategy, MsgBroadcaster } from "@injectivelabs/wallet-core";
-import { PrivateKeyWalletStrategy } from "@injectivelabs/wallet-private-key";
+import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { Button } from "./ui/button";
+import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 
 declare global {
   interface Window {
@@ -32,21 +28,12 @@ const MetaMaskGrant = () => {
       console.log("MetaMask is installed");
     }
 
-    const walletStrategy = new BaseWalletStrategy({
+    const walletStrategy = new WalletStrategy({
       chainId: ChainId.Testnet,
-      wallet: Wallet.PrivateKey,
-      strategies: {
-        [Wallet.PrivateKey]: new PrivateKeyWalletStrategy({
-          chainId: ChainId.Testnet,
-          ethereumOptions: {
-            ethereumChainId: EthereumChainId.Sepolia,
-          },
-          metadata: {
-            privateKey: {
-              privateKey: import.meta.env.VITE_PRIVATE_KEY_INJECTIVE,
-            },
-          },
-        }),
+      wallet: Wallet.Metamask,
+      strategies: {},
+      ethereumOptions: {
+        ethereumChainId: EthereumChainId.Injective,
       },
     });
 
@@ -58,8 +45,12 @@ const MetaMaskGrant = () => {
     const nowInSeconds = Math.floor(Date.now() / 1000);
     const expirationInSeconds = 30 * 24 * 60 * 60; // 30 days
 
+    const injectiveAddress = getInjectiveAddress(granter);
+
+    console.log("Injective Address:", injectiveAddress);
+
     const msg = MsgGrant.fromJSON({
-      granter: getInjectiveAddress(granter),
+      granter: injectiveAddress,
       grantee: "inj1g8lwgz26ej7crwt906wp6wsnwjteh2qk0h4n2n",
       authorization: getGenericAuthorizationFromMessageType(
         "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
@@ -67,17 +58,24 @@ const MetaMaskGrant = () => {
       expiration: nowInSeconds + expirationInSeconds,
     });
 
+    const c = getNetworkEndpoints(Network.Testnet).rpc;
+
+    console.log(c);
+
     const broadcaster = new MsgBroadcaster({
       walletStrategy,
       simulateTx: true,
       network: Network.Testnet,
       endpoints: getNetworkEndpoints(Network.Testnet),
+      chainId: ChainId.Testnet,
+      ethereumChainId: EthereumChainId.Injective,
     });
 
     try {
       const results = await broadcaster.broadcast({
         msgs: [msg],
-        injectiveAddress: granter,
+        injectiveAddress,
+        ethereumAddress: granter,
       });
 
       console.log("Grant Status:", results);

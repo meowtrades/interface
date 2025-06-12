@@ -1,6 +1,6 @@
 /** @format */
 
-import KeplGrant from "@/components/KeplGrant";
+import KeplGrant from "@/components/KeplrGrant";
 import LeapGrant from "@/components/LeapGrant";
 import MetaMaskGrant from "@/components/MetaMask";
 import { FaWallet, FaBolt, FaKey, FaBox } from "react-icons/fa";

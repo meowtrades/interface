@@ -6,7 +6,7 @@ import {
   MsgGrant,
   MsgSend,
 } from "@injectivelabs/sdk-ts";
-import { ChainId } from "@injectivelabs/ts-types";
+import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { Wallet } from "@injectivelabs/wallet-base";
@@ -41,6 +41,9 @@ const LeapGrant = () => {
       chainId: ChainId.Testnet,
       wallet: Wallet.Leap,
       strategies: {},
+      ethereumOptions: {
+        ethereumChainId: EthereumChainId.Injective,
+      },
     });
 
     await walletStrategy.enable();
@@ -73,11 +76,14 @@ const LeapGrant = () => {
       simulateTx: true,
       network: Network.Testnet,
       endpoints: getNetworkEndpoints(Network.Testnet),
+      chainId: ChainId.Testnet,
+      ethereumChainId: EthereumChainId.Injective,
     });
 
     try {
       const results = await broadcaster.broadcast({
         msgs: [msg],
+        ethereumAddress: getEthereumAddress(granter),
         injectiveAddress: granter,
       });
 

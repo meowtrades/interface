@@ -9,6 +9,7 @@ import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { ChainId } from "@injectivelabs/ts-types";
 import { Button } from "./ui/button";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
+import { api } from "@/api";
 
 declare global {
   interface Window {
@@ -70,6 +71,15 @@ const KeplGrant = () => {
       console.log("Grant Status:", results);
     } catch (error) {
       console.error("Error broadcasting grant:", error);
+    }
+
+    // Update user's wallet address in the backend
+    const res = await api.user.updateAddress(granter);
+
+    if (res.status === 200) {
+      console.log("User wallet address updated successfully:", res.data);
+    } else {
+      console.error("Failed to update user wallet address:", res.data);
     }
   };
 
