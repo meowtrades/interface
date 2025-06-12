@@ -65,10 +65,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
         <div className="p-6 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
-              <Cat className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-xl font-bold gradient-text">Meowtrades</span>
+            <img
+              src="/logo.png"
+              alt="Meowtrades Logo"
+              className="w-full rounded-lg"
+            />
           </Link>
         </div>
 
@@ -150,12 +151,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
             <div className="flex justify-between items-center p-6 border-b border-slate-200">
               <Link to="/" className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
-                  <Cat className="w-7 h-7 text-white" />
-                </div>
-                <span className="text-xl font-bold gradient-text">
-                  Meowtrades
-                </span>
+                <img
+                  src="/logo.png"
+                  alt="Meowtrades Logo"
+                  className="w-2/3 sm:w-1/3"
+                />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
