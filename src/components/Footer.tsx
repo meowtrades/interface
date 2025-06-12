@@ -1,6 +1,6 @@
+/** @format */
 
 import { Link } from "react-router-dom";
-import { Cat } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -9,13 +9,14 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-1.5 rounded-lg">
-                <Cat className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold gradient-text">Meowtrades</span>
+              <img
+                src="/logo.png"
+                alt="Meowtrades Logo"
+                className="w-[170px]"
+              />
             </Link>
           </div>
-          
+
           <div className="text-center md:text-right">
             <p className="text-sm text-slate-400">
               &copy; {new Date().getFullYear()} Meowtrades. All rights reserved.
@@ -23,7 +24,12 @@ const Footer = () => {
             <div className="mt-1 text-xs">
               {/* <Link to="/terms" className="text-slate-400 hover:text-meow-paw mr-4">Terms</Link> */}
               {/* <Link to="/privacy" className="text-slate-400 hover:text-meow-paw">Privacy</Link> */}
-              <Link to="https://github.com/meowtrades" className="text-slate-400 hover:text-meow-paw">Github</Link>
+              <Link
+                to="https://github.com/meowtrades"
+                className="text-slate-400 hover:text-meow-paw"
+              >
+                Github
+              </Link>
             </div>
           </div>
         </div>

@@ -15,7 +15,6 @@ import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
 import { useQueryClient } from "@tanstack/react-query";
-import Testnet from "./pages/Test";
 
 window.Buffer = Buffer; // Polyfill Buffer for browser compatibility
 
@@ -67,8 +66,6 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
-
-        <Route path="/test" element={<Testnet />} />
 
         {/* App routes */}
         <Route

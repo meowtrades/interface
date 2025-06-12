@@ -65,11 +65,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
         <div className="p-6 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="Meowtrades Logo"
-              className="w-full rounded-lg"
-            />
+            <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
           </Link>
         </div>
 
@@ -154,7 +150,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 <img
                   src="/logo.png"
                   alt="Meowtrades Logo"
-                  className="w-2/3 sm:w-1/3"
+                  className="w-[200px]"
                 />
               </Link>
               <button
