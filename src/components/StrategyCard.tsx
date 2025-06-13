@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { useCreateDcaPlan } from "@/api";
+import { FrequencyOption, useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
 
 const IconMap: Record<string, React.ReactNode> = {
@@ -71,6 +71,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     tokenId: string;
     amount: number;
     frequency: string;
+    slippage: number;
     riskLevel?: number;
   }) => {
     // For now, we'll hardcode the chainId to the first supported chain
@@ -93,9 +94,12 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       userId: user?.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
       userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
-      frequency: "test_10_seconds",
+      frequency: data.frequency as FrequencyOption, // FIXME: REMOVE HARD CODED FREQUENCY
       chain: chainId,
       riskLevel: "no_risk",
+      strategyId: data.strategyId,
+      tokenSymbol: data.tokenId,
+      slippage: data.slippage, // Default to -1 for auto slippage
     });
   };
 

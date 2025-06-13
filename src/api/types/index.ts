@@ -259,6 +259,9 @@ export type CreateDcaPlanDto = {
   userWalletAddress: string;
   frequency: FrequencyOption;
   chain: string;
+  tokenSymbol: string;
+  strategyId: string;
+  slippage: number; // Optional, will be set based on risk level
   riskLevel: string;
 };
 

@@ -25,6 +25,7 @@ import { Slider } from "@/components/ui/slider";
 import { Strategy, Frequency, RiskLevel } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { FrequencyOption } from "@/api";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -60,7 +61,8 @@ interface StartStrategyDialogProps {
     strategyId: string;
     tokenId: string;
     amount: number;
-    frequency: Frequency;
+    slippage: number;
+    frequency: FrequencyOption;
     riskLevel?: RiskLevel;
   }) => Promise<void>;
 }
@@ -77,6 +79,7 @@ const StartStrategyDialog = ({
   const [amount, setAmount] = useState("1000");
   const [frequency, setFrequency] = useState(Frequency.DAILY);
   const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.MEDIUM_RISK);
+  const [slippage, setSlippage] = useState(-1); // Default to -1 for auto slippage
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -147,7 +150,8 @@ const StartStrategyDialog = ({
       strategyId: strategy.id,
       tokenId,
       amount: amountNum,
-      frequency,
+      frequency: "test_10_seconds",
+      slippage, // Default to -1 for auto slippage
       ...(strategy.type === "dca" ? { riskLevel } : {}),
     });
 
@@ -236,7 +240,7 @@ const StartStrategyDialog = ({
             </div>
 
             {/* Risk level slider for Smart DCA strategy */}
-            {strategy.type === "dca" && (
+            {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="risk-level">Risk Level</Label>
@@ -260,7 +264,29 @@ const StartStrategyDialog = ({
                   <span>Higher Risk</span>
                 </div>
               </div>
-            )}
+            }
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <Label htmlFor="slippage">Slippage Tolerance (%)</Label>
+                <span className="text-sm font-medium">
+                  {slippage === -1 ? "Auto Slippage" : `${slippage}%`}
+                </span>
+              </div>
+              <Slider
+                id="slippage"
+                min={-1}
+                max={10}
+                step={1}
+                value={[slippage]}
+                onValueChange={(values) => setSlippage(values[0])}
+                className="py-4"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                {slippage === -1 &&
+                  "Auto slippage will be applied based on risk level."}
+              </p>
+            </div>
           </div>
 
           <div className="bg-amber-50 p-4 rounded-lg text-amber-800 text-sm">
