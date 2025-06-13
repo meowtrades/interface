@@ -12,9 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
-import { Strategy, StrategyPerformance } from "@/lib/types";
+import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { useCreateDcaPlan } from "@/api";
+import { FrequencyOption, useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
 
 const IconMap: Record<string, React.ReactNode> = {
@@ -71,7 +71,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     tokenId: string;
     amount: number;
     frequency: string;
-    riskLevel?: number;
+    slippage: number;
+    riskLevel?: RiskLevel;
   }) => {
     // For now, we'll hardcode the chainId to the first supported chain
     const chainId = strategy.supportedChains[0];
@@ -93,9 +94,12 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       userId: user?.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
       userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
-      frequency: "test_10_seconds",
+      frequency: data.frequency as FrequencyOption,
       chain: chainId,
-      riskLevel: "no_risk",
+      riskLevel: data.riskLevel,
+      strategyId: data.strategyId,
+      tokenSymbol: data.tokenId,
+      slippage: data.slippage, // Default to -1 for auto slippage
     });
   };
 
@@ -164,7 +168,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
           <div className="grid grid-cols-5 gap-3">
             {[
-              { label: "1 Year", data: performance.year || 0 },
+              // { label: "1 Year", data: performance.year || 0 },
               { label: "6 Months", data: performance.sixMonths || 0 },
               { label: "3 Months", data: performance.threeMonths || 0 },
               { label: "1 Month", data: performance.month || 0 },

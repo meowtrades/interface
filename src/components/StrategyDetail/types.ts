@@ -13,6 +13,7 @@ export interface UserStrategy {
   totalInvested: number;
   profit: number;
   profitPercentage: number;
+  pauseReason: string;
   invested: number;
   initialAmount: number;
   frequency: string;
@@ -20,6 +21,7 @@ export interface UserStrategy {
   createdAt: string;
   active: boolean;
   currentValue: number;
+  status: "active" | "paused" | "stopped";
   strategyTemplate?: {
     id: string;
     name: string;

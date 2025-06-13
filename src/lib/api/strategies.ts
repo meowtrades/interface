@@ -36,7 +36,7 @@ const tokens: Token[] = [
 
 const strategies: Strategy[] = [
   {
-    id: "smart-dca",
+    id: "SDCA",
     name: "Smart DCA Strategy",
     description: "Dollar-cost averaging enhanced by market timing algorithms",
     type: "dca",

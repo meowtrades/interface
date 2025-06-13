@@ -7,16 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Grid, RefreshCcw, RefreshCw, TrendingUp } from "lucide-react";
+import {
+  Grid,
+  Pause,
+  RefreshCcw,
+  RefreshCw,
+  TrendingUp,
+  Play,
+  Loader2,
+} from "lucide-react";
 import { StrategyChart } from "./StrategyChart";
 import { UserStrategy } from "./types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, Transaction } from "@/api";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 export const StrategyOverview = () => {
   const { strategyId } = useParams();
@@ -26,17 +35,20 @@ export const StrategyOverview = () => {
   >([]);
   const range = searchParams.get("range");
 
-  const { data: userStrategy, refetch: refetchUserStrategy } =
-    useQuery<UserStrategy>({
-      queryKey: ["userStrategy", strategyId],
-      queryFn: async () => {
-        if (!strategyId) throw new Error("Strategy ID is required");
-        const {
-          data: { data },
-        } = await api.strategies.getDetails(strategyId);
-        return data;
-      },
-    });
+  const {
+    data: userStrategy,
+    refetch: refetchUserStrategy,
+    isLoading: isLoadingUserStrategy,
+  } = useQuery<UserStrategy>({
+    queryKey: ["userStrategy", strategyId],
+    queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+      const {
+        data: { data },
+      } = await api.strategies.getDetails(strategyId);
+      return data;
+    },
+  });
 
   console.log(userStrategy);
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,6 +114,26 @@ export const StrategyOverview = () => {
       console.error("Failed to refresh chart data:", error);
     }
   };
+
+  const { mutate: switchStrategyStatus, isPending: isSwitching } = useMutation({
+    mutationFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
+
+      if (userStrategy.status === "active") {
+        const { data } = await api.plans.pause(strategyId);
+        return data;
+      } else {
+        const { data } = await api.plans.resume(strategyId);
+        return data;
+      }
+    },
+
+    onSuccess: () => {
+      refetchUserStrategy();
+      refetchTransactions();
+      refetchChart();
+    },
+  });
 
   useEffect(() => {
     const ranges = getValidRanges(userStrategy.frequency as Frequency);
@@ -180,12 +212,39 @@ export const StrategyOverview = () => {
           <Button
             variant="outline"
             size="sm"
+            className="gap-1"
+            onClick={() => switchStrategyStatus()}
+            disabled={isSwitching}
+          >
+            {isSwitching || isLoadingUserStrategy ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : userStrategy.status === "active" ? (
+              <Pause size={14} />
+            ) : (
+              <Play size={14} />
+            )}
+            {userStrategy.status === "active" ? "Pause" : "Resume"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             className="text-red-600 border-red-200 hover:bg-red-50"
           >
             Close Position
           </Button>
         </div>
       </div>
+
+      {userStrategy.pauseReason && (
+        <Alert variant="info" className="mb-4">
+          <AlertTitle className="text-sm font-semibold">
+            Strategy Paused
+          </AlertTitle>
+          <AlertDescription className="text-sm">
+            Due to {userStrategy.pauseReason}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Card className="shadow-sm">
