@@ -152,7 +152,7 @@ const StartStrategyDialog = ({
       amount: amountNum,
       frequency,
       slippage, // Default to -1 for auto slippage
-      ...(strategy.type === "dca" ? { riskLevel } : {}),
+      riskLevel,
     });
 
     // toast.success(`${strategy.name} started successfully!`);
