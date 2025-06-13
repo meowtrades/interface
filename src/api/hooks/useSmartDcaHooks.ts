@@ -1,3 +1,5 @@
+/** @format */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../interceptors/axiosInterceptor";
 import {
@@ -7,6 +9,7 @@ import {
   TotalInvestment,
 } from "../types";
 import { toast } from "sonner";
+import { getKeplrGrant } from "@/lib/grants/Keplr";
 
 // Query keys for cache management
 export const SMART_DCA_KEYS = {
@@ -26,16 +29,44 @@ export const useCreateDcaPlan = () => {
 
   return useMutation({
     mutationFn: async (planData: CreateDcaPlanDto) => {
+      const id = toast.loading(
+        `Please confirm the transaction in your wallet...`
+      );
+
+      try {
+        await getKeplrGrant();
+      } catch (error) {
+        toast.dismiss(id);
+        throw new Error("Permission denied");
+      }
+
+      toast.dismiss(id);
+      toast.success("Permission granted");
+
       const response = await axiosInstance.post<DcaPlan>(
         "/services/s-dca/create-plan",
         planData
       );
-      return response.data;
+
+      if (!response.data) {
+        throw new Error("Failed to create DCA plan");
+      }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: SMART_DCA_KEYS.plans(),
+        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of DCA plans
+        exact: true,
       });
+      await queryClient.resetQueries({
+        queryKey: ["activeStrategiesAnalytics", "real"],
+        exact: true,
+      });
+
+      toast.success("DCA plan created successfully");
+    },
+    onError: (error: Error) => {
+      console.error("Error creating DCA plan:", error);
+      toast.error(error.message || "Failed to create DCA plan");
     },
   });
 };
@@ -48,14 +79,24 @@ export const useStopDcaPlan = () => {
 
   return useMutation({
     mutationFn: async (planId: string) => {
+      console.log("Stopping DCA plan with ID:", planId);
+
       const response = await axiosInstance.post(
         `/services/s-dca/stop-plan/${planId}`
       );
+
+      console.log(response);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: SMART_DCA_KEYS.plans(),
+        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of real trades
+        exact: true,
+      });
+
+      await queryClient.refetchQueries({
+        queryKey: ["activeStrategiesAnalytics", "real"],
+        exact: true,
       });
 
       toast.success("Plan stopped successfully");

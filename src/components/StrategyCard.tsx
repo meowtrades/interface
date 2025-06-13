@@ -1,5 +1,6 @@
+/** @format */
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -13,8 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { toast } from "sonner";
-import { startStrategy } from "@/lib/api/strategies";
 import { useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
 
@@ -71,49 +70,33 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     strategyId: string;
     tokenId: string;
     amount: number;
-    duration: string;
+    frequency: string;
     riskLevel?: number;
   }) => {
-    try {
-      // For now, we'll hardcode the chainId to the first supported chain
-      const chainId = strategy.supportedChains[0];
+    // For now, we'll hardcode the chainId to the first supported chain
+    const chainId = strategy.supportedChains[0];
 
-      const durationOptions = [
-        { label: "1 Month", value: 30 },
-        { label: "3 Months", value: 90 },
-        { label: "6 Months", value: 180 },
-        { label: "1 Year", value: 365 },
-      ];
+    const durationOptions = [
+      { label: "1 Month", value: 30 },
+      { label: "3 Months", value: 90 },
+      { label: "6 Months", value: 180 },
+      { label: "1 Year", value: 365 },
+    ];
 
-      const durationInMonths =
-        durationOptions.find((option) => option.label === data.duration)
-          ?.value || 30;
+    // const durationInMonths =
+    //   durationOptions.find((option) => option.label === data.duration)
+    //     ?.value || 30;
 
-      const amountPerDay = data.amount / durationInMonths;
+    const amountPerDay = data.amount;
 
-      dcaMutation.mutate(
-        {
-          userId: user?.user.id, // Adding userId to plan data as well
-          amount: amountPerDay,
-          userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
-          frequency: "test_minute",
-          chain: chainId,
-          riskLevel: "no_risk",
-        },
-        {
-          onSuccess: () => {
-            toast.success(`${strategy.name} started successfully!`);
-          },
-        }
-      );
-
-      // await startStrategy(data.strategyId, chainId, data.tokenId, data.amount);
-
-      // toast.success(`${strategy.name} started successfully!`);
-    } catch (error) {
-      console.error("Error starting strategy:", error);
-      toast.error("Failed to start strategy. Please try again.");
-    }
+    await dcaMutation.mutateAsync({
+      userId: user?.user.id, // Adding userId to plan data as well
+      amount: amountPerDay,
+      userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
+      frequency: "test_10_seconds",
+      chain: chainId,
+      riskLevel: "no_risk",
+    });
   };
 
   return (
@@ -217,6 +200,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
       {/* Strategy Start Dialog */}
       <StartStrategyDialog
+        loading={dcaMutation.isPending}
         strategy={strategy}
         open={startDialogOpen}
         onClose={() => setStartDialogOpen(false)}

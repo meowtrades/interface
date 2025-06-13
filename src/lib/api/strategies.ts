@@ -182,7 +182,7 @@ export const fetchUserStrategies = async (): Promise<UserStrategyNew[]> => {
 
   const data = (await axiosInstance.get("/user/analytics/strategies")).data;
 
-  console.log("fetch: ", data.data);
+  // console.log("fetch: ", data.data);
   return data.data;
   // return userStrategies;
 };

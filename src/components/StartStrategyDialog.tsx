@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Strategy, Frequency } from "@/lib/types";
-import { RefreshCw, Grid, TrendingUp } from "lucide-react";
+import { Strategy, Frequency, RiskLevel } from "@/lib/types";
+import { RefreshCw, Grid, TrendingUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Color map for strategy types
@@ -50,15 +50,8 @@ const frequencyOptions = [
   { value: Frequency.TEST_10_SECONDS, label: "Test 10 Seconds" },
 ];
 
-// Risk level enum
-export enum RiskLevel {
-  NO_RISK = "no_risk",
-  LOW_RISK = "low_risk",
-  MEDIUM_RISK = "medium_risk",
-  HIGH_RISK = "high_risk",
-}
-
 interface StartStrategyDialogProps {
+  loading: boolean;
   strategy: Strategy;
   open: boolean;
   onClose: () => void;
@@ -69,10 +62,11 @@ interface StartStrategyDialogProps {
     amount: number;
     frequency: Frequency;
     riskLevel?: RiskLevel;
-  }) => void;
+  }) => Promise<void>;
 }
 
 const StartStrategyDialog = ({
+  loading,
   strategy,
   open,
   onClose,
@@ -140,7 +134,7 @@ const StartStrategyDialog = ({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate amount
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
@@ -149,7 +143,7 @@ const StartStrategyDialog = ({
     }
 
     // Start the strategy
-    onStartStrategy({
+    await onStartStrategy({
       strategyId: strategy.id,
       tokenId,
       amount: amountNum,
@@ -157,7 +151,7 @@ const StartStrategyDialog = ({
       ...(strategy.type === "dca" ? { riskLevel } : {}),
     });
 
-    toast.success(`${strategy.name} started successfully!`);
+    // toast.success(`${strategy.name} started successfully!`);
     onClose();
   };
 
@@ -284,10 +278,11 @@ const StartStrategyDialog = ({
           </Button>
           <Button
             type="button"
+            disabled={loading}
             onClick={handleSubmit}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            One Click Start
+            {loading ? <Loader2 className="animate-spin" /> : "One Click Start"}
           </Button>
         </DialogFooter>
       </DialogContent>

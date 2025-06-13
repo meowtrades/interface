@@ -1,3 +1,21 @@
+/** @format */
+
+import { Frequency, RiskLevel } from "@/lib/types";
+
+export interface Transaction {
+  _id: string;
+  planId: string;
+  userId: string;
+  chain: string;
+  amount: number;
+  status: string;
+  retryCount: number;
+  maxRetries: number;
+  lastAttemptTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Common types
 export type Pagination = {
   page: number;
@@ -44,6 +62,11 @@ export type PerformanceHistory = {
 };
 
 export type UserStatistics = {
+  activeStrategies: {
+    mock: number;
+    real: number;
+    total: number;
+  };
   activeTrades: number;
   bestPerformingStrategy: string | null;
   completedTrades: number;
@@ -53,6 +76,111 @@ export type UserStatistics = {
   totalInvestment: number;
   totalProfitLoss: number;
   worstPerformingStrategy: string | null;
+};
+
+/**
+ * active
+: 
+true
+amount
+: 
+1000
+analytics
+: 
+averageBuyPrice
+: 
+0
+currentTokenPrice
+: 
+0.999942
+portfolioValue
+: 
+0
+profit
+: 
+0
+profitPercentage
+: 
+null
+tokensHeld
+: 
+0
+totalTransactions
+: 
+0
+[[Prototype]]
+: 
+Object
+chain
+: 
+"injective"
+createdAt
+: 
+"2025-05-13T19:13:48.557Z"
+currentValue
+: 
+0
+frequency
+: 
+"test_minute"
+initialAmount
+: 
+1000
+invested
+: 
+1000
+profit
+: 
+0
+profitPercentage
+: 
+null
+strategyTemplate
+: 
+{id: 'SDCA', name: 'Smart Dollar Cost Averaging', type: 'dca', description: 'DCA reduces the impact of volatility by investing … at regular intervals, regardless of asset price.'}
+token
+: 
+{symbol: 'USDT', name: 'Tether', currentPrice: 0.999942}
+totalInvested
+: 
+0
+_id
+: 
+"682399ec7f41b4978187af43"
+ */
+export type ActiveStrategyAnalytics = {
+  chain: string;
+  _id: string;
+  currentValue: number;
+  token: {
+    symbol: string;
+    name: string;
+    currentPrice: number;
+  };
+  strategyTemplate: {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+  };
+  totalInvested: number;
+  invested: number;
+  profit: number;
+  profitPercentage: number;
+  initialAmount: number;
+  frequency: string;
+  amount: number;
+  createdAt: string;
+  active: boolean;
+  analytics: {
+    tokensHeld: number;
+    averageBuyPrice: number;
+    currentTokenPrice: number;
+    portfolioValue: number;
+    profit: number;
+    profitPercentage: number;
+    totalTransactions: number;
+  };
 };
 
 export type PlatformStatistics = {
@@ -114,7 +242,8 @@ export type FrequencyOption =
   | "daily"
   | "weekly"
   | "monthly"
-  | "test_minute";
+  | "test_minute"
+  | "test_10_seconds";
 export type ThresholdComparison = "lessThan" | "greaterThan" | "equals";
 
 export type DcaPlanCustomSettings = {
@@ -171,12 +300,20 @@ export type TotalInvestment = {
 // Mock Trading types
 export type Direction = "long" | "short";
 
+// export type CreateMockTradeDto = {
+//   strategyId: string;
+//   tokenSymbol: string;
+//   initialInvestment: number;
+//   riskLevel: string;
+//   // timeframe: string;
+// };
+
 export type CreateMockTradeDto = {
   strategyId: string;
   tokenSymbol: string;
-  initialInvestment: number;
-  riskLevel: string;
-  timeframe: string;
+  amount: number;
+  riskLevel: RiskLevel;
+  frequency: Frequency;
 };
 
 export type StopMockTradeDto = {

@@ -19,15 +19,14 @@ import StrategyCard from "@/components/StrategyCard";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
-import { DcaPlan, useStopDcaPlan, useUserDcaPlans } from "@/api";
+import { Link, useSearchParams } from "react-router-dom";
+import { api, useStopDcaPlan } from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const Strategies = () => {
   const {
     strategies,
     chains,
-    tokens,
-    userStrategies,
     isLoading,
     error,
     selectedChain,
@@ -35,28 +34,47 @@ const Strategies = () => {
     setSelectedChain,
     setSelectedToken,
     getSupportedTokensForChain,
-    getSupportedChainsForToken,
     getStrategiesForChainAndToken,
   } = useStrategies();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "available";
   const [simulationDialogOpen, setSimulationDialogOpen] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
     null
   );
 
-  const stopMutatoin = useStopDcaPlan();
+  const stopDcaPlanMutation = useStopDcaPlan();
 
-  const { data: allDcaActiveStrategies } = useUserDcaPlans();
+  const {
+    data: activeMockStrategiesAnalytics,
+    isLoading: isFetchingActiveMockStrategies,
+  } = useQuery({
+    queryKey: ["activeStrategiesAnalytics", "mock"],
+    queryFn: async () => {
+      const {
+        data: { data },
+      } = await api.analytics.getActiveMockStrategies();
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
 
-  console.log("dca", allDcaActiveStrategies);
+  const {
+    data: activeRealStrategiesAnalytics,
+    isLoading: isFetchingActiveRealStrategies,
+  } = useQuery({
+    queryKey: ["activeStrategiesAnalytics", "real"],
+    queryFn: async () => {
+      const {
+        data: { data },
+      } = await api.analytics.getActiveLiveStrategies();
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
 
-  console.log(allDcaActiveStrategies);
-
-  const dcaActiveStrategies = allDcaActiveStrategies?.filter(
-    (us) => us.isActive
-  );
-
-  console.log(dcaActiveStrategies);
+  // console.log("activeStrategiesAnalytics", activeMockStrategiesAnalytics);
 
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
@@ -64,9 +82,6 @@ const Strategies = () => {
     : [];
 
   // Get supported chains for the current token
-  const supportedChains = selectedToken
-    ? getSupportedChainsForToken(selectedToken)
-    : [];
 
   // Get strategies for the current chain and token
   const availableStrategies =
@@ -100,12 +115,12 @@ const Strategies = () => {
 
   // Switch to available strategies tab
   const switchToAvailableTab = () => {
-    const availableTabTrigger = document.querySelector(
-      '[data-state="inactive"][value="available"]'
+    setSearchParams(
+      { tab: "available" },
+      {
+        replace: true,
+      }
     );
-    if (availableTabTrigger && availableTabTrigger instanceof HTMLElement) {
-      availableTabTrigger.click();
-    }
   };
 
   if (error) {
@@ -172,16 +187,51 @@ const Strategies = () => {
         </Select>
       </div>
 
-      <Tabs defaultValue="available" className="mb-8">
+      <Tabs value={tab} className="mb-8">
         <TabsList>
-          <TabsTrigger value="available">Available Strategies</TabsTrigger>
-          <TabsTrigger value="active">
-            Active Strategies ({dcaActiveStrategies?.length})
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "available" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="available"
+          >
+            Available Strategies
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "active" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="active"
+          >
+            Live Strategies ({activeRealStrategiesAnalytics?.length ?? 0})
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() =>
+              setSearchParams(
+                { tab: "paper" },
+                {
+                  replace: true,
+                }
+              )
+            }
+            value="paper"
+          >
+            Paper Trades ({activeMockStrategiesAnalytics?.length ?? 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="available" className="pt-6">
-          {isLoading ? (
+          {isFetchingActiveMockStrategies ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-96 w-full" />
               <Skeleton className="h-96 w-full" />
@@ -215,29 +265,14 @@ const Strategies = () => {
         </TabsContent>
 
         <TabsContent value="active" className="pt-6">
-          {isLoading ? (
+          {isFetchingActiveRealStrategies ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Skeleton className="h-80 w-full" />
               <Skeleton className="h-80 w-full" />
             </div>
-          ) : userStrategies.length > 0 ? (
+          ) : activeRealStrategiesAnalytics!.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {dcaActiveStrategies?.map((userStrategy) => {
-                if (!userStrategy.isActive) return null;
-                const strategy = strategies.find((s) => s.id === "smart-dca");
-                const token = tokens.find((t) => t.id === "inj");
-                const chain = chains.find((c) => c.id === "injective");
-
-                if (!strategy || !token || !chain) return null;
-
-                const currentValue =
-                  userStrategy.totalInvested + userStrategy.amount;
-
-                const profitPercentage =
-                  ((currentValue - userStrategy.initialAmount) /
-                    userStrategy.initialAmount) *
-                  100;
-
+              {activeRealStrategiesAnalytics!.map((userStrategy) => {
                 return (
                   <div
                     key={userStrategy._id}
@@ -246,30 +281,33 @@ const Strategies = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                          {strategy.icon === "RefreshCw" && (
+                          {userStrategy.strategyTemplate.id === "SDCA" && (
                             <RefreshCw size={20} />
                           )}
-                          {strategy.icon === "Grid" && <Grid size={20} />}
-                          {strategy.icon === "TrendingUp" && (
-                            <TrendingUp size={20} />
+                          {userStrategy.strategyTemplate.id === "Grid" && (
+                            <Grid size={20} />
                           )}
+                          {userStrategy.strategyTemplate.id ===
+                            "TrendingUp" && <TrendingUp size={20} />}
                         </div>
                         <div>
-                          <h3 className="font-medium">{strategy.name}</h3>
+                          <h3 className="font-medium">
+                            {userStrategy.strategyTemplate.name}
+                          </h3>
                           <p className="text-sm text-slate-500">
-                            {chain.name} • {token.symbol}
+                            {userStrategy.chain} • {userStrategy.token.symbol}
                           </p>
                         </div>
                       </div>
                       <div
                         className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          profitPercentage >= 0
+                          userStrategy.profitPercentage >= 0
                             ? "bg-green-100 text-green-600"
                             : "bg-red-100 text-red-600"
                         }`}
                       >
-                        {profitPercentage >= 0 ? "+" : ""}
-                        {profitPercentage}%
+                        {userStrategy.profitPercentage >= 0 ? "+" : ""}
+                        {userStrategy.profitPercentage}%
                       </div>
                     </div>
 
@@ -277,22 +315,24 @@ const Strategies = () => {
                       <div className="bg-slate-50 p-3 rounded">
                         <div className="text-sm text-slate-500">Invested</div>
                         <div className="font-medium">
-                          {currentValue} {token.symbol}
+                          ${userStrategy.totalInvested}{" "}
                         </div>
                       </div>
                       <div className="bg-slate-50 p-3 rounded">
                         <div className="text-sm text-slate-500">
-                          Current Value
+                          Current Position
                         </div>
                         <div className="font-medium">
-                          {currentValue} {token.symbol}
+                          ${userStrategy.currentValue}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
                       <Button
-                        onClick={() => stopMutatoin.mutate(userStrategy._id)}
+                        onClick={() =>
+                          stopDcaPlanMutation.mutate(userStrategy._id)
+                        }
                         className="flex-1"
                         variant="destructive"
                       >
@@ -314,14 +354,116 @@ const Strategies = () => {
             </div>
           ) : (
             <div className="p-12 text-center bg-slate-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">No active strategies</h3>
+              <h3 className="text-lg font-medium mb-2">No Live strategies</h3>
               <p className="text-slate-600 mb-4">
-                You haven't started any strategies yet. Go to the Available
+                You haven't started any live strategies yet. Go to the Available
                 Strategies tab to get started.
               </p>
+
               <Button variant="outline" onClick={switchToAvailableTab}>
                 View Available Strategies
               </Button>
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="paper" className="pt-6">
+          {isFetchingActiveMockStrategies ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Skeleton className="h-80 w-full" />
+              <Skeleton className="h-80 w-full" />
+            </div>
+          ) : activeMockStrategiesAnalytics!.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {activeMockStrategiesAnalytics!.map((userStrategy) => {
+                return (
+                  <div
+                    key={userStrategy._id}
+                    className="border rounded-lg p-6 bg-white"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                          {userStrategy.strategyTemplate.id === "SDCA" && (
+                            <RefreshCw size={20} />
+                          )}
+                          {userStrategy.strategyTemplate.id === "Grid" && (
+                            <Grid size={20} />
+                          )}
+                          {userStrategy.strategyTemplate.id ===
+                            "TrendingUp" && <TrendingUp size={20} />}
+                        </div>
+                        <div>
+                          <h3 className="font-medium">
+                            {userStrategy.strategyTemplate.name}
+                          </h3>
+                          <p className="text-sm text-slate-500">
+                            Paper Trade • {userStrategy.token.symbol}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          userStrategy.profitPercentage >= 0
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
+                      >
+                        {userStrategy.profitPercentage >= 0 ? "+" : ""}
+                        {userStrategy.profitPercentage}%
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">Invested</div>
+                        <div className="font-medium">
+                          ${userStrategy.totalInvested}{" "}
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded">
+                        <div className="text-sm text-slate-500">
+                          Current Position
+                        </div>
+                        <div className="font-medium">
+                          ${userStrategy.currentValue}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() =>
+                          stopDcaPlanMutation.mutate(userStrategy._id)
+                        }
+                        className="flex-1"
+                        variant="destructive"
+                      >
+                        Stop Strategy
+                      </Button>
+                      <Link
+                        to={`/app/strategies/${userStrategy._id}`}
+                        state={{ planId: userStrategy._id }}
+                        className="flex-1"
+                      >
+                        <Button className="w-full" variant="outline">
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-slate-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">No Paper Trades</h3>
+              <p className="text-slate-600 mb-4">
+                You haven't started any paper trades. Go to the Available
+                Strategies tab to get started.
+              </p>
+              <Link to="/app/mock-trades">
+                <Button variant="outline">View Available Strategies</Button>
+              </Link>
             </div>
           )}
         </TabsContent>

@@ -1,5 +1,5 @@
 /** @format */
-
+import { Buffer } from "buffer";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -14,6 +14,10 @@ import StrategyDetail from "./pages/StrategyDetail";
 import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
+import { useQueryClient } from "@tanstack/react-query";
+
+window.Buffer = Buffer; // Polyfill Buffer for browser compatibility
+
 // Route guard for authenticated routes
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const { data, isPending, error, refetch } = authClient.useSession();

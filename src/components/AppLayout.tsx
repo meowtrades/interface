@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+/** @format */
+
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,12 +48,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     },
     {
       icon: <LineChart size={20} />,
-      label: "Strategies",
+      label: "Live Strategies",
       path: "/app/strategies",
     },
     {
       icon: <CircleDollarSign size={20} />,
-      label: "Mock Trades",
+      label: "Paper Trades",
       path: "/app/mock-trades",
     },
     { icon: <Wallet size={20} />, label: "Wallet", path: "/app/wallet" },
@@ -63,10 +65,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
         <div className="p-6 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
-              <Cat className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-xl font-bold gradient-text">Meowtrades</span>
+            <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
           </Link>
         </div>
 
@@ -129,7 +128,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <div className="flex items-center gap-5">
             <button className="p-2.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
               <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-meow-paw rounded-full"></span>
+              {/* <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-meow-paw rounded-full"></span> */}
             </button>
 
             <div className="flex items-center gap-3">
@@ -148,12 +147,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
             <div className="flex justify-between items-center p-6 border-b border-slate-200">
               <Link to="/" className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-meow-paw to-meow-tabby p-2.5 rounded-lg">
-                  <Cat className="w-7 h-7 text-white" />
-                </div>
-                <span className="text-xl font-bold gradient-text">
-                  Meowtrades
-                </span>
+                <img
+                  src="/logo.png"
+                  alt="Meowtrades Logo"
+                  className="w-[200px]"
+                />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
