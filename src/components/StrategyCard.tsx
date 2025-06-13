@@ -94,7 +94,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       userId: user?.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
       userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
-      frequency: data.frequency as FrequencyOption, // FIXME: REMOVE HARD CODED FREQUENCY
+      frequency: data.frequency as FrequencyOption,
       chain: chainId,
       riskLevel: "no_risk",
       strategyId: data.strategyId,

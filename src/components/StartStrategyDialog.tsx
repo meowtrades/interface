@@ -109,13 +109,13 @@ const StartStrategyDialog = ({
   const riskLevelToSliderValue = (riskLevel: RiskLevel): number => {
     switch (riskLevel) {
       case RiskLevel.NO_RISK:
-        return 12.5;
+        return 0;
       case RiskLevel.LOW_RISK:
-        return 37.5;
+        return 33;
       case RiskLevel.MEDIUM_RISK:
-        return 62.5;
+        return 66;
       case RiskLevel.HIGH_RISK:
-        return 87.5;
+        return 100;
       default:
         return 62.5;
     }
@@ -150,7 +150,7 @@ const StartStrategyDialog = ({
       strategyId: strategy.id,
       tokenId,
       amount: amountNum,
-      frequency: "test_10_seconds",
+      frequency,
       slippage, // Default to -1 for auto slippage
       ...(strategy.type === "dca" ? { riskLevel } : {}),
     });
