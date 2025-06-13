@@ -24,6 +24,18 @@ export const api = {
     stop: (id: string) => axiosInstance.post(`/services/s-dca/stop-plan/${id}`),
     stopAll: (userId: string) =>
       axiosInstance.post(`/services/s-dca/stop-all-plans/${userId}`),
+    pause: (planId: string) =>
+      axiosInstance.post<{
+        success: boolean;
+        message: string;
+        plan: DcaPlan;
+      }>(`/services/s-dca/pause-plan/${planId}`),
+    resume: (planId: string) =>
+      axiosInstance.post<{
+        success: boolean;
+        message: string;
+        plan: DcaPlan;
+      }>(`/services/s-dca/resume-plan/${planId}`),
   },
   transactions: {
     get: (id: string) => axiosInstance.get<Transaction>(`/transactions/${id}`),

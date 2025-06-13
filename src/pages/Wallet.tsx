@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserBalances, ChainToken } from "@/api";
-import WithdrawModal from "@/components/WithdrawModal";
+import { ChainToken } from "@/api";
+// import WithdrawModal from "@/components/WithdrawModal";
 import DepositModal from "@/components/DepositModal";
 
 const Wallet = () => {
@@ -178,7 +178,7 @@ const Wallet = () => {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <DepositModal currentToken={selectedToken} />
 
-                  <WithdrawModal currentToken={selectedToken} />
+                  {/* <WithdrawModal currentToken={selectedToken} /> */}
                 </div>
               )}
             </div>

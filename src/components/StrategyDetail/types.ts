@@ -20,6 +20,7 @@ export interface UserStrategy {
   createdAt: string;
   active: boolean;
   currentValue: number;
+  status: "active" | "paused" | "stopped";
   strategyTemplate?: {
     id: string;
     name: string;
