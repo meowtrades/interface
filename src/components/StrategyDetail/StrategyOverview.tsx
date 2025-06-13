@@ -25,6 +25,7 @@ import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 export const StrategyOverview = () => {
   const { strategyId } = useParams();
@@ -233,6 +234,17 @@ export const StrategyOverview = () => {
           </Button>
         </div>
       </div>
+
+      {userStrategy.pauseReason && (
+        <Alert variant="info" className="mb-4">
+          <AlertTitle className="text-sm font-semibold">
+            Strategy Paused
+          </AlertTitle>
+          <AlertDescription className="text-sm">
+            Due to {userStrategy.pauseReason}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Card className="shadow-sm">

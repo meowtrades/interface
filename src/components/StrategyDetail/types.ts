@@ -13,6 +13,7 @@ export interface UserStrategy {
   totalInvested: number;
   profit: number;
   profitPercentage: number;
+  pauseReason: string;
   invested: number;
   initialAmount: number;
   frequency: string;
