@@ -5,15 +5,54 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
 import { Transaction } from "@/api/types/dtos";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
+import { Skeleton } from "../ui/skeleton";
+import {
+  Cell,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { transactionToTableValues } from "@/lib/utils";
+
+const getToolTipValue = (cell: Cell<unknown, unknown>) => {
+  const value = cell.getValue();
+
+  console.log(value);
+
+  if (typeof value === "string") {
+    if (value.split(" ").length > 1) {
+      // If it's a string with a token, show only the amount
+      if (!isNaN(parseFloat(value.split(" ")[0]))) {
+        return (
+          parseFloat(value.split(" ")[0]).toFixed(2) + " " + value.split(" ")[1]
+        );
+      }
+    }
+
+    if (!isNaN(parseFloat(value))) {
+      return parseFloat(value).toFixed(2);
+    }
+  }
+
+  return value as string;
+};
 
 export const TransactionList = () => {
   const { strategyId } = useParams();
@@ -48,37 +87,8 @@ export const TransactionList = () => {
   });
 
   // Format dates for display
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  };
 
   // Format date and time for tooltips
-  const formatDateTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(date);
-  };
-
-  // Format currency values
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
 
   // Get transaction type label and color
   const getTransactionType = (type: string) => {
@@ -96,15 +106,19 @@ export const TransactionList = () => {
     }
   };
 
-  console.log(transactionsData);
-
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
       <Card className="shadow-sm">
         <div className="overflow-x-auto">
           {isLoading ? (
-            <div className="p-4">Loading transactions...</div>
+            <div className="p-4">
+              <Skeleton className="h-16 w-full mb-2" />
+              <Skeleton className="h-16 w-full mb-2" />
+              <Skeleton className="h-16 w-full mb-2" />
+              <Skeleton className="h-16 w-full mb-2" />
+              <Skeleton className="h-16 w-full mb-2" />
+            </div>
           ) : error ? (
             error.status === 404 ? (
               <div className="p-4">No transactions available.</div>
@@ -112,92 +126,9 @@ export const TransactionList = () => {
               <div className="p-4">Error loading transactions</div>
             )
           ) : transactionsData?.data && transactionsData.data.length > 0 ? (
-            <table className="w-full min-w-max">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Date
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Type
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Amount
-                  </th>
-                  <th className="text-left py-4 px-5 font-medium text-slate-500">
-                    Price
-                  </th>
-                  <th className="text-right py-4 px-5 font-medium text-slate-500">
-                    Value
-                  </th>
-                </tr>
-              </thead>
-              <TooltipProvider>
-                <tbody>
-                  {transactionsData.data.map((transaction, index) => {
-                    const type = getTransactionType(transaction.type);
-                    return (
-                      <tr key={index} className="border-b border-slate-100">
-                        <td
-                          className="py-4 px-5 text-slate-700"
-                          // title={new Date(transaction.createdAt).toLocaleString()}
-                        >
-                          <Tooltip>
-                            <TooltipTrigger>
-                              {formatDate(transaction.createdAt)}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              {formatDateTime(transaction.createdAt)}
-                            </TooltipContent>
-                          </Tooltip>
-                        </td>
-                        <td className="py-4 px-5">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${type.color}`}
-                          >
-                            {type.label}
-                          </span>
-                        </td>
-                        <td className="py-4 px-5 text-slate-700">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              {transaction.to.amount.toFixed(3)}{" "}
-                              {transaction.to.token}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Bought: {transaction.to.amount}{" "}
-                              {transaction.to.token}
-                            </TooltipContent>
-                          </Tooltip>
-                        </td>
-                        <td className="py-4 px-5 text-slate-700">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              {transaction.price.toFixed(2)} USD
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Price per {transaction.to.token}:{" "}
-                              {transaction.price} USD
-                            </TooltipContent>
-                          </Tooltip>
-                        </td>
-                        <td className="py-4 px-5 text-right text-slate-700">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              {formatCurrency(transaction.value)}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Total value in {transaction.to.token}:{" "}
-                              {formatCurrency(transaction.value)}
-                            </TooltipContent>
-                          </Tooltip>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </TooltipProvider>
-            </table>
+            <TransactionTable
+              data={transactionToTableValues(transactionsData.data)}
+            />
           ) : (
             <div className="p-4">No transactions available.</div>
           )}
@@ -234,5 +165,72 @@ export const TransactionList = () => {
         </div>
       </Card>
     </div>
+  );
+};
+
+const TransactionTable: FC<{
+  data: ReturnType<typeof transactionToTableValues>;
+}> = ({ data }) => {
+  console.log(data);
+
+  const columns = [
+    { accessorKey: "date", header: "Date" },
+    { accessorKey: "type", header: "Type" },
+    { accessorKey: "amount", header: "Amount" },
+    { accessorKey: "value", header: "Value" },
+    { accessorKey: "price", header: "Price" },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Date</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Value</TableHead>
+          <TableHead>Price</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map((row) => (
+            <TableRow
+              key={row.id}
+              data-state={row.getIsSelected() && "selected"}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  <Tooltip>
+                    {/* Show low precision value for trigger */}
+                    <TooltipTrigger>{getToolTipValue(cell)}</TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="h-24 text-center">
+              No results.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 };

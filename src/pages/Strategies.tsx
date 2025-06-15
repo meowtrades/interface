@@ -187,48 +187,50 @@ const Strategies = () => {
         </Select>
       </div>
 
-      <Tabs value={tab} className="mb-8">
-        <TabsList>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "available" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="available"
-          >
-            Available Strategies
-          </TabsTrigger>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "active" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="active"
-          >
-            Live Strategies ({activeRealStrategiesAnalytics?.length ?? 0})
-          </TabsTrigger>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "paper" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="paper"
-          >
-            Paper Trades ({activeMockStrategiesAnalytics?.length ?? 0})
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={tab} className="mb-8 w-full">
+        <div className="max-w-full">
+          <TabsList className="text-xs">
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "available" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="available"
+            >
+              Available
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "active" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="active"
+            >
+              Live ({activeRealStrategiesAnalytics?.length ?? 0})
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "paper" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="paper"
+            >
+              Paper ({activeMockStrategiesAnalytics?.length ?? 0})
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="available" className="pt-6">
           {isFetchingActiveMockStrategies ? (

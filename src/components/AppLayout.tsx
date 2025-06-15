@@ -60,10 +60,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex max-w-screen">
       {/* Desktop Sidebar - Increased width from w-56 to w-72 */}
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
-        <div className="p-6 border-b border-slate-200 bg-white">
+        <div className="p-2 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
             <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
           </Link>
@@ -145,7 +145,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
-            <div className="flex justify-between items-center p-6 border-b border-slate-200">
+            <div className="flex justify-between items-center p-2 border-b border-slate-200">
               <Link to="/" className="flex items-center gap-3">
                 <img
                   src="/logo.png"
@@ -161,7 +161,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               </button>
             </div>
 
-            <nav className="p-6">
+            <nav className="p-2">
               <ul className="space-y-3">
                 {navItems.map((item, index) => (
                   <li key={index}>
@@ -196,10 +196,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
 
         {/* Page Content - Increased horizontal padding and added max-width for better content width */}
-        <main className="flex-1 p-6 md:p-10 bg-slate-50 overflow-auto">
-          <div className="premium-container mx-auto w-full max-w-[1400px]">
-            {children}
-          </div>
+        <main className="flex-1 p-2 pt-4 md:p-10 bg-slate-50 overflow-auto">
+          <div className="premium-container mx-auto">{children}</div>
         </main>
       </div>
     </div>
