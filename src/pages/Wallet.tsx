@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChainToken } from "@/api";
+import { ChainToken, useUserBalances } from "@/api";
 // import WithdrawModal from "@/components/WithdrawModal";
 import DepositModal from "@/components/DepositModal";
 

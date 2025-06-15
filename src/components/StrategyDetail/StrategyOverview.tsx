@@ -209,22 +209,24 @@ export const StrategyOverview = () => {
             <RefreshCcw size={14} />
             Refresh
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => switchStrategyStatus()}
-            disabled={isSwitching}
-          >
-            {isSwitching || isLoadingUserStrategy ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : userStrategy.status === "active" ? (
-              <Pause size={14} />
-            ) : (
-              <Play size={14} />
-            )}
-            {userStrategy.status === "active" ? "Pause" : "Resume"}
-          </Button>
+          {userStrategy.chain !== "mock" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              onClick={() => switchStrategyStatus()}
+              disabled={isSwitching}
+            >
+              {isSwitching || isLoadingUserStrategy ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : userStrategy.status === "active" ? (
+                <Pause size={14} />
+              ) : (
+                <Play size={14} />
+              )}
+              {userStrategy.status === "active" ? "Pause" : "Resume"}
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
