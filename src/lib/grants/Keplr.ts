@@ -11,6 +11,12 @@ import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 
+declare global {
+  interface Window {
+    keplr: unknown;
+  }
+}
+
 export const getKeplrGrant = async () => {
   if (window.keplr) {
     console.log("Keplr is installed");

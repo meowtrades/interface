@@ -26,6 +26,7 @@ import { Strategy, Frequency, RiskLevel } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
+import WalletPicker from "./WalletPicker";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -302,14 +303,7 @@ const StartStrategyDialog = ({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            disabled={loading}
-            onClick={handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : "One Click Start"}
-          </Button>
+          <WalletPicker callback={handleSubmit} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

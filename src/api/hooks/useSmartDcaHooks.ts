@@ -29,20 +29,6 @@ export const useCreateDcaPlan = () => {
 
   return useMutation({
     mutationFn: async (planData: CreateDcaPlanDto) => {
-      const id = toast.loading(
-        `Please confirm the transaction in your wallet...`
-      );
-
-      try {
-        await getKeplrGrant();
-      } catch (error) {
-        toast.dismiss(id);
-        throw new Error("Permission denied");
-      }
-
-      toast.dismiss(id);
-      toast.success("Permission granted");
-
       const response = await axiosInstance.post<DcaPlan>(
         "/services/s-dca/create-plan",
         planData
