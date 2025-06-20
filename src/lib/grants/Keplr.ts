@@ -6,7 +6,7 @@ import {
   MsgGrant,
   getGenericAuthorizationFromMessageType,
 } from "@injectivelabs/sdk-ts";
-import { ChainId } from "@injectivelabs/ts-types";
+import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
@@ -49,6 +49,7 @@ export const getKeplrGrant = async () => {
     walletStrategy,
     simulateTx: true,
     network: Network.Testnet,
+    ethereumChainId: EthereumChainId.TestnetEvm,
     endpoints: getNetworkEndpoints(Network.Testnet),
   });
 

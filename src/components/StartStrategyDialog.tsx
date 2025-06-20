@@ -161,7 +161,6 @@ const StartStrategyDialog = ({
       riskLevel,
     });
 
-    // toast.success(`${strategy.name} started successfully!`);
     onClose();
   };
 
@@ -229,7 +228,7 @@ const StartStrategyDialog = ({
             </div>
 
             <div className={"flex gap-4"}>
-              <div className={"w-1/3"}>Lea
+              <div className={"w-1/3"}>
                 <Label htmlFor="token">Token</Label>
                 <Select value={tokenId} onValueChange={setTokenId}>
                   <SelectTrigger id="token">
