@@ -73,20 +73,9 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     frequency: string;
     slippage: number;
     riskLevel?: RiskLevel;
+    chain: string
   }) => {
-    // For now, we'll hardcode the chainId to the first supported chain
-    const chainId = strategy.supportedChains[0];
 
-    const durationOptions = [
-      { label: "1 Month", value: 30 },
-      { label: "3 Months", value: 90 },
-      { label: "6 Months", value: 180 },
-      { label: "1 Year", value: 365 },
-    ];
-
-    // const durationInMonths =
-    //   durationOptions.find((option) => option.label === data.duration)
-    //     ?.value || 30;
 
     const amountPerDay = data.amount;
 
@@ -95,7 +84,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       amount: amountPerDay,
       userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
       frequency: data.frequency as FrequencyOption,
-      chain: chainId,
+      chain: data.chain,
       riskLevel: data.riskLevel,
       strategyId: data.strategyId,
       tokenSymbol: data.tokenId,
@@ -204,6 +193,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
       {/* Strategy Start Dialog */}
       <StartStrategyDialog
+        supportedChains={strategy.supportedChains}
         loading={dcaMutation.isPending}
         strategy={strategy}
         open={startDialogOpen}

@@ -58,12 +58,14 @@ interface StartStrategyDialogProps {
   open: boolean;
   onClose: () => void;
   defaultToken?: string;
+  supportedChains: string[];
   onStartStrategy: (data: {
     strategyId: string;
     tokenId: string;
     amount: number;
     slippage: number;
     frequency: FrequencyOption;
+    chain: string;
     riskLevel?: RiskLevel;
   }) => Promise<void>;
 }
@@ -74,11 +76,13 @@ const StartStrategyDialog = ({
   open,
   onClose,
   defaultToken = "inj",
+  supportedChains,
   onStartStrategy,
 }: StartStrategyDialogProps) => {
   const [tokenId, setTokenId] = useState(defaultToken);
   const [amount, setAmount] = useState("1000");
   const [frequency, setFrequency] = useState(Frequency.DAILY);
+  const [chain, setChain] = useState("injective"); // Default to TEST_MINUTE for simplicity
   const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.MEDIUM_RISK);
   const [slippage, setSlippage] = useState(-1); // Default to -1 for auto slippage
 
@@ -150,6 +154,7 @@ const StartStrategyDialog = ({
     await onStartStrategy({
       strategyId: strategy.id,
       tokenId,
+      chain,
       amount: amountNum,
       frequency,
       slippage, // Default to -1 for auto slippage
@@ -181,24 +186,7 @@ const StartStrategyDialog = ({
 
         <div className="grid gap-6 py-4">
           <div className="grid gap-4">
-            <div>
-              <Label htmlFor="token">Token</Label>
-              <Select value={tokenId} onValueChange={setTokenId}>
-                <SelectTrigger id="token">
-                  <SelectValue placeholder="Select token" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tokens</SelectLabel>
-                    {strategy.supportedTokens.map((token) => (
-                      <SelectItem key={token} value={token}>
-                        {token.toUpperCase()}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+
 
             <div>
               <Label htmlFor="investment">Investment Amount (USD)</Label>
@@ -238,6 +226,48 @@ const StartStrategyDialog = ({
                   </SelectGroup>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className={"flex gap-4"}>
+              <div className={"w-1/3"}>Lea
+                <Label htmlFor="token">Token</Label>
+                <Select value={tokenId} onValueChange={setTokenId}>
+                  <SelectTrigger id="token">
+                    <SelectValue placeholder="Select token" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Tokens</SelectLabel>
+                      {strategy.supportedTokens.map((token) => (
+                        <SelectItem key={token} value={token}>
+                          {token.toUpperCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className={"w-2/3"}>
+                <Label htmlFor="chain">Chain</Label>
+                <Select
+                  value={chain}
+                  onValueChange={(value) => setChain(value)}
+                >
+                  <SelectTrigger id="frequency">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Chains</SelectLabel>
+                      {supportedChains.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option.split("-").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join(" ")}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Risk level slider for Smart DCA strategy */}

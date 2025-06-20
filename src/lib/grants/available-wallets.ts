@@ -17,7 +17,8 @@ export const availableWallets: AvailableWallets[] = [
     windowKey: "keplr",
     description: "Grant access to Keplr wallet",
     icon: "/icons/wallets/keplr.svg",
-    colorTheme: "bg-gradient-to-br from-[#23bcfe] to-[#7451fd] text-white",
+    colorTheme:
+      "bg-gradient-to-br from-[#23bcfe] to-[#7451fd] text-white bg-sca",
     action: getKeplrGrant,
   },
 ];

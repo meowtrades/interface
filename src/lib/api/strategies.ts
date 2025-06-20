@@ -46,7 +46,7 @@ const strategies: Strategy[] = [
       "AI-driven market timing optimization",
       "Buy more when prices dip, less when they rise",
     ],
-    supportedChains: ["injective"],
+    supportedChains: ["injective", "injective-evm"],
     supportedTokens: ["inj", "usdt"],
     performance: {
       inj: {
