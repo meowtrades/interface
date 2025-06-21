@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
+import { api } from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 // CSS for shining effect with pure CSS
 const shineStyles = `
@@ -65,62 +67,14 @@ const Leaderboard = () => {
     };
   }, []);
 
-  // const { data: leaderboard, isLoading } = useQuery({
-  //   queryKey: ["leaderboard"],
-  //   queryFn: async () => {
-  //     const response = await api.xp.leaderboard();
-  //     return response.data;
-  //   },
-  //   refetchInterval: 60000,
-  // });
-
-  const isLoading = false;
-
-  // Using a mock leaderboard for demonstration purposes
-  const leaderboard: Leaderboard = [
-    {
-      userId: "1",
-      username: "Alice",
-      xp: 1500,
-      avatarUrl: "https://example.com/avatar1.png",
+  const { data: leaderboard, isLoading } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: async () => {
+      const response = await api.xp.leaderboard();
+      return response.data;
     },
-    {
-      userId: "2",
-      username: "Bob",
-      xp: 1200,
-      avatarUrl: "https://example.com/avatar2.png",
-    },
-    {
-      userId: "3",
-      username: "Charlie",
-      xp: 1100,
-      avatarUrl: "https://example.com/avatar3.png",
-    },
-    {
-      userId: "4",
-      username: "David",
-      xp: 900,
-      avatarUrl: "https://example.com/avatar4.png",
-    },
-    {
-      userId: "5",
-      username: "Eve",
-      xp: 800,
-      avatarUrl: "https://example.com/avatar5.png",
-    },
-    {
-      userId: "6",
-      username: "Frank",
-      xp: 700,
-      avatarUrl: "https://example.com/avatar6.png",
-    },
-    {
-      userId: "7",
-      username: "Grace",
-      xp: 600,
-      avatarUrl: "https://example.com/avatar7.png",
-    },
-  ];
+    refetchInterval: 60000,
+  });
 
   // Animation variants for staggered animations
   const container = {
