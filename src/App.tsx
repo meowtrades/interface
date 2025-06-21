@@ -14,7 +14,7 @@ import StrategyDetail from "./pages/StrategyDetail";
 import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
-import { useQueryClient } from "@tanstack/react-query";
+import Leaderboard from "./pages/Leaderboard";
 
 window.Buffer = Buffer; // Polyfill Buffer for browser compatibility
 
@@ -73,6 +73,14 @@ const App = () => (
           element={
             <RequireAuth>
               <Navigate to="/app/dashboard" replace />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/app/leaderboard"
+          element={
+            <RequireAuth>
+              <Leaderboard/>
             </RequireAuth>
           }
         />

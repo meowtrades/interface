@@ -13,6 +13,7 @@ import {
   PlatformStatistics,
 } from "./types/dtos";
 import { ActiveStrategyAnalytics } from "./types";
+import type {Leaderboard} from "@/pages/Leaderboard.tsx";
 
 export const api = {
   plans: {
@@ -155,4 +156,7 @@ export const api = {
     updateAddress: (newAddress: string) =>
       axiosInstance.patch(`/user/address`, { newAddress }),
   },
+  xp: {
+    leaderboard: () => axiosInstance.get<Leaderboard>("/xp/leaderboard"),
+  }
 };

@@ -6,9 +6,9 @@ import {
   MsgGrant,
   getGenericAuthorizationFromMessageType,
 } from "@injectivelabs/sdk-ts";
-import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
+import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 
 declare global {
