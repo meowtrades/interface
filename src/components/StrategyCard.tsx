@@ -16,6 +16,11 @@ import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
 import { FrequencyOption, useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,
@@ -34,12 +39,14 @@ const ColorMap: Record<string, { bg: string; text: string }> = {
 interface StrategyCardProps {
   strategy: Strategy;
   selectedToken: string;
+  trending: boolean;
   onViewDetails: (strategyId: string) => void;
 }
 
 const StrategyCard: React.FC<StrategyCardProps> = ({
   strategy,
   selectedToken,
+  trending,
   onViewDetails,
 }) => {
   // Get color scheme based on strategy type
@@ -47,6 +54,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     bg: "bg-gray-100",
     text: "text-gray-600",
   };
+
+  console.log(trending);
 
   // Get performance data for selected token or first available
   const performance = strategy.performance?.[selectedToken] ||
@@ -73,10 +82,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     frequency: string;
     slippage: number;
     riskLevel?: RiskLevel;
-    chain: string
+    chain: string;
   }) => {
-
-
     const amountPerDay = data.amount;
 
     await dcaMutation.mutateAsync({
@@ -96,8 +103,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="w-full">
+            <div className="flex items-center gap-2 w-full">
               <div
                 className={`w-10 h-10 rounded-full ${colorScheme.bg} ${colorScheme.text} flex items-center justify-center`}
               >
@@ -105,7 +112,22 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
                   <RefreshCw size={20} />
                 )}
               </div>
-              <CardTitle>{strategy.name}</CardTitle>
+              <CardTitle className="flex items-center justify-between gap-2 w-full">
+                <span>{strategy.name}</span>
+                {trending && (
+                  <Tooltip>
+                    <TooltipTrigger className="cursor-pointer" asChild>
+                      <div className="text-xs text-crypto-green font-medium bg-green-100 px-2 py-1 rounded-full">
+                        Trending <TrendingUp size={14} className="inline" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      Investing in trending strategies can yield higher returns
+                      and pawscore.
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </CardTitle>
             </div>
             <CardDescription className="mt-2">
               {strategy.description}

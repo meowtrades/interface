@@ -114,19 +114,7 @@ const Leaderboard = () => {
     return (
       <AppLayout>
         <div className="p-4 max-w-4xl mx-auto">
-          <motion.h1
-            className="text-3xl font-bold mb-6 text-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 10,
-              duration: 0.5,
-            }}
-          >
-            Leaderboard
-          </motion.h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">Leaderboard</h1>
           <motion.div
             className="space-y-4"
             variants={container}
@@ -161,21 +149,12 @@ const Leaderboard = () => {
     <AppLayout>
       <div className="p-4 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="flex items-center justify-center mb-8"
         >
-          <motion.h1
-            className="text-3xl font-bold text-center"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 10,
-            }}
-          >
+          <motion.h1 className="text-3xl font-bold text-center">
             Leaderboard
           </motion.h1>
         </motion.div>
@@ -285,7 +264,7 @@ const Leaderboard = () => {
                 />
                 <span className="font-bold text-lg">{user.username}</span>
                 <span className="text-sm text-gray-600 mb-2">
-                  XP: {user.xp.toLocaleString()}
+                  {user.xp.toLocaleString()} paws
                 </span>
               </motion.div>
             );

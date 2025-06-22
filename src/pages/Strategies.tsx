@@ -76,6 +76,15 @@ const Strategies = () => {
 
   // console.log("activeStrategiesAnalytics", activeMockStrategiesAnalytics);
 
+  const { data: trendingStrategyId } = useQuery({
+    queryKey: ["trendingStrategyId"],
+    queryFn: async () => {
+      const { strategyId } = await api.strategies.getTrendingStrategy();
+      return strategyId;
+    },
+    refetchOnWindowFocus: false,
+  });
+
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
     ? getSupportedTokensForChain(selectedChain)
@@ -132,6 +141,8 @@ const Strategies = () => {
       </AppLayout>
     );
   }
+
+  console.log(availableStrategies, trendingStrategyId);
 
   return (
     <AppLayout>
@@ -243,6 +254,7 @@ const Strategies = () => {
               {availableStrategies.map((strategy) => (
                 <StrategyCard
                   key={strategy.id}
+                  trending={strategy.id === trendingStrategyId}
                   strategy={strategy}
                   selectedToken={selectedToken || "btc"}
                   onViewDetails={handleViewDetails}

@@ -13,7 +13,7 @@ import {
   PlatformStatistics,
 } from "./types/dtos";
 import { ActiveStrategyAnalytics } from "./types";
-import type {Leaderboard} from "@/pages/Leaderboard.tsx";
+import type { Leaderboard } from "@/pages/Leaderboard.tsx";
 
 export const api = {
   plans: {
@@ -142,6 +142,13 @@ export const api = {
           `/user/analytics/strategies/active/analytics`
         )
       ).data.data,
+    getTrendingStrategy: async () =>
+      (
+        await axiosInstance.get<{
+          message: "Trending strategy";
+          strategyId: string;
+        }>(`/available/strategies/trending`)
+      ).data,
   },
   admin: {
     getActivePlans: () => axiosInstance.get<DcaPlan[]>(`/admin/active-plans`),
@@ -158,5 +165,5 @@ export const api = {
   },
   xp: {
     leaderboard: () => axiosInstance.get<Leaderboard>("/xp/leaderboard"),
-  }
+  },
 };

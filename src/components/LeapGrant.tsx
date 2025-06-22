@@ -41,9 +41,9 @@ const LeapGrant = () => {
       chainId: ChainId.Testnet,
       wallet: Wallet.Leap,
       strategies: {},
-      ethereumOptions: {
-        ethereumChainId: EthereumChainId.Injective,
-      },
+      // ethereumOptions: {
+      //   ethereumChainId: EthereumChainId.Injective,
+      // },
     });
 
     await walletStrategy.enable();
