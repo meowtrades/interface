@@ -213,8 +213,7 @@ const StartStrategyDialog = ({
                 <span className="font-semibold text-green-600">
                   {strategy.name}
                 </span>{" "}
-                strategy is now running and will start executing trades
-                automatically.
+                is now running and will start executing trades automatically.
               </DialogDescription>
             </DialogHeader>
             <div className="py-6">
