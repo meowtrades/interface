@@ -27,9 +27,6 @@ import {
   RefreshCw,
   Grid,
   TrendingUp,
-  Loader2,
-  CheckCircle,
-  Sparkles,
   TrendingUp as TrendingUpIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -208,12 +205,6 @@ const StartStrategyDialog = ({
         {showSuccess ? ( // Success State
           <>
             <DialogHeader className="text-center">
-              <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center relative animate-pulse">
-                <CheckCircle className="w-8 h-8 text-white animate-bounce" />
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-spin">
-                  <Sparkles className="w-3 h-3 text-yellow-700" />
-                </div>
-              </div>
               <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                 🎉 Strategy Activated!
               </DialogTitle>
