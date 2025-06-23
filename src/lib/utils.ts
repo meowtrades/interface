@@ -4,6 +4,10 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Frequency, FREQUENCY_RANGE_MAP } from "./types";
 import { Transaction } from "@/api/types/dtos";
+import { IndexerGrpcAccountPortfolioApi } from "@injectivelabs/sdk-ts";
+import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
+import { USDT_DENOM } from "./constants";
+import { BigNumber } from "@injectivelabs/utils";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -93,4 +97,38 @@ export const formatCurrency = (value: number) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+};
+
+export const checkMinimumUSDTBalance = async (
+  granter: string,
+  requiredBalance: number
+) => {
+  const indexer = new IndexerGrpcAccountPortfolioApi(
+    getNetworkEndpoints(Network.Testnet).indexer
+  );
+
+  console.log("Fetching subaccount balance...");
+  // Check if the user has sufficient balance (must also include management fees)
+  const { bankBalancesList } = await indexer.fetchAccountPortfolioBalances(
+    granter
+  );
+
+  console.log(bankBalancesList);
+
+  const usdtBalance = bankBalancesList.find(
+    (balance) => balance.denom === USDT_DENOM
+  )?.amount;
+
+  const humanReadableBalance = BigNumber(usdtBalance).shiftedBy(-6); // Convert from smallest unit to human-readable (assuming USDT has 6 decimals)
+
+  console.log(humanReadableBalance, BigNumber(requiredBalance).toString());
+  if (humanReadableBalance.lt(requiredBalance)) {
+    throw new Error(
+      `Insufficient USDT balance. Required: $${requiredBalance.toFixed(
+        2
+      )}, Available: $${humanReadableBalance.toFixed(2)}`
+    );
+  }
+
+  return;
 };

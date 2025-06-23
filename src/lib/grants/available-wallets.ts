@@ -8,7 +8,7 @@ export type AvailableWallets = {
   icon: string;
   windowKey: string;
   colorTheme: string;
-  action: () => Promise<void>;
+  action: (enteredBalance: number) => Promise<void>;
 };
 
 export const availableWallets: AvailableWallets[] = [

@@ -1,21 +1,19 @@
 /** @format */
 
 import { availableWallets } from "@/lib/grants/available-wallets";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { MANAGEMENT_FEE } from "@/lib/constants";
 
 const WalletPicker = ({
   callback,
+  enteredBalance,
 }: {
   callback: (data: unknown) => Promise<void>;
+  enteredBalance?: number;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isWalletGrantPending, setisWalletGrantPending] = useState(false);
@@ -26,7 +24,7 @@ const WalletPicker = ({
         <Button className="bg-blue-600 hover:bg-blue-700 text-white">
           {isLoading ? <Loader2 className="animate-spin" /> : "Start Strategy"}
         </Button>
-      </DialogTrigger>
+      </DialogTrigger>{" "}
       <DialogContent>
         <h2>Select a Wallet</h2>
         {availableWallets
@@ -43,12 +41,31 @@ const WalletPicker = ({
                     try {
                       setIsLoading(true);
                       setisWalletGrantPending(true);
-                      await wallet.action();
+                      await wallet.action(enteredBalance);
                       setisWalletGrantPending(false);
                       toast.success(`Permission granted for ${wallet.name}`);
                       await callback(wallet.name);
                     } catch (error) {
-                      toast.error("Unable to grant access to wallet");
+                      console.error("Wallet grant error:", error);
+
+                      // Check if it's an insufficient balance error
+                      if (
+                        error instanceof Error &&
+                        error.message.includes("Insufficient USDT balance")
+                      ) {
+                        const totalRequired =
+                          (enteredBalance || 0) * (1 + MANAGEMENT_FEE);
+                        toast.error("Insufficient Balance", {
+                          description: `You need $${totalRequired.toFixed(
+                            2
+                          )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
+                            1
+                          )}% management fee) to start this strategy. Please add funds to your wallet.`,
+                          duration: 6000,
+                        });
+                      } else {
+                        toast.error("Unable to grant access to wallet");
+                      }
                     } finally {
                       setIsLoading(false);
                     }

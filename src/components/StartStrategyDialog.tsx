@@ -1,6 +1,7 @@
 /** @format */
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -28,11 +29,13 @@ import {
   Grid,
   TrendingUp,
   TrendingUp as TrendingUpIcon,
+  CheckCircle,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
 import WalletPicker from "./WalletPicker";
-import { useSearchParams } from "react-router-dom";
+import { MANAGEMENT_FEE } from "@/lib/constants";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -188,7 +191,24 @@ const StartStrategyDialog = ({
     } catch (error) {
       // Handle error - success state won't show
       console.error("Strategy creation failed:", error);
-      toast.error("Failed to activate strategy. Please try again.");
+
+      // Check if it's an insufficient balance error
+      if (
+        error instanceof Error &&
+        error.message.includes("Insufficient USDT balance")
+      ) {
+        const totalRequired = amountNum * (1 + MANAGEMENT_FEE);
+        toast.error("Insufficient Balance", {
+          description: `You need $${totalRequired.toFixed(
+            2
+          )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
+            1
+          )}% management fee) to start this strategy. Please add funds to your wallet.`,
+          duration: 6000,
+        });
+      } else {
+        toast.error("Failed to activate strategy. Please try again.");
+      }
     }
   };
 
@@ -204,6 +224,7 @@ const StartStrategyDialog = ({
       <DialogContent className="sm:max-w-[500px]">
         {showSuccess ? ( // Success State
           <>
+            {" "}
             <DialogHeader className="text-center">
               <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                 🎉 Strategy Activated!
@@ -307,6 +328,7 @@ const StartStrategyDialog = ({
             </DialogHeader>
             <div className="grid gap-6 py-4">
               <div className="grid gap-4">
+                {" "}
                 <div>
                   <Label htmlFor="investment">Investment Amount (USD)</Label>
                   <Input
@@ -324,8 +346,14 @@ const StartStrategyDialog = ({
                         10}
                     </p>
                   )}
+                  <p className="text-xs text-blue-600 mt-1">
+                    Balance required on each execution: $
+                    {(parseFloat(amount || "0") * (1 + MANAGEMENT_FEE)).toFixed(
+                      2
+                    )}{" "}
+                    (includes {(MANAGEMENT_FEE * 100).toFixed(1)}% platform fee)
+                  </p>
                 </div>
-
                 <div>
                   <Label htmlFor="frequency">Frequency</Label>
                   <Select
@@ -347,7 +375,6 @@ const StartStrategyDialog = ({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
                     <Label htmlFor="token">Token</Label>
@@ -395,7 +422,6 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 </div>
-
                 {/* Risk level slider for Smart DCA strategy */}
                 {
                   <div className="space-y-3">
@@ -422,7 +448,6 @@ const StartStrategyDialog = ({
                     </div>
                   </div>
                 }
-
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <Label htmlFor="slippage">Slippage Tolerance (%)</Label>
@@ -457,7 +482,10 @@ const StartStrategyDialog = ({
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <WalletPicker callback={handleSubmit} />
+              <WalletPicker
+                callback={handleSubmit}
+                enteredBalance={parseFloat(amount)}
+              />
             </DialogFooter>
           </>
         )}

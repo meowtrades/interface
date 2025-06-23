@@ -10,6 +10,8 @@ import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
+import { checkMinimumUSDTBalance } from "../utils";
+import { MANAGEMENT_FEE } from "../constants";
 
 declare global {
   interface Window {
@@ -17,7 +19,7 @@ declare global {
   }
 }
 
-export const getKeplrGrant = async () => {
+export const getKeplrGrant = async (enteredBalance: number) => {
   if (window.keplr) {
     console.log("Keplr is installed");
   }
@@ -32,16 +34,27 @@ export const getKeplrGrant = async () => {
 
   const [granter] = await walletStrategy.getAddresses();
 
+  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE; // Default to 0.01 if not provided
+
+  await checkMinimumUSDTBalance(granter, requiredBalance);
+
   console.log("Granter Address:", granter);
   const nowInSeconds = Math.floor(Date.now() / 1000);
   const expirationInSeconds = 30 * 24 * 60 * 60; // 30 days
 
-  const msg = MsgGrant.fromJSON({
+  const sportMarketOrderGrant = MsgGrant.fromJSON({
     granter: granter,
     grantee: "inj1g8lwgz26ej7crwt906wp6wsnwjteh2qk0h4n2n",
     authorization: getGenericAuthorizationFromMessageType(
       "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
     ),
+    expiration: nowInSeconds + expirationInSeconds,
+  });
+
+  const msgSendGrant = MsgGrant.fromJSON({
+    granter: granter,
+    grantee: "inj1g8lwgz26ej7crwt906wp6wsnwjteh2qk0h4n2n",
+    messageType: "/cosmos.bank.v1beta1.MsgSend",
     expiration: nowInSeconds + expirationInSeconds,
   });
 
@@ -55,8 +68,9 @@ export const getKeplrGrant = async () => {
 
   try {
     const results = await broadcaster.broadcast({
-      msgs: [msg],
+      msgs: [sportMarketOrderGrant, msgSendGrant],
       injectiveAddress: granter,
+      memo: "Granting permissions for trading and sending",
     });
 
     console.log("Grant Status:", results);
