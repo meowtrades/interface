@@ -34,12 +34,20 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
   const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentLivePrice, setCurrentLivePrice] = useState(data.currentPrice);
-
   const { prices, connectionStatus, lastUpdate, error } = useLivePrices({
     symbols: [data.tokenSymbol],
     onPriceUpdate: (update) => {
       if (update.symbol === data.tokenSymbol) {
         setCurrentLivePrice(update.price);
+
+        // Log price updates for testing
+        if (import.meta.env.DEV) {
+          console.log(`[${data.tokenSymbol}] Live price update:`, {
+            price: update.price,
+            timestamp: new Date(update.timestamp).toLocaleTimeString(),
+            amplified: true,
+          });
+        }
 
         // Add to price history
         setPriceHistory((prev) => {
@@ -126,10 +134,18 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
         <div className="flex items-center space-x-4">
           <CardTitle className="text-xl font-bold">
             {data.tokenSymbol} Grid Trading
-          </CardTitle>
+          </CardTitle>{" "}
           <Badge className={getRiskLevelColor(data.riskLevel)}>
             {data.riskLevel.replace("_", " ")}
           </Badge>
+          {import.meta.env.DEV && (
+            <Badge
+              variant="outline"
+              className="bg-yellow-50 text-yellow-700 border-yellow-300"
+            >
+              Testing Mode (10x Price Amplification)
+            </Badge>
+          )}
           <div className="flex items-center space-x-2">
             {getConnectionStatusIcon()}
             <span className="text-sm text-gray-600 capitalize">

@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { HermesClient } from "@pythnetwork/hermes-client";
 
+// Testing configuration
+const TESTING_MODE = import.meta.env.DEV; // Only apply in development
+const PRICE_AMPLIFICATION_FACTOR = 10; // Amplify price movements by 10x for testing
+
 export interface PriceUpdate {
   symbol: string;
   price: number;
@@ -58,9 +62,9 @@ export const useLivePrices = (
     "Connecting" | "Open" | "Closed" | "Error"
   >("Closed");
   const [error, setError] = useState<string | null>(null);
-
   const hermesClientRef = useRef<HermesClient | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const priceBaselinesRef = useRef<Record<string, number>>({});
 
   const initializeClient = useCallback(async () => {
     try {
@@ -95,14 +99,37 @@ export const useLivePrices = (
       const priceUpdates = await hermesClientRef.current.getLatestPriceUpdates(
         priceFeeds
       );
-
       priceUpdates.parsed?.forEach((priceData, index) => {
         const symbol = symbols[index];
         if (!symbol || !priceData.price) return;
 
-        const price =
+        let price =
           parseFloat(priceData.price.price) *
           Math.pow(10, priceData.price.expo);
+
+        // Apply price amplification for testing (development mode only)
+        if (TESTING_MODE) {
+          // Store the original price for reference
+          const originalPrice = price;
+
+          // Set baseline if not exists for this symbol
+          if (!priceBaselinesRef.current[symbol]) {
+            priceBaselinesRef.current[symbol] = price;
+            console.log(`Setting price baseline for ${symbol}: ${price}`);
+          }
+
+          // Calculate the difference from baseline and amplify it
+          const baseline = priceBaselinesRef.current[symbol];
+          const priceDeviation = price - baseline;
+          const amplifiedDeviation =
+            priceDeviation * PRICE_AMPLIFICATION_FACTOR;
+          price = baseline + amplifiedDeviation;
+
+          console.log(
+            `Price amplified for ${symbol} - Original: ${originalPrice}, Amplified: ${price} (${PRICE_AMPLIFICATION_FACTOR}x factor)`
+          );
+        }
+
         const timestamp = Date.now();
 
         const priceUpdate: PriceUpdate = {

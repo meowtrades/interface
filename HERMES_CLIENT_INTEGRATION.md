@@ -15,6 +15,19 @@ Instead of using Server-Sent Events (SSE) or WebSocket relays through our backen
 - **Better Reliability**: One less point of failure
 - **Real-time Data**: Pyth provides high-frequency price updates
 
+## Testing Features
+
+### Price Amplification (Development Mode Only)
+
+For testing purposes, both frontend and backend apply a **10x amplification factor** to price movements in development mode:
+
+- **Backend**: `PRICE_AMPLIFICATION_FACTOR = 10` in `backend/src/core/strategies/grid/index.ts`
+- **Frontend**: `PRICE_AMPLIFICATION_FACTOR = 10` in `interface/src/hooks/useLivePrices.ts`
+
+This amplifies price deviations from the baseline by 10x, making it easier to test grid trading triggers without waiting for significant market movements.
+
+**Note**: This only applies when `NODE_ENV === 'development'` (backend) or `import.meta.env.DEV` (frontend).
+
 ## Implementation
 
 ### Hook: `useLivePrices`
