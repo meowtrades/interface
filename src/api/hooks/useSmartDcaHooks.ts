@@ -29,10 +29,23 @@ export const useCreateDcaPlan = () => {
 
   return useMutation({
     mutationFn: async (planData: CreateDcaPlanDto) => {
-      const response = await axiosInstance.post<DcaPlan>(
-        "/services/s-dca/create-plan",
-        planData
-      );
+      let response;
+
+      switch (planData.strategyId) {
+        case "SDCA":
+          response = await axiosInstance.post<DcaPlan>(
+            "/services/s-dca/create-plan",
+            planData
+          );
+          break;
+
+        case "GRID":
+          response = await axiosInstance.post<DcaPlan>(
+            "/services/grid/create-plan",
+            planData
+          );
+          break;
+      }
 
       if (!response.data) {
         throw new Error("Failed to create DCA plan");

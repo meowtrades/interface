@@ -14,6 +14,7 @@ import {
   Cat,
   Bell,
   User,
+  Grid,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
@@ -39,7 +40,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   };
 
   if (!user) return null;
-
   const navItems = [
     {
       icon: <LayoutDashboard size={20} />,
@@ -56,7 +56,16 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       label: "Paper Trades",
       path: "/app/mock-trades",
     },
-    { icon: <Wallet size={20} />, label: "Wallet", path: "/app/wallet" },
+    {
+      icon: <Wallet size={20} />,
+      label: "Wallet",
+      path: "/app/wallet",
+    },
+    {
+      icon: <Grid size={20} />,
+      label: "Grid Visualization",
+      path: "/app/grid-visualization",
+    },
   ];
 
   return (
@@ -113,17 +122,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
-
-          {/* Search or Title */}
+          {/* Search or Title */}{" "}
           <div className="hidden md:block">
             <h1 className="text-xl font-medium text-slate-800">
               {location.pathname.includes("dashboard") && "Dashboard"}
               {location.pathname.includes("strategies") && "Trading Strategies"}
               {location.pathname.includes("mock-trades") && "Mock Trading"}
               {location.pathname.includes("wallet") && "Wallet"}
+              {location.pathname.includes("grid-visualization") &&
+                "Grid Visualization"}
             </h1>
           </div>
-
           {/* Right Side Actions */}
           <div className="flex items-center gap-5">
             <button className="p-2.5 rounded-full text-slate-600 hover:bg-slate-100 relative">

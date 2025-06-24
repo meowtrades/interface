@@ -17,6 +17,29 @@ import type { Leaderboard } from "@/pages/Leaderboard.tsx";
 
 export const api = {
   plans: {
+    grid: {
+      get: (id: string) =>
+        axiosInstance.get<DcaPlan>(`/services/grid/plans/${id}`),
+      getAll: () => axiosInstance.get<DcaPlan[]>(`/services/grid/plans`),
+      create: (data: CreateDcaPlanDto) =>
+        axiosInstance.post<DcaPlan>(`/services/grid/create-plan`, data),
+      stop: (id: string) =>
+        axiosInstance.post(`/services/grid/stop-plan/${id}`),
+      stopAll: (userId: string) =>
+        axiosInstance.post(`/services/grid/stop-all-plans/${userId}`),
+      pause: (planId: string) =>
+        axiosInstance.post<{
+          success: boolean;
+          message: string;
+          plan: DcaPlan;
+        }>(`/services/grid/pause-plan/${planId}`),
+      resume: (planId: string) =>
+        axiosInstance.post<{
+          success: boolean;
+          message: string;
+          plan: DcaPlan;
+        }>(`/services/grid/resume-plan/${planId}`),
+    },
     get: (id: string) =>
       axiosInstance.get<DcaPlan>(`/services/s-dca/plans/${id}`),
     getAll: () => axiosInstance.get<DcaPlan[]>(`/services/s-dca/plans`),
