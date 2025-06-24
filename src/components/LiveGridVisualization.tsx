@@ -42,11 +42,11 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
 
         // Log price updates for testing
         if (import.meta.env.DEV) {
-          console.log(`[${data.tokenSymbol}] Live price update:`, {
-            price: update.price,
-            timestamp: new Date(update.timestamp).toLocaleTimeString(),
-            amplified: true,
-          });
+          // console.log(`[${data.tokenSymbol}] Live price update:`, {
+          //   price: update.price,
+          //   timestamp: new Date(update.timestamp).toLocaleTimeString(),
+          //   amplified: true,
+          // });
         }
 
         // Add to price history

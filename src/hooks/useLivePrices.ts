@@ -115,7 +115,7 @@ export const useLivePrices = (
           // Set baseline if not exists for this symbol
           if (!priceBaselinesRef.current[symbol]) {
             priceBaselinesRef.current[symbol] = price;
-            console.log(`Setting price baseline for ${symbol}: ${price}`);
+            // console.log(`Setting price baseline for ${symbol}: ${price}`);
           }
 
           // Calculate the difference from baseline and amplify it
@@ -125,9 +125,9 @@ export const useLivePrices = (
             priceDeviation * PRICE_AMPLIFICATION_FACTOR;
           price = baseline + amplifiedDeviation;
 
-          console.log(
-            `Price amplified for ${symbol} - Original: ${originalPrice}, Amplified: ${price} (${PRICE_AMPLIFICATION_FACTOR}x factor)`
-          );
+          // console.log(
+          //   `Price amplified for ${symbol} - Original: ${originalPrice}, Amplified: ${price} (${PRICE_AMPLIFICATION_FACTOR}x factor)`
+          // );
         }
 
         const timestamp = Date.now();
