@@ -225,6 +225,7 @@ const MockTrades = () => {
               <Input
                 type="number"
                 min="10"
+                max="1000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="focus:border-crypto-blue"

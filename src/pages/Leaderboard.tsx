@@ -1,340 +1,271 @@
 /** @format */
 
-import { useEffect } from "react";
+import { api } from "@/api/client";
 import AppLayout from "@/components/AppLayout";
-import clsx from "clsx";
-import { AnimatePresence, motion } from "motion/react";
-import { api } from "@/api";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
 import { useQuery } from "@tanstack/react-query";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { TrendingUp } from "lucide-react";
 
-// CSS for shining effect with pure CSS
-const shineStyles = `
-  @keyframes shine {
-    0% { left: -100%; }
-    100% { left: 200%; }
-  }
-
-  .shine-effect {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .shine-effect::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .top-1.shine-effect::after {
-    animation: shine 2s infinite 0.5s;
-  }
-
-  .top-2.shine-effect::after {
-    animation: shine 2.5s infinite 1.2s;
-  }
-
-  .top-3.shine-effect::after {
-    animation: shine 3s infinite 0.8s;
-  }
-
-  .shine-on-hover:hover::after {
-    animation: shine 1s forwards;
-  }
-`;
-
-export type Leaderboard = {
-  avatarUrl?: string;
-  userId: string;
+export type LeaderboardUser = {
+  id: string;
+  avatarUrl: string;
+  name: string;
+  address: string;
+  executions: number;
   xp: number;
-  username?: string;
-}[];
+};
+
+export type Leaderboard = LeaderboardUser[];
 
 const Leaderboard = () => {
-  // Add CSS styles to the document
-  useEffect(() => {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = shineStyles;
-    document.head.appendChild(styleTag);
-
-    return () => {
-      document.head.removeChild(styleTag);
-    };
-  }, []);
-
-  const { data: leaderboard, isLoading } = useQuery({
+  const { data: leaderboard, isLoading } = useQuery<Leaderboard>({
     queryKey: ["leaderboard"],
     queryFn: async () => {
       const response = await api.xp.leaderboard();
+      console.log(response.data);
       return response.data;
+      // return [
+      //   {
+      //     id: "1",
+      //     avatarUrl: "",
+      //     name: "Roger Korsgaard",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 12,
+      //     xp: 497,
+      //   },
+      //   {
+      //     id: "2",
+      //     avatarUrl: "",
+      //     name: "Charlie Herwitz",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 8,
+      //     xp: 359,
+      //   },
+      //   {
+      //     id: "3",
+      //     avatarUrl: "",
+      //     name: "Ahmad Mango",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 5,
+      //     xp: 248,
+      //   },
+      //   {
+      //     id: "4",
+      //     avatarUrl: "",
+      //     name: "Cristofer George",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 3,
+      //     xp: 129,
+      //   },
+      //   {
+      //     id: "5",
+      //     avatarUrl: "",
+      //     name: "Roger K.",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 2,
+      //     xp: 37,
+      //   },
+      // ];
     },
-    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
   });
-
-  // Animation variants for staggered animations
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const item = {
-    hidden: { y: 20, opacity: 0 },
-    show: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring" as const, stiffness: 100, damping: 12 },
-    },
-  };
-
-  const getRankStyle = (index: number) => {
-    switch (index) {
-      case 0:
-        return "bg-gradient-to-r from-yellow-100 to-yellow-200 border-yellow-400";
-      case 1:
-        return "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-400";
-      case 2:
-        return "bg-gradient-to-r from-amber-100 to-amber-200 border-amber-400";
-      default:
-        return "bg-white hover:bg-gray-50";
-    }
-  };
 
   if (isLoading) {
     return (
       <AppLayout>
-        <div className="p-4 max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6 text-center">Leaderboard</h1>
-          <motion.div
-            className="space-y-4"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="h-16 bg-gray-200 rounded-lg"
-                variants={item}
-                layout
-              />
-            ))}
-          </motion.div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+          <div className="animate-pulse space-y-8">
+            <div className="h-8 bg-slate-300 rounded w-64 mx-auto"></div>
+            <div className="flex justify-center gap-4">
+              <div className="h-80 w-64 bg-slate-300 rounded-3xl"></div>
+              <div className="h-96 w-64 bg-slate-300 rounded-3xl"></div>
+              <div className="h-72 w-64 bg-slate-300 rounded-3xl"></div>
+            </div>
+          </div>
         </div>
       </AppLayout>
     );
   }
 
-  // For podium: center gold, left silver, right bronze
-  let podiumUsers: Leaderboard = [];
-  if (leaderboard.length === 1) {
-    podiumUsers = [leaderboard[0]];
-  } else if (leaderboard.length === 2) {
-    podiumUsers = [leaderboard[0], leaderboard[1]];
-  } else {
-    podiumUsers = [leaderboard[0], leaderboard[1], leaderboard[2]];
-  }
+  const getFirstInCenter = (data: Leaderboard) => {
+    if (data.length === 0) return [];
+    if (data.length === 1) return [data[0]];
+    if (data.length === 2) return [data[0], data[1]];
+
+    return [data[1], data[0], data[2]];
+  };
+
+  const topThree = getFirstInCenter(leaderboard?.slice(0, 3) || []);
+
+  const remainingUsers =
+    leaderboard?.slice(3).map((user, index) => ({
+      ...user,
+      rank: index + 4,
+    })) || [];
 
   return (
     <AppLayout>
-      <div className="p-4 max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-center mb-8"
-        >
-          <motion.h1 className="text-3xl font-bold text-center">
-            Leaderboard
-          </motion.h1>
-        </motion.div>
+      <div className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-meow-ginger/20 via-[#f9fafc] to-[#f9fafc] p-6">
+        {/* Champions Section */}
+        <div className="text-center mb-8 flex flex-col space-y-10">
+          <h1 className="text-6xl font-bold text-gray-300 mb-6">
+            Paws Leaderboard
+          </h1>
+          <TopThree users={topThree} />
+        </div>
 
-        {/* Podium for Top 3 */}
-        <motion.div
-          className={clsx(
-            "flex justify-center items-end gap-10 mb-10",
-            leaderboard.length === 1 && "justify-center",
-            leaderboard.length === 2 && "justify-center"
-          )}
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
-          {podiumUsers.map((user, i) => {
-            if (!user) return <div key={i} className="flex-1" />;
-            // Adjust props for 1 or 2 users
-            let prop;
-            if (leaderboard.length === 1) {
-              prop = {
-                color:
-                  "bg-gradient-to-t from-yellow-300 to-yellow-100 border-yellow-400",
-                shine: "top-1",
-                height: "h-72",
-                badge: "bg-yellow-500",
-                lift: "mt-0 z-20", // No negative margin
-              };
-            } else if (leaderboard.length === 2) {
-              prop = [
-                {
-                  color:
-                    "bg-gradient-to-t from-yellow-300 to-yellow-100 border-yellow-400",
-                  shine: "top-1",
-                  height: "h-72",
-                  badge: "bg-yellow-500",
-                  lift: "mt-0 z-20",
-                },
-                {
-                  color:
-                    "bg-gradient-to-t from-gray-300 to-gray-100 border-gray-400",
-                  shine: "top-2",
-                  height: "h-64",
-                  badge: "bg-gray-400",
-                  lift: "mt-4 z-10",
-                },
-              ][i];
-            } else {
-              prop = [
-                {
-                  color:
-                    "bg-gradient-to-t from-yellow-300 to-yellow-100 border-yellow-400",
-                  shine: "top-1",
-                  height: "h-72",
-                  badge: "bg-yellow-500",
-                  lift: "-mt-16 z-20",
-                },
-                {
-                  color:
-                    "bg-gradient-to-t from-gray-300 to-gray-100 border-gray-400",
-                  shine: "top-2",
-                  height: "h-64",
-                  badge: "bg-gray-400",
-                  lift: "mt-4 z-10",
-                },
-                {
-                  color:
-                    "bg-gradient-to-t from-amber-400 to-amber-200 border-amber-600",
-                  shine: "top-3",
-                  height: "h-56",
-                  badge: "bg-amber-600",
-                  lift: "mt-10 z-0",
-                },
-              ][i];
-            }
-            const rank = i + 1;
-            return (
-              <motion.div
-                key={user.userId}
-                variants={item}
-                className={clsx(
-                  "flex flex-col items-center justify-end rounded-xl border-2 shadow-md shine-effect pt-8 pb-2",
-                  prop.color,
-                  prop.shine,
-                  prop.height,
-                  prop.lift,
-                  "w-40 relative"
-                )}
-                style={{ minWidth: 120 }}
-              >
-                {/* Rank number badge on top left, absolute, not too big */}
-                <span
-                  className={clsx(
-                    "absolute left-3 top-3 px-3 py-1 rounded-full font-bold text-white shadow text-base z-10",
-                    prop.badge
-                  )}
-                  style={{ minWidth: 36, textAlign: "center" }}
-                >
-                  #{rank}
-                </span>
-                {/* User avatar sits on the card, not squished */}
-                <img
-                  src={user.avatarUrl}
-                  alt={user.username}
-                  className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-2 mt-4 z-0"
-                  style={{ objectFit: "cover" }}
-                />
-                <span className="font-bold text-lg">{user.username}</span>
-                <span className="text-sm text-gray-600 mb-2">
-                  {user.xp.toLocaleString()} paws
-                </span>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Rest of leaderboard */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="space-y-4"
-        >
-          <AnimatePresence>
-            {leaderboard.slice(3).map((user, index) => (
-              <motion.div
-                key={user.userId}
-                variants={item}
-                exit={{ opacity: 0, y: 20 }}
-                whileHover={{
-                  boxShadow:
-                    "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                className={clsx(
-                  "p-4 rounded-lg shadow-sm border shine-on-hover bg-white flex items-center gap-4"
-                )}
-                style={{ position: "relative" }}
-              >
-                <span className="w-8 h-8 flex items-center justify-center font-bold text-gray-500 text-lg">
-                  #{index + 4}
-                </span>
-                <div className="flex-1 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {user.avatarUrl && (
-                      <motion.img
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 200 }}
-                        src={user.avatarUrl}
-                        alt={user.username}
-                        className="w-8 h-8 rounded-full"
-                      />
-                    )}
-                    <motion.span
-                      className="font-semibold text-lg"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      {user.username}
-                    </motion.span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">XP:</span>
-                    <motion.span
-                      className="font-bold text-lg"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      {user.xp.toLocaleString()}
-                    </motion.span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {/* Leaderboard Table */}
+        <div className="max-w-6xl mx-auto mt-16">
+          <LeaderboardTable leaderboard={remainingUsers} />
+        </div>
       </div>
     </AppLayout>
+  );
+};
+
+const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
+  const getRankGradient = (index: number) => {
+    switch (index) {
+      case 0:
+        return "bg-gradient-to-tr from-emerald-50 via-yellow-200 to-green-50 to-white";
+      case 1:
+        return "bg-gradient-to-tr from-violet-100 via-blue-200 via-cyan-200 to-white";
+      case 2:
+        return "bg-gradient-to-tr from-violet-100 via-[#ffd2a5] to-white";
+      default:
+        return "";
+    }
+  };
+
+  const getRankSuffx = (index: number) => {
+    switch (index) {
+      case 0:
+        return "st";
+      case 1:
+        return "nd";
+      case 2:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  return (
+    <div className="flex gap-10 items-center justify-center">
+      {users.map((user, index) => (
+        <div className="flex flex-col w-72 h-72 border rounded-2xl overflow-clip shadow-lg bg-neutral-50">
+          <div
+            className={`rank-gradient h-2/5 ${getRankGradient(index)} relative`}
+          >
+            <i className="text-7xl text-black font-bold font-league-gothic flex items-start justify-end mr-10 mt-5 h-full gap-2 opacity-20">
+              {index + 1}
+              <span className="text-4xl">{getRankSuffx(index)}</span>
+            </i>
+          </div>
+          <div className="details h-3/5 relative">
+            <div className="absolute left-5 -top-7 flex items-center">
+              <img
+                src={user.avatarUrl}
+                className="min-w-24 min-h-24 bg-slate-700 rounded-full border-8 border-neutral-50"
+              />
+              <span className="text-lg font-bold text-gray-900 pl-4 text-start">
+                {user.name}
+              </span>
+            </div>
+            <div className="flex flex-col justify-center items-start h-full pl-5 mt-4">
+              <div className="divide-x-2 flex w-full">
+                <div className="flex flex-col w-full justify-start items-start pl-4">
+                  <span className="font-semibold">{user.executions}</span>
+                  <span className="font-bold opacity-50 text-sm">Trades</span>
+                </div>
+                <div className="flex flex-col w-full justify-start items-start pl-4">
+                  <span className="font-semibold">{user.xp}</span>
+                  <span className="font-bold opacity-50 text-sm">Paws</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const LeaderboardTable = ({
+  leaderboard,
+}: {
+  leaderboard: (LeaderboardUser & { rank: number })[];
+}) => {
+  const columns = [
+    { accessorKey: "rank", header: "Rank" },
+    { accessorKey: "name", header: "Name" },
+    { accessorKey: "xp", header: "XP" },
+    { accessorKey: "executions", header: "Executions" },
+  ];
+
+  const table = useReactTable({
+    data: leaderboard.map((user, index) => ({
+      ...user,
+      rank: index + 4,
+    })),
+
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <div className="w-full rounded-lg overflow-clip border">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100 rounded-t-lg">
+            <TableHead>Rank</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Paws</TableHead>
+            <TableHead>Executions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    <p>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </p>
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
