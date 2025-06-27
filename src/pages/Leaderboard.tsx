@@ -202,11 +202,24 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
               </div>
             </div>
             <div className="flex space-x-2 items-center justify-evenly mt-4">
-              <MonadCard className="w-3/4 h-16 after:-z-10">
-                <div className="h-full flex items-center justify-center bg-white">
-                  <h3 className="font-bold text-xl z-50 text-yellow-900">
-                    {user.xp} PAWS
+              <MonadCard className="w-2/5 h-16 after:-z-10">
+                <div className="h-full flex items-center justify-center bg-white flex-col">
+                  <h3 className="font-black text-xl z-50 text-rose-500">
+                    {user.xp}
                   </h3>
+                  <span className="text-xs text-gray-500 font-semibold uppercase">
+                    Paws
+                  </span>
+                </div>
+              </MonadCard>
+              <MonadCard className="w-2/5 h-16 after:-z-10">
+                <div className="h-full flex items-center justify-center bg-white flex-col">
+                  <h3 className="font-black text-xl z-50 text-accent">
+                    {user.executions}
+                  </h3>
+                  <span className="text-xs text-gray-500 font-semibold uppercase">
+                    Executions
+                  </span>
                 </div>
               </MonadCard>
             </div>
@@ -232,7 +245,7 @@ const LeaderboardTable = ({
   const table = useReactTable({
     data: leaderboard.map((user, index) => ({
       ...user,
-      rank: index + 4,
+      rank: "#" + (index + 4),
     })),
 
     columns,
@@ -240,17 +253,17 @@ const LeaderboardTable = ({
   });
 
   return (
-    <div className="w-full rounded-lg overflow-clip border">
+    <div className="w-full border-2 border-accent">
       <Table>
-        <TableHeader>
-          <TableRow className="bg-gray-100 rounded-t-lg">
-            <TableHead>Rank</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Paws</TableHead>
-            <TableHead>Executions</TableHead>
+        <TableHeader className="bg-accent text-white">
+          <TableRow className="bg-gray-100 rounded-t-lg bg-accent text-white">
+            <TableHead className="text-white uppercase">Rank</TableHead>
+            <TableHead className="text-white uppercase">Name</TableHead>
+            <TableHead className="text-white uppercase">Paws</TableHead>
+            <TableHead className="text-white uppercase">Executions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="font-bold">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -258,7 +271,12 @@ const LeaderboardTable = ({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={`${
+                      cell.column.id === "xp" ? "text-rose-500" : ""
+                    }`}
+                  >
                     <p>
                       {flexRender(
                         cell.column.columnDef.cell,
