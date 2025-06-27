@@ -55,6 +55,8 @@ const Strategies = () => {
       const {
         data: { data },
       } = await api.analytics.getActiveMockStrategies();
+
+      console.log("activeMockStrategiesAnalytics", data);
       return data;
     },
     refetchOnWindowFocus: false,
@@ -400,7 +402,7 @@ const Strategies = () => {
                           {userStrategy.strategyTemplate.id === "SDCA" && (
                             <RefreshCw size={20} />
                           )}
-                          {userStrategy.strategyTemplate.id === "Grid" && (
+                          {userStrategy.strategyTemplate.id === "GRID" && (
                             <Grid size={20} />
                           )}
                           {userStrategy.strategyTemplate.id ===

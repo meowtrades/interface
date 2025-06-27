@@ -34,8 +34,6 @@ import { transactionToTableValues } from "@/lib/utils";
 const getToolTipValue = (cell: Cell<unknown, unknown>) => {
   const value = cell.getValue();
 
-  console.log(value);
-
   if (typeof value === "string") {
     if (value.split(" ").length > 1) {
       // If it's a string with a token, show only the amount
@@ -90,21 +88,7 @@ export const TransactionList = () => {
 
   // Format date and time for tooltips
 
-  // Get transaction type label and color
-  const getTransactionType = (type: string) => {
-    if (!type) {
-      return { label: "Unknown", color: "bg-slate-100 text-slate-800" };
-    }
-
-    switch (type.toLowerCase()) {
-      case "buy":
-        return { label: "Buy", color: "bg-green-100 text-green-800" };
-      case "sell":
-        return { label: "Sell", color: "bg-red-100 text-red-800" };
-      default:
-        return { label: type, color: "bg-slate-100 text-slate-800" };
-    }
-  };
+  console.log(transactionsData);
 
   return (
     <div className="mb-6">
@@ -171,8 +155,6 @@ export const TransactionList = () => {
 const TransactionTable: FC<{
   data: ReturnType<typeof transactionToTableValues>;
 }> = ({ data }) => {
-  console.log(data);
-
   const columns = [
     { accessorKey: "date", header: "Date" },
     { accessorKey: "type", header: "Type" },
@@ -186,6 +168,18 @@ const TransactionTable: FC<{
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // Get transaction type styling
+  const getTransactionStyle = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "buy":
+        return "bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium";
+      case "sell":
+        return "bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium";
+      default:
+        return "bg-slate-100 text-slate-800 px-2 py-1 rounded-full text-xs font-medium";
+    }
+  };
 
   return (
     <Table>
@@ -207,18 +201,26 @@ const TransactionTable: FC<{
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
-                  <Tooltip>
-                    {/* Show low precision value for trigger */}
-                    <TooltipTrigger>{getToolTipValue(cell)}</TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {cell.column.id === "type" ? (
+                    <span
+                      className={getTransactionStyle(cell.getValue() as string)}
+                    >
+                      {(cell.getValue() as string).toUpperCase()}
+                    </span>
+                  ) : (
+                    <Tooltip>
+                      {/* Show low precision value for trigger */}
+                      <TooltipTrigger>{getToolTipValue(cell)}</TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </TableCell>
               ))}
             </TableRow>

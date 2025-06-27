@@ -48,6 +48,7 @@ export const StrategyOverview = () => {
       } = await api.strategies.getDetails(strategyId);
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 
   console.log(userStrategy);

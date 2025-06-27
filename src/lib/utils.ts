@@ -55,15 +55,28 @@ export const transactionToTableValues = (
   price: string;
   value: string;
 }[] => {
-  return transactions.map((transaction) => ({
-    type: transaction.type,
-    date: formatDate(transaction.createdAt),
-    amount: `${transaction.to.amount} ${transaction.to.token}`,
-    price: transaction.price.toString(),
-    value: `${transaction.to.amount * transaction.price} ${
-      transaction.from.token
-    }`,
-  }));
+  return transactions.map((transaction) => {
+    const isBuy = transaction.type.toLowerCase() === "buy";
+
+    // For display purposes:
+    // - Amount: Show the main asset being traded (tokens for buy, USDT for sell)
+    // - Value: Show the transaction value in USD
+    const displayAmount = isBuy
+      ? `${transaction.to.amount.toFixed(6)} ${transaction.to.token}` // Tokens received
+      : `${transaction.from.amount.toFixed(6)} ${transaction.from.token}`; // Tokens sold
+
+    const displayValue = transaction.value
+      ? `$${transaction.value.toFixed(2)}` // Use the value field if available
+      : `$${(transaction.to.amount * transaction.price).toFixed(2)}`; // Fallback calculation
+
+    return {
+      type: transaction.type,
+      date: formatDate(transaction.createdAt),
+      amount: displayAmount,
+      price: `$${transaction.price.toFixed(2)}`,
+      value: displayValue,
+    };
+  });
 };
 
 export const formatDateTime = (dateStr: string) => {

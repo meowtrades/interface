@@ -118,7 +118,7 @@ const Leaderboard = () => {
 
   return (
     <AppLayout>
-      <div className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-meow-ginger/20 via-[#f9fafc] to-[#f9fafc] p-6">
+      <div className="min-h-screen p-6">
         {/* Champions Section */}
         <div className="text-center mb-8 flex flex-col space-y-10">
           <h1 className="text-6xl font-bold text-gray-300 mb-6">
@@ -166,7 +166,10 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
   return (
     <div className="flex gap-10 items-center justify-center">
       {users.map((user, index) => (
-        <div className="flex flex-col w-72 h-72 border rounded-2xl overflow-clip shadow-lg bg-neutral-50">
+        <div
+          key={user.id}
+          className="flex flex-col w-72 h-72 border rounded-2xl overflow-clip shadow-lg bg-neutral-50"
+        >
           <div
             className={`rank-gradient h-2/5 ${getRankGradient(index)} relative`}
           >
@@ -179,7 +182,7 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
             <div className="absolute left-5 -top-7 flex items-center">
               <img
                 src={user.avatarUrl}
-                className="min-w-24 min-h-24 bg-slate-700 rounded-full border-8 border-neutral-50"
+                className="min-w-24 min-h-24 rounded-full border-8 border-neutral-50"
               />
               <span className="text-lg font-bold text-gray-900 pl-4 text-start">
                 {user.name}

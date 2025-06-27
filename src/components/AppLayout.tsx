@@ -15,6 +15,7 @@ import {
   Bell,
   User,
   Grid,
+  Trophy,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
@@ -66,10 +67,20 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       label: "Grid Visualization",
       path: "/app/grid-visualization",
     },
+    {
+      icon: <Trophy size={20} />,
+      label: "Leaderboard",
+      path: "/app/leaderboard",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex max-w-screen">
+    <div
+      className={`min-h-screen bg-slate-50 flex max-w-screen ${
+        location.pathname.includes("leaderboard") &&
+        "bg-grabg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-blue-300 to-white"
+      }`}
+    >
       {/* Desktop Sidebar - Increased width from w-56 to w-72 */}
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
         <div className="p-2 border-b border-slate-200 bg-white">
@@ -84,11 +95,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    location.pathname === item.path
-                      ? "bg-meow-siamese/10 text-meow-paw font-medium"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors `}
                 >
                   {item.icon}
                   <span className="text-base">{item.label}</span>
@@ -205,7 +212,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
 
         {/* Page Content - Increased horizontal padding and added max-width for better content width */}
-        <main className="flex-1 p-2 pt-4 md:p-10 bg-slate-50 overflow-auto">
+        <main
+          className={`flex-1 p-2 pt-4 md:p-10 bg-slate-50 overflow-auto ${
+            location.pathname.includes("leaderboard") &&
+            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-blue-200 to-white"
+          }`}
+        >
           <div className="premium-container mx-auto">{children}</div>
         </main>
       </div>
