@@ -36,7 +36,7 @@ const tokens: Token[] = [
 
 const strategies: Strategy[] = [
   {
-    id: "smart-dca",
+    id: "SDCA",
     name: "Smart DCA Strategy",
     description: "Dollar-cost averaging enhanced by market timing algorithms",
     type: "dca",
@@ -46,18 +46,16 @@ const strategies: Strategy[] = [
       "AI-driven market timing optimization",
       "Buy more when prices dip, less when they rise",
     ],
-    supportedChains: ["injective"],
+    supportedChains: ["injective", "injective-evm"],
     supportedTokens: ["inj", "usdt"],
     performance: {
       inj: {
-        year: 32.5,
         sixMonths: 18.3,
         threeMonths: 12.1,
         month: 5.4,
         week: 2.1,
       },
       usdt: {
-        year: 8.4,
         sixMonths: 5.7,
         threeMonths: 2.8,
         month: 1.2,
@@ -69,33 +67,32 @@ const strategies: Strategy[] = [
     },
     riskLevel: "low",
   },
-  // {
-  //   id: 'grid-trading',
-  //   name: 'Grid Trading Strategy',
-  //   description: 'Automated buy-low, sell-high across a price range',
-  //   type: 'grid',
-  //   icon: 'Grid',
-  //   features: [
-  //     'Buy at lower grid levels, sell at higher levels',
-  //     'Works well in ranging (sideways) markets',
-  //     'Captures small price movements repeatedly'
-  //   ],
-  //   supportedChains: ['injective'],
-  //   supportedTokens: ['inj'],
-  //   performance: {
-  //     'inj': {
-  //       year: 24.8,
-  //       sixMonths: 14.5,
-  //       threeMonths: 8.9,
-  //       month: 3.7,
-  //       week: 1.5
-  //     }
-  //   },
-  //   minInvestment: {
-  //     'injective': 20
-  //   },
-  //   riskLevel: 'medium'
-  // },
+  {
+    id: "GRID",
+    name: "Grid Trading Strategy",
+    description: "Automated buy-low, sell-high across a price range",
+    type: "grid",
+    icon: "Grid",
+    features: [
+      "Buy at lower grid levels, sell at higher levels",
+      "Works well in ranging (sideways) markets",
+      "Captures small price movements repeatedly",
+    ],
+    supportedChains: ["injective"],
+    supportedTokens: ["inj"],
+    performance: {
+      inj: {
+        sixMonths: 14.5,
+        threeMonths: 8.9,
+        month: 3.7,
+        week: 1.5,
+      },
+    },
+    minInvestment: {
+      injective: 20,
+    },
+    riskLevel: "medium",
+  },
   // {
   //   id: 'momentum',
   //   name: 'Momentum Strategy',

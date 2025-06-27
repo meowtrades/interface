@@ -12,10 +12,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
-import { Strategy, StrategyPerformance } from "@/lib/types";
+import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { useCreateDcaPlan } from "@/api";
+import { FrequencyOption, useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,
@@ -34,12 +39,14 @@ const ColorMap: Record<string, { bg: string; text: string }> = {
 interface StrategyCardProps {
   strategy: Strategy;
   selectedToken: string;
+  trending: boolean;
   onViewDetails: (strategyId: string) => void;
 }
 
 const StrategyCard: React.FC<StrategyCardProps> = ({
   strategy,
   selectedToken,
+  trending,
   onViewDetails,
 }) => {
   // Get color scheme based on strategy type
@@ -47,6 +54,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     bg: "bg-gray-100",
     text: "text-gray-600",
   };
+
+  console.log(trending);
 
   // Get performance data for selected token or first available
   const performance = strategy.performance?.[selectedToken] ||
@@ -71,31 +80,22 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     tokenId: string;
     amount: number;
     frequency: string;
-    riskLevel?: number;
+    slippage: number;
+    riskLevel?: RiskLevel;
+    chain: string;
   }) => {
-    // For now, we'll hardcode the chainId to the first supported chain
-    const chainId = strategy.supportedChains[0];
-
-    const durationOptions = [
-      { label: "1 Month", value: 30 },
-      { label: "3 Months", value: 90 },
-      { label: "6 Months", value: 180 },
-      { label: "1 Year", value: 365 },
-    ];
-
-    // const durationInMonths =
-    //   durationOptions.find((option) => option.label === data.duration)
-    //     ?.value || 30;
-
     const amountPerDay = data.amount;
 
     await dcaMutation.mutateAsync({
       userId: user?.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
       userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
-      frequency: "test_10_seconds",
-      chain: chainId,
-      riskLevel: "no_risk",
+      frequency: data.frequency as FrequencyOption,
+      chain: data.chain,
+      riskLevel: data.riskLevel,
+      strategyId: data.strategyId,
+      tokenSymbol: data.tokenId,
+      slippage: data.slippage, // Default to -1 for auto slippage
     });
   };
 
@@ -103,8 +103,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="w-full">
+            <div className="flex items-center gap-2 w-full">
               <div
                 className={`w-10 h-10 rounded-full ${colorScheme.bg} ${colorScheme.text} flex items-center justify-center`}
               >
@@ -112,7 +112,22 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
                   <RefreshCw size={20} />
                 )}
               </div>
-              <CardTitle>{strategy.name}</CardTitle>
+              <CardTitle className="flex items-center justify-between gap-2 w-full">
+                <span>{strategy.name}</span>
+                {trending && (
+                  <Tooltip>
+                    <TooltipTrigger className="cursor-pointer" asChild>
+                      <div className="text-xs text-crypto-green font-medium bg-green-100 px-2 py-1 rounded-full">
+                        Trending <TrendingUp size={14} className="inline" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      Investing in trending strategies can yield higher returns
+                      and pawscore.
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </CardTitle>
             </div>
             <CardDescription className="mt-2">
               {strategy.description}
@@ -164,7 +179,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
           <div className="grid grid-cols-5 gap-3">
             {[
-              { label: "1 Year", data: performance.year || 0 },
+              // { label: "1 Year", data: performance.year || 0 },
               { label: "6 Months", data: performance.sixMonths || 0 },
               { label: "3 Months", data: performance.threeMonths || 0 },
               { label: "1 Month", data: performance.month || 0 },
@@ -200,6 +215,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
       {/* Strategy Start Dialog */}
       <StartStrategyDialog
+        supportedChains={strategy.supportedChains}
         loading={dcaMutation.isPending}
         strategy={strategy}
         open={startDialogOpen}

@@ -11,10 +11,12 @@ import MockTrades from "./pages/MockTrades";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 import StrategyDetail from "./pages/StrategyDetail";
+import GridVisualization from "./pages/GridVisualization";
 import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
-import { useQueryClient } from "@tanstack/react-query";
+import Leaderboard from "./pages/Leaderboard";
+import LeaderboardInfo from "./pages/LeaderboardInfo";
 
 window.Buffer = Buffer; // Polyfill Buffer for browser compatibility
 
@@ -66,13 +68,28 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
-
         {/* App routes */}
         <Route
           path="/app"
           element={
             <RequireAuth>
               <Navigate to="/app/dashboard" replace />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/app/leaderboard"
+          element={
+            <RequireAuth>
+              <Leaderboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/app/leaderboard/info"
+          element={
+            <RequireAuth>
+              <LeaderboardInfo />
             </RequireAuth>
           }
         />
@@ -107,7 +124,7 @@ const App = () => (
               <MockTrades />
             </RequireAuth>
           }
-        />
+        />{" "}
         <Route
           path="/app/wallet"
           element={
@@ -116,7 +133,14 @@ const App = () => (
             </RequireAuth>
           }
         />
-
+        <Route
+          path="/app/grid-visualization"
+          element={
+            <RequireAuth>
+              <GridVisualization />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/admin/credits"
           element={
@@ -125,7 +149,6 @@ const App = () => (
             </RequireAuth>
           }
         />
-
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
       </Routes>

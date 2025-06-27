@@ -1,3 +1,6 @@
+/** @format */
+@import url("https://fonts.googleapis.com/css2?family=League+Gothic&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -75,23 +78,23 @@
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
   }
-  
+
   .glass-card {
     @apply bg-white shadow-lg border border-slate-100 rounded-lg hover:shadow-xl transition-all;
   }
-  
+
   .premium-card {
     @apply bg-white shadow-md border border-slate-100 rounded-lg hover:shadow-lg transition-all;
   }
-  
+
   .gradient-text {
     @apply text-transparent bg-clip-text bg-gradient-to-r from-meow-paw to-meow-tabby;
   }
-  
+
   .button-glow {
     @apply relative overflow-hidden;
   }
-  
+
   .button-glow::after {
     @apply content-[''] absolute inset-0 bg-gradient-to-r from-meow-paw to-meow-tabby bg-[length:200%_100%] animate-pulse-glow opacity-70 blur-xl -z-10;
   }
@@ -105,24 +108,27 @@
   }
 
   .premium-container {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto px-2.5 sm:px-6 lg:px-8;
   }
 
   .premium-panel {
     @apply bg-white rounded-xl shadow-md border border-slate-100;
   }
-  
+
   .premium-data-card {
     @apply bg-white p-6 rounded-xl shadow-md border border-slate-100 hover:shadow-lg transition-all;
   }
-  
+
   .trading-chart {
     @apply rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-white;
   }
-  
+
   .bg-grid-pattern {
-    background-image: 
-      linear-gradient(to right, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    background-image: linear-gradient(
+        to right,
+        rgba(37, 99, 235, 0.05) 1px,
+        transparent 1px
+      ),
       linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
     background-size: 24px 24px;
   }

@@ -41,7 +41,7 @@ export type DcaPlan = {
 // };
 
 export type Transaction = {
-  id: string;
+  _id: string;
   type: string;
   from: {
     token: string;

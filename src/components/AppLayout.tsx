@@ -14,6 +14,8 @@ import {
   Cat,
   Bell,
   User,
+  Grid,
+  Trophy,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
@@ -39,7 +41,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   };
 
   if (!user) return null;
-
   const navItems = [
     {
       icon: <LayoutDashboard size={20} />,
@@ -56,14 +57,33 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       label: "Paper Trades",
       path: "/app/mock-trades",
     },
-    { icon: <Wallet size={20} />, label: "Wallet", path: "/app/wallet" },
+    {
+      icon: <Wallet size={20} />,
+      label: "Wallet",
+      path: "/app/wallet",
+    },
+    {
+      icon: <Grid size={20} />,
+      label: "Grid Visualization",
+      path: "/app/grid-visualization",
+    },
+    {
+      icon: <Trophy size={20} />,
+      label: "Leaderboard",
+      path: "/app/leaderboard",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div
+      className={`min-h-screen bg-slate-50 flex max-w-screen ${
+        location.pathname.includes("leaderboard") &&
+        "bg-grabg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-blue-300 to-white"
+      }`}
+    >
       {/* Desktop Sidebar - Increased width from w-56 to w-72 */}
       <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
-        <div className="p-6 border-b border-slate-200 bg-white">
+        <div className="p-2 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
             <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
           </Link>
@@ -75,11 +95,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    location.pathname === item.path
-                      ? "bg-meow-siamese/10 text-meow-paw font-medium"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors `}
                 >
                   {item.icon}
                   <span className="text-base">{item.label}</span>
@@ -113,17 +129,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
-
-          {/* Search or Title */}
+          {/* Search or Title */}{" "}
           <div className="hidden md:block">
             <h1 className="text-xl font-medium text-slate-800">
               {location.pathname.includes("dashboard") && "Dashboard"}
               {location.pathname.includes("strategies") && "Trading Strategies"}
               {location.pathname.includes("mock-trades") && "Mock Trading"}
               {location.pathname.includes("wallet") && "Wallet"}
+              {location.pathname.includes("grid-visualization") &&
+                "Grid Visualization"}
             </h1>
           </div>
-
           {/* Right Side Actions */}
           <div className="flex items-center gap-5">
             <button className="p-2.5 rounded-full text-slate-600 hover:bg-slate-100 relative">
@@ -145,7 +161,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-white">
-            <div className="flex justify-between items-center p-6 border-b border-slate-200">
+            <div className="flex justify-between items-center p-2 border-b border-slate-200">
               <Link to="/" className="flex items-center gap-3">
                 <img
                   src="/logo.png"
@@ -161,7 +177,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               </button>
             </div>
 
-            <nav className="p-6">
+            <nav className="p-2">
               <ul className="space-y-3">
                 {navItems.map((item, index) => (
                   <li key={index}>
@@ -196,10 +212,13 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
 
         {/* Page Content - Increased horizontal padding and added max-width for better content width */}
-        <main className="flex-1 p-6 md:p-10 bg-slate-50 overflow-auto">
-          <div className="premium-container mx-auto w-full max-w-[1400px]">
-            {children}
-          </div>
+        <main
+          className={`flex-1 p-2 pt-4 md:p-10 bg-slate-50 overflow-auto ${
+            location.pathname.includes("leaderboard") &&
+            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-blue-200 to-white"
+          }`}
+        >
+          <div className="premium-container mx-auto">{children}</div>
         </main>
       </div>
     </div>

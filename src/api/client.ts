@@ -13,9 +13,33 @@ import {
   PlatformStatistics,
 } from "./types/dtos";
 import { ActiveStrategyAnalytics } from "./types";
+import type { Leaderboard } from "@/pages/Leaderboard.tsx";
 
 export const api = {
   plans: {
+    grid: {
+      get: (id: string) =>
+        axiosInstance.get<DcaPlan>(`/services/grid/plans/${id}`),
+      getAll: () => axiosInstance.get<DcaPlan[]>(`/services/grid/plans`),
+      create: (data: CreateDcaPlanDto) =>
+        axiosInstance.post<DcaPlan>(`/services/grid/create-plan`, data),
+      stop: (id: string) =>
+        axiosInstance.post(`/services/grid/stop-plan/${id}`),
+      stopAll: (userId: string) =>
+        axiosInstance.post(`/services/grid/stop-all-plans/${userId}`),
+      pause: (planId: string) =>
+        axiosInstance.post<{
+          success: boolean;
+          message: string;
+          plan: DcaPlan;
+        }>(`/services/grid/pause-plan/${planId}`),
+      resume: (planId: string) =>
+        axiosInstance.post<{
+          success: boolean;
+          message: string;
+          plan: DcaPlan;
+        }>(`/services/grid/resume-plan/${planId}`),
+    },
     get: (id: string) =>
       axiosInstance.get<DcaPlan>(`/services/s-dca/plans/${id}`),
     getAll: () => axiosInstance.get<DcaPlan[]>(`/services/s-dca/plans`),
@@ -24,6 +48,18 @@ export const api = {
     stop: (id: string) => axiosInstance.post(`/services/s-dca/stop-plan/${id}`),
     stopAll: (userId: string) =>
       axiosInstance.post(`/services/s-dca/stop-all-plans/${userId}`),
+    pause: (planId: string) =>
+      axiosInstance.post<{
+        success: boolean;
+        message: string;
+        plan: DcaPlan;
+      }>(`/services/s-dca/pause-plan/${planId}`),
+    resume: (planId: string) =>
+      axiosInstance.post<{
+        success: boolean;
+        message: string;
+        plan: DcaPlan;
+      }>(`/services/s-dca/resume-plan/${planId}`),
   },
   transactions: {
     get: (id: string) => axiosInstance.get<Transaction>(`/transactions/${id}`),
@@ -129,6 +165,13 @@ export const api = {
           `/user/analytics/strategies/active/analytics`
         )
       ).data.data,
+    getTrendingStrategy: async () =>
+      (
+        await axiosInstance.get<{
+          message: "Trending strategy";
+          strategyId: string;
+        }>(`/available/strategies/trending`)
+      ).data,
   },
   admin: {
     getActivePlans: () => axiosInstance.get<DcaPlan[]>(`/admin/active-plans`),
@@ -142,5 +185,8 @@ export const api = {
   user: {
     updateAddress: (newAddress: string) =>
       axiosInstance.patch(`/user/address`, { newAddress }),
+  },
+  xp: {
+    leaderboard: () => axiosInstance.get<Leaderboard>("/xp/leaderboard"),
   },
 };

@@ -80,9 +80,11 @@ const RecentActivities = () => {
                 minute: "2-digit",
               }).format(new Date(activity.createdAt));
 
+              // console.log(activity);
+
               return (
                 <div
-                  key={activity.id}
+                  key={activity._id}
                   className="flex items-center justify-between p-5"
                 >
                   <div className="flex items-center gap-4">

@@ -55,6 +55,8 @@ const Strategies = () => {
       const {
         data: { data },
       } = await api.analytics.getActiveMockStrategies();
+
+      console.log("activeMockStrategiesAnalytics", data);
       return data;
     },
     refetchOnWindowFocus: false,
@@ -75,6 +77,15 @@ const Strategies = () => {
   });
 
   // console.log("activeStrategiesAnalytics", activeMockStrategiesAnalytics);
+
+  const { data: trendingStrategyId } = useQuery({
+    queryKey: ["trendingStrategyId"],
+    queryFn: async () => {
+      const { strategyId } = await api.strategies.getTrendingStrategy();
+      return strategyId;
+    },
+    refetchOnWindowFocus: false,
+  });
 
   // Get supported tokens for the current chain
   const supportedTokens = selectedChain
@@ -133,6 +144,8 @@ const Strategies = () => {
     );
   }
 
+  console.log(availableStrategies, trendingStrategyId);
+
   return (
     <AppLayout>
       <div className="mb-6">
@@ -187,48 +200,50 @@ const Strategies = () => {
         </Select>
       </div>
 
-      <Tabs value={tab} className="mb-8">
-        <TabsList>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "available" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="available"
-          >
-            Available Strategies
-          </TabsTrigger>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "active" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="active"
-          >
-            Live Strategies ({activeRealStrategiesAnalytics?.length ?? 0})
-          </TabsTrigger>
-          <TabsTrigger
-            onClick={() =>
-              setSearchParams(
-                { tab: "paper" },
-                {
-                  replace: true,
-                }
-              )
-            }
-            value="paper"
-          >
-            Paper Trades ({activeMockStrategiesAnalytics?.length ?? 0})
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={tab} className="mb-8 w-full">
+        <div className="max-w-full">
+          <TabsList className="text-xs">
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "available" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="available"
+            >
+              Available
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "active" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="active"
+            >
+              Live ({activeRealStrategiesAnalytics?.length ?? 0})
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() =>
+                setSearchParams(
+                  { tab: "paper" },
+                  {
+                    replace: true,
+                  }
+                )
+              }
+              value="paper"
+            >
+              Paper ({activeMockStrategiesAnalytics?.length ?? 0})
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="available" className="pt-6">
           {isFetchingActiveMockStrategies ? (
@@ -241,6 +256,7 @@ const Strategies = () => {
               {availableStrategies.map((strategy) => (
                 <StrategyCard
                   key={strategy.id}
+                  trending={strategy.id === trendingStrategyId}
                   strategy={strategy}
                   selectedToken={selectedToken || "btc"}
                   onViewDetails={handleViewDetails}
@@ -386,7 +402,7 @@ const Strategies = () => {
                           {userStrategy.strategyTemplate.id === "SDCA" && (
                             <RefreshCw size={20} />
                           )}
-                          {userStrategy.strategyTemplate.id === "Grid" && (
+                          {userStrategy.strategyTemplate.id === "GRID" && (
                             <Grid size={20} />
                           )}
                           {userStrategy.strategyTemplate.id ===
