@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -17,7 +18,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { TrendingUp } from "lucide-react";
+import { Crown, Medal, TrendingUp, Trophy } from "lucide-react";
 
 export type LeaderboardUser = {
   id: string;
@@ -34,51 +35,51 @@ const Leaderboard = () => {
   const { data: leaderboard, isLoading } = useQuery<Leaderboard>({
     queryKey: ["leaderboard"],
     queryFn: async () => {
-      const response = await api.xp.leaderboard();
-      console.log(response.data);
-      return response.data;
-      // return [
-      //   {
-      //     id: "1",
-      //     avatarUrl: "",
-      //     name: "Roger Korsgaard",
-      //     address: "0x1234567890abcdef1234567890abcdef12345678",
-      //     executions: 12,
-      //     xp: 497,
-      //   },
-      //   {
-      //     id: "2",
-      //     avatarUrl: "",
-      //     name: "Charlie Herwitz",
-      //     address: "0x1234567890abcdef1234567890abcdef12345678",
-      //     executions: 8,
-      //     xp: 359,
-      //   },
-      //   {
-      //     id: "3",
-      //     avatarUrl: "",
-      //     name: "Ahmad Mango",
-      //     address: "0x1234567890abcdef1234567890abcdef12345678",
-      //     executions: 5,
-      //     xp: 248,
-      //   },
-      //   {
-      //     id: "4",
-      //     avatarUrl: "",
-      //     name: "Cristofer George",
-      //     address: "0x1234567890abcdef1234567890abcdef12345678",
-      //     executions: 3,
-      //     xp: 129,
-      //   },
-      //   {
-      //     id: "5",
-      //     avatarUrl: "",
-      //     name: "Roger K.",
-      //     address: "0x1234567890abcdef1234567890abcdef12345678",
-      //     executions: 2,
-      //     xp: 37,
-      //   },
-      // ];
+      // const response = await api.xp.leaderboard();
+      // console.log(response.data);
+      // return response.data;
+      return [
+        {
+          id: "1",
+          avatarUrl: "",
+          name: "Roger Korsgaard",
+          address: "0x1234567890abcdef1234567890abcdef12345678",
+          executions: 12,
+          xp: 497,
+        },
+        {
+          id: "2",
+          avatarUrl: "",
+          name: "Charlie Herwitz",
+          address: "0x1234567890abcdef1234567890abcdef12345678",
+          executions: 8,
+          xp: 359,
+        },
+        {
+          id: "3",
+          avatarUrl: "",
+          name: "Ahmad Mango",
+          address: "0x1234567890abcdef1234567890abcdef12345678",
+          executions: 5,
+          xp: 248,
+        },
+        {
+          id: "4",
+          avatarUrl: "",
+          name: "Cristofer George",
+          address: "0x1234567890abcdef1234567890abcdef12345678",
+          executions: 3,
+          xp: 129,
+        },
+        {
+          id: "5",
+          avatarUrl: "",
+          name: "Roger K.",
+          address: "0x1234567890abcdef1234567890abcdef12345678",
+          executions: 2,
+          xp: 37,
+        },
+      ];
     },
     refetchOnWindowFocus: false,
   });
@@ -121,7 +122,7 @@ const Leaderboard = () => {
       <div className="min-h-screen p-6">
         {/* Champions Section */}
         <div className="text-center mb-8 flex flex-col space-y-10">
-          <h1 className="text-6xl font-bold text-gray-300 mb-6">
+          <h1 className="text-6xl font-bold bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-neutral-900 via-cyan-500 to-stone-400 bg-clip-text text-transparent mb-6">
             Paws Leaderboard
           </h1>
           <TopThree users={topThree} />
@@ -136,72 +137,89 @@ const Leaderboard = () => {
   );
 };
 
+const MonadCard = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div
+      className={cn(
+        "hover:-translate-x-0.5 hover:-translate-y-0.5 ease-in-out duration-300 transform transition-all hover:after:translate-x-1 hover:after:translate-y-1 after:ease-in-out after:duration-300 bg-accent border-accent border-4 relative after:content-[''] after:absolute after:bg-accent after:w-full after:h-full after:-right-3 after:-bottom-3",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+};
+
 const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
-  const getRankGradient = (index: number) => {
+  const getRankColor = (index: number) => {
     switch (index) {
       case 0:
-        return "bg-gradient-to-tr from-emerald-50 via-yellow-200 to-green-50 to-white";
+        return "bg-[#e9b308]";
       case 1:
-        return "bg-gradient-to-tr from-violet-100 via-blue-200 via-cyan-200 to-white";
+        return "bg-[#9ca3ae]";
       case 2:
-        return "bg-gradient-to-tr from-violet-100 via-[#ffd2a5] to-white";
-      default:
-        return "";
+        return "bg-[#f49e0b]";
     }
   };
 
-  const getRankSuffx = (index: number) => {
+  const getIcon = (index: number) => {
     switch (index) {
       case 0:
-        return "st";
+        return <Crown className="text-yellow-800" size={24} />;
       case 1:
-        return "nd";
+        return <Trophy className="text-gray-800" size={24} />;
       case 2:
-        return "rd";
+        return <Medal className="text-orange-800" size={24} />;
       default:
-        return "th";
+        return null;
     }
   };
 
   return (
-    <div className="flex gap-10 items-center justify-center">
+    <div className="flex flex-col md:flex-row gap-10 items-center justify-center">
       {users.map((user, index) => (
-        <div
+        <MonadCard
+          className="flex flex-col items-center w-full md:w-1/3 h-80"
           key={user.id}
-          className="flex flex-col w-72 h-72 border rounded-2xl overflow-clip shadow-lg bg-neutral-50"
         >
           <div
-            className={`rank-gradient h-2/5 ${getRankGradient(index)} relative`}
+            className={`h-1/5 ${getRankColor(
+              index
+            )} w-full z-20 px-4 items-center flex`}
           >
-            <i className="text-7xl text-black font-bold font-league-gothic flex items-start justify-end mr-10 mt-5 h-full gap-2 opacity-20">
-              {index + 1}
-              <span className="text-4xl">{getRankSuffx(index)}</span>
-            </i>
+            <div className="items-center font-bold text-lg flex space-x-2">
+              {getIcon(index)}
+              <span>Rank #{index + 1}</span>
+            </div>
           </div>
-          <div className="details h-3/5 relative">
-            <div className="absolute left-5 -top-7 flex items-center">
+          <div className="h-4/5 w-full z-20 bg-neutral-100 flex flex-col pt-4">
+            <div className="flex justify-center flex-col items-center gap-2">
               <img
                 src={user.avatarUrl}
-                className="min-w-24 min-h-24 rounded-full border-8 border-neutral-50"
+                alt={`${user.name}'s avatar`}
+                className="w-20 h-20 object-cover rounded-full border-2 border-accent"
               />
-              <span className="text-lg font-bold text-gray-900 pl-4 text-start">
-                {user.name}
-              </span>
-            </div>
-            <div className="flex flex-col justify-center items-start h-full pl-5 mt-4">
-              <div className="divide-x-2 flex w-full">
-                <div className="flex flex-col w-full justify-start items-start pl-4">
-                  <span className="font-semibold">{user.executions}</span>
-                  <span className="font-bold opacity-50 text-sm">Trades</span>
-                </div>
-                <div className="flex flex-col w-full justify-start items-start pl-4">
-                  <span className="font-semibold">{user.xp}</span>
-                  <span className="font-bold opacity-50 text-sm">Paws</span>
-                </div>
+              <div className="flex flex-col items-center">
+                <h3 className="font-bold text-lg">{user.name}</h3>
               </div>
             </div>
+            <div className="flex space-x-2 items-center justify-evenly mt-4">
+              <MonadCard className="w-3/4 h-16 after:-z-10">
+                <div className="p-4 ">
+                  <h3 className="font-bold text-xl z-50 text-yellow-300">
+                    {user.xp} PAWS
+                  </h3>
+                </div>
+              </MonadCard>
+            </div>
           </div>
-        </div>
+        </MonadCard>
       ))}
     </div>
   );
