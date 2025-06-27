@@ -16,6 +16,7 @@ import AppProviders from "./components/AppProviders";
 import { authClient } from "@/lib/auth";
 import Admin from "./pages/admin/Credits";
 import Leaderboard from "./pages/Leaderboard";
+import LeaderboardInfo from "./pages/LeaderboardInfo";
 
 window.Buffer = Buffer; // Polyfill Buffer for browser compatibility
 
@@ -81,6 +82,14 @@ const App = () => (
           element={
             <RequireAuth>
               <Leaderboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/app/leaderboard/info"
+          element={
+            <RequireAuth>
+              <LeaderboardInfo />
             </RequireAuth>
           }
         />

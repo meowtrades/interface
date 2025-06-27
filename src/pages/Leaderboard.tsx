@@ -12,14 +12,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
 import { useQuery } from "@tanstack/react-query";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Crown, Medal, TrendingUp, Trophy } from "lucide-react";
+import { Crown, Medal, Trophy, Info } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export type LeaderboardUser = {
   _id: string;
@@ -116,7 +116,16 @@ const Leaderboard = () => {
         {/* Champions Section */}
         <div className="text-center mb-8 flex flex-col space-y-8">
           <div className="text-6xl font-bold bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-neutral-900 via-cyan-500 to-stone-400 bg-clip-text text-transparent mb-6">
-            <h1>Paws Leaderboard</h1>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <h1>Paws Leaderboard</h1>
+              <Link
+                to="/app/leaderboard/info"
+                className="text-accent hover:text-meow-ginger transition-colors"
+                title="How to earn PawScore"
+              >
+                <Info size={32} />
+              </Link>
+            </div>
             <p className="text-lg text-gray-700 mt-4">
               Meet our top traders who have clawed their way to the top of the
               leaderboard!
