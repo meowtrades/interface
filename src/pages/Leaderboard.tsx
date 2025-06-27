@@ -1,5 +1,6 @@
 /** @format */
 
+import React from "react";
 import { api } from "@/api/client";
 import AppLayout from "@/components/AppLayout";
 import {
@@ -21,7 +22,7 @@ import {
 import { Crown, Medal, TrendingUp, Trophy } from "lucide-react";
 
 export type LeaderboardUser = {
-  id: string;
+  _id: string;
   avatarUrl: string;
   name: string;
   address: string;
@@ -35,51 +36,51 @@ const Leaderboard = () => {
   const { data: leaderboard, isLoading } = useQuery<Leaderboard>({
     queryKey: ["leaderboard"],
     queryFn: async () => {
-      // const response = await api.xp.leaderboard();
-      // console.log(response.data);
-      // return response.data;
-      return [
-        {
-          id: "1",
-          avatarUrl: "",
-          name: "Roger Korsgaard",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 12,
-          xp: 497,
-        },
-        {
-          id: "2",
-          avatarUrl: "",
-          name: "Charlie Herwitz",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 8,
-          xp: 359,
-        },
-        {
-          id: "3",
-          avatarUrl: "",
-          name: "Ahmad Mango",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 5,
-          xp: 248,
-        },
-        {
-          id: "4",
-          avatarUrl: "",
-          name: "Cristofer George",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 3,
-          xp: 129,
-        },
-        {
-          id: "5",
-          avatarUrl: "",
-          name: "Roger K.",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 2,
-          xp: 37,
-        },
-      ];
+      const response = await api.xp.leaderboard();
+      console.log(response.data);
+      return response.data;
+      // return [
+      //   {
+      //     id: "1",
+      //     avatarUrl: "",
+      //     name: "Roger Korsgaard",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 12,
+      //     xp: 497,
+      //   },
+      //   {
+      //     id: "2",
+      //     avatarUrl: "",
+      //     name: "Charlie Herwitz",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 8,
+      //     xp: 359,
+      //   },
+      //   {
+      //     id: "3",
+      //     avatarUrl: "",
+      //     name: "Ahmad Mango",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 5,
+      //     xp: 248,
+      //   },
+      //   {
+      //     id: "4",
+      //     avatarUrl: "",
+      //     name: "Cristofer George",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 3,
+      //     xp: 129,
+      //   },
+      //   {
+      //     id: "5",
+      //     avatarUrl: "",
+      //     name: "Roger K.",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 2,
+      //     xp: 37,
+      //   },
+      // ];
     },
     refetchOnWindowFocus: false,
   });
@@ -113,10 +114,15 @@ const Leaderboard = () => {
     <AppLayout>
       <div className="min-h-screen p-6">
         {/* Champions Section */}
-        <div className="text-center mb-8 flex flex-col space-y-10">
-          <h1 className="text-6xl font-bold bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-neutral-900 via-cyan-500 to-stone-400 bg-clip-text text-transparent mb-6">
-            Paws Leaderboard
-          </h1>
+        <div className="text-center mb-8 flex flex-col space-y-8">
+          <div className="text-6xl font-bold bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-neutral-900 via-cyan-500 to-stone-400 bg-clip-text text-transparent mb-6">
+            <h1>Paws Leaderboard</h1>
+            <p className="text-lg text-gray-700 mt-4">
+              Meet our top traders who have clawed their way to the top of the
+              leaderboard!
+            </p>
+          </div>
+
           <TopThree users={topThree} />
         </div>
 
@@ -149,6 +155,16 @@ const MonadCard = ({
 };
 
 const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
+  const [imageErrors, setImageErrors] = React.useState<Set<string>>(new Set());
+
+  const handleImageError = (userId: string, avatarUrl: string) => {
+    console.error("Image failed to load:", avatarUrl);
+    setImageErrors((prev) => new Set(prev).add(userId));
+  };
+
+  const handleImageLoad = (avatarUrl: string) => {
+    console.log("Image loaded successfully:", avatarUrl);
+  };
   const getRankColor = (index: number) => {
     switch (index) {
       case 0:
@@ -178,7 +194,7 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
       {users.map((user, index) => (
         <MonadCard
           className="flex flex-col items-center w-full md:w-1/3 h-80"
-          key={user.id}
+          key={user._id}
         >
           <div
             className={`h-1/5 ${getRankColor(
@@ -192,11 +208,19 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
           </div>
           <div className="h-4/5 w-full z-20 bg-neutral-100 flex flex-col pt-4">
             <div className="flex justify-center flex-col items-center gap-2">
-              <img
-                src={user.avatarUrl}
-                alt={`${user.name}'s avatar`}
-                className="w-20 h-20 object-cover rounded-full border-2 border-accent"
-              />
+              {user.avatarUrl && !imageErrors.has(user._id) ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={`${user.name}'s avatar`}
+                  className="w-20 h-20 object-cover rounded-full border-2 border-accent"
+                  onError={() => handleImageError(user._id, user.avatarUrl)}
+                  onLoad={() => handleImageLoad(user.avatarUrl)}
+                />
+              ) : (
+                <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-accent flex items-center justify-center text-2xl">
+                  😺
+                </div>
+              )}
               <div className="flex flex-col items-center">
                 <h3 className="font-bold text-lg">{user.name}</h3>
               </div>
