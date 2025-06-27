@@ -101,15 +101,7 @@ const Leaderboard = () => {
     );
   }
 
-  const getFirstInCenter = (data: Leaderboard) => {
-    if (data.length === 0) return [];
-    if (data.length === 1) return [data[0]];
-    if (data.length === 2) return [data[0], data[1]];
-
-    return [data[1], data[0], data[2]];
-  };
-
-  const topThree = getFirstInCenter(leaderboard?.slice(0, 3) || []);
+  const topThree = leaderboard?.slice(0, 3) || [];
 
   const remainingUsers =
     leaderboard?.slice(3).map((user, index) => ({
@@ -147,7 +139,7 @@ const MonadCard = ({
   return (
     <div
       className={cn(
-        "hover:-translate-x-0.5 hover:-translate-y-0.5 ease-in-out duration-300 transform transition-all hover:after:translate-x-1 hover:after:translate-y-1 after:ease-in-out after:duration-300 bg-accent border-accent border-4 relative after:content-[''] after:absolute after:bg-accent after:w-full after:h-full after:-right-3 after:-bottom-3",
+        "hover:border-meow-ginger hover:bg-meow-ginger hover:after:bg-meow-ginger hover:-translate-x-0.5 hover:-translate-y-0.5 ease-in-out duration-300 transform transition-all hover:after:translate-x-1 hover:after:translate-y-1 after:ease-in-out after:duration-300 bg-accent border-accent border-4 relative after:content-[''] after:absolute after:bg-accent after:w-full after:h-full after:-right-3 after:-bottom-3",
         className
       )}
     >
@@ -211,8 +203,8 @@ const TopThree = ({ users }: { users: LeaderboardUser[] }) => {
             </div>
             <div className="flex space-x-2 items-center justify-evenly mt-4">
               <MonadCard className="w-3/4 h-16 after:-z-10">
-                <div className="p-4 ">
-                  <h3 className="font-bold text-xl z-50 text-yellow-300">
+                <div className="h-full flex items-center justify-center bg-white">
+                  <h3 className="font-bold text-xl z-50 text-yellow-900">
                     {user.xp} PAWS
                   </h3>
                 </div>
