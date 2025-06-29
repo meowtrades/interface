@@ -29,13 +29,13 @@ import {
   Grid,
   TrendingUp,
   TrendingUp as TrendingUpIcon,
-  CheckCircle,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
 import WalletPicker from "./WalletPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
+import { getLeapWalletAddress } from "@/lib/wallet";
+import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -75,12 +75,12 @@ interface StartStrategyDialogProps {
     slippage: number;
     frequency: FrequencyOption;
     chain: string;
+    recipientAddress?: string;
     riskLevel?: RiskLevel;
   }) => Promise<void>;
 }
 
 const StartStrategyDialog = ({
-  loading,
   strategy,
   open,
   onClose,
@@ -91,12 +91,14 @@ const StartStrategyDialog = ({
   const [tokenId, setTokenId] = useState(defaultToken);
   const [amount, setAmount] = useState("1000");
   const [frequency, setFrequency] = useState(Frequency.DAILY);
+  const [recipientAddress, setRecipientAddress] = useState<string>();
   const [chain, setChain] = useState("injective"); // Default to TEST_MINUTE for simplicity
   const [riskLevel, setRiskLevel] = useState<RiskLevel>(RiskLevel.MEDIUM_RISK);
   const [slippage, setSlippage] = useState(-1); // Default to -1 for auto slippage
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isRecipientAddressValid, setIsRecipientAddressValid] = useState(false);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [_searchParams, setSearchParams] = useSearchParams();
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -175,7 +177,8 @@ const StartStrategyDialog = ({
         tokenId,
         chain,
         amount: amountNum,
-        frequency: "daily",
+        frequency,
+        recipientAddress,
         slippage, // Default to -1 for auto slippage
         riskLevel,
       }); // Show success toast
@@ -379,6 +382,48 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 )}
+                {strategy.id === "SDCA" && (
+                  <div>
+                    <Label htmlFor="recipient">Recipient Address</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="recipient"
+                        type="text"
+                        className={`flex-1 ${
+                          isRecipientAddressValid
+                            ? "border-green-500"
+                            : "border-red-500"
+                        }`}
+                        placeholder="Enter recipient address"
+                        value={recipientAddress}
+                        onChange={(e) => {
+                          setRecipientAddress(e.target.value);
+
+                          if (!validateInjecitveWalletAddress(e.target.value)) {
+                            setIsRecipientAddressValid(false);
+                            return;
+                          }
+
+                          setIsRecipientAddressValid(true);
+                        }}
+                      />
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          getLeapWalletAddress().then((addr) => {
+                            setRecipientAddress(addr);
+
+                            if (validateInjecitveWalletAddress(addr)) {
+                              setIsRecipientAddressValid(true);
+                            }
+                          })
+                        }
+                      >
+                        Use My Address
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
                     <Label htmlFor="token">Token</Label>
@@ -487,6 +532,7 @@ const StartStrategyDialog = ({
                 Cancel
               </Button>
               <WalletPicker
+                disabled={!isRecipientAddressValid && strategy.id === "SDCA"}
                 callback={handleSubmit}
                 enteredBalance={parseFloat(amount)}
               />

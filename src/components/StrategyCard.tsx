@@ -21,6 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getLeapWalletAddress } from "@/lib/wallet";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,
@@ -81,15 +82,22 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     amount: number;
     frequency: string;
     slippage: number;
+    recipientAddress?: string;
     riskLevel?: RiskLevel;
     chain: string;
   }) => {
     const amountPerDay = data.amount;
 
+    console.log(data);
+
     await dcaMutation.mutateAsync({
       userId: user?.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
-      userWalletAddress: "inj10l9jcspxdud6ujjy4k22nlksdree2w9mamcqep",
+      userWalletAddress: await getLeapWalletAddress(),
+      recipientAddress:
+        data.strategyId === "SDCA"
+          ? data.recipientAddress
+          : await getLeapWalletAddress(),
       frequency: data.frequency as FrequencyOption,
       chain: data.chain,
       riskLevel: data.riskLevel,
