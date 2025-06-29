@@ -35,7 +35,7 @@ const HowItWorksSection = () => {
         <div className="grid md:grid-cols-4 gap-8 rounded-lg bg-white p-10 shadow-lg">
           {steps.map((step, index) => (
             <div key={index} className="text-center">
-              <div className="w-16 h-16 text-white bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="w-16 h-16 text-white bg-meow-ginger rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 {step.number}
               </div>
               <h3 className="text-lg font-semibold mb-3">{step.title}</h3>
