@@ -175,7 +175,7 @@ const StartStrategyDialog = ({
         tokenId,
         chain,
         amount: amountNum,
-        frequency,
+        frequency: "daily",
         slippage, // Default to -1 for auto slippage
         riskLevel,
       }); // Show success toast
@@ -354,27 +354,31 @@ const StartStrategyDialog = ({
                     (includes {(MANAGEMENT_FEE * 100).toFixed(1)}% platform fee)
                   </p>
                 </div>
-                <div>
-                  <Label htmlFor="frequency">Frequency</Label>
-                  <Select
-                    value={frequency}
-                    onValueChange={(value) => setFrequency(value as Frequency)}
-                  >
-                    <SelectTrigger id="frequency">
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Frequency</SelectLabel>
-                        {frequencyOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {strategy.id === "SDCA" && (
+                  <div>
+                    <Label htmlFor="frequency">Frequency</Label>
+                    <Select
+                      value={frequency}
+                      onValueChange={(value) =>
+                        setFrequency(value as Frequency)
+                      }
+                    >
+                      <SelectTrigger id="frequency">
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Frequency</SelectLabel>
+                          {frequencyOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
                     <Label htmlFor="token">Token</Label>

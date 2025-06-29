@@ -82,7 +82,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       }`}
     >
       {/* Desktop Sidebar - Increased width from w-56 to w-72 */}
-      <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white">
+      <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 bg-white z-10">
         <div className="p-2 border-b border-slate-200 bg-white">
           <Link to="/" className="flex items-center gap-3">
             <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
@@ -213,12 +213,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
         {/* Page Content - Increased horizontal padding and added max-width for better content width */}
         <main
-          className={`flex-1 p-2 pt-4 md:p-10 bg-slate-50 overflow-auto ${
-            location.pathname.includes("leaderboard") &&
-            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-blue-200 to-white"
-          }`}
+          className={`flex-1 ${
+            !location.pathname.includes("leaderboard") ? "p-2 pt-4 md:p-10" : ""
+          } bg-slate-50`}
         >
-          <div className="premium-container mx-auto">{children}</div>
+          <div
+            className={
+              !location.pathname.includes("leaderboard")
+                ? "premium-container mx-auto"
+                : "" + "overflow-y-scroll"
+            }
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>
