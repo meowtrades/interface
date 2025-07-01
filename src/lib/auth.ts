@@ -1,4 +1,3 @@
-"use client";
 import { AUTH_URL } from "@/configs/env";
 import { createAuthClient } from "better-auth/react";
 
