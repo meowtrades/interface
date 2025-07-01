@@ -10,9 +10,11 @@ import { MANAGEMENT_FEE } from "@/lib/constants";
 
 const WalletPicker = ({
   callback,
+  disabled = false,
   enteredBalance,
 }: {
   callback: (data: unknown) => Promise<void>;
+  disabled?: boolean;
   enteredBalance?: number;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +23,10 @@ const WalletPicker = ({
   return (
     <Dialog open={isWalletGrantPending} onOpenChange={setisWalletGrantPending}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button
+          disabled={disabled}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
           {isLoading ? <Loader2 className="animate-spin" /> : "Start Strategy"}
         </Button>
       </DialogTrigger>{" "}
