@@ -35,21 +35,11 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentLivePrice, setCurrentLivePrice] = useState(data.currentPrice);
   const { prices, connectionStatus, lastUpdate, error } = useLivePrices({
-    symbols: [data.tokenSymbol],
+    tokenIds: [data.tokenSymbol],
     onPriceUpdate: (update) => {
       if (update.symbol === data.tokenSymbol) {
         setCurrentLivePrice(update.price);
 
-        // Log price updates for testing
-        if (import.meta.env.DEV) {
-          // console.log(`[${data.tokenSymbol}] Live price update:`, {
-          //   price: update.price,
-          //   timestamp: new Date(update.timestamp).toLocaleTimeString(),
-          //   amplified: true,
-          // });
-        }
-
-        // Add to price history
         setPriceHistory((prev) => {
           const newHistory = [
             ...prev,
@@ -59,7 +49,6 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
             },
           ];
 
-          // Keep only the last N points
           if (newHistory.length > maxPricePoints) {
             return newHistory.slice(-maxPricePoints);
           }
@@ -84,21 +73,20 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
     }
   }, [data.currentPrice, priceHistory.length]);
 
-  const currentPrice = useMemo(() => {
-    return prices[data.tokenSymbol]?.price || currentLivePrice;
-  }, [prices, data.tokenSymbol, currentLivePrice]);
+  // Simple price calculation without useMemo to avoid re-render issues
+  const currentPrice = prices[data.tokenSymbol]?.price || currentLivePrice;
 
-  const priceChange = useMemo(() => {
+  const priceChange = (() => {
     if (priceHistory.length < 2) return 0;
     const firstPrice = priceHistory[0].price;
     return currentPrice - firstPrice;
-  }, [priceHistory, currentPrice]);
+  })();
 
-  const priceChangePercent = useMemo(() => {
+  const priceChangePercent = (() => {
     if (priceHistory.length < 2) return 0;
     const firstPrice = priceHistory[0].price;
     return ((currentPrice - firstPrice) / firstPrice) * 100;
-  }, [priceHistory, currentPrice]);
+  })();
 
   const getRiskLevelColor = (riskLevel: string) => {
     switch (riskLevel) {
@@ -138,14 +126,6 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
           <Badge className={getRiskLevelColor(data.riskLevel)}>
             {data.riskLevel.replace("_", " ")}
           </Badge>
-          {import.meta.env.DEV && (
-            <Badge
-              variant="outline"
-              className="bg-yellow-50 text-yellow-700 border-yellow-300"
-            >
-              Testing Mode (10x Price Amplification)
-            </Badge>
-          )}
           <div className="flex items-center space-x-2">
             {getConnectionStatusIcon()}
             <span className="text-sm text-gray-600 capitalize">
@@ -174,7 +154,9 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-sm text-gray-600">Current Price</p>
-            <p className="text-2xl font-bold">${currentPrice.toFixed(4)}</p>
+            <p className="text-2xl font-bold text-blue-600">
+              ${currentPrice.toFixed(4)}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-600">24h Change</p>
