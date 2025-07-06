@@ -27,7 +27,7 @@ import { Link } from "react-router-dom";
 
 const GridVisualization: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [testHermesClient, setTestHermesClient] = useState(false);
+  const [testLivePriceApi, setTestLivePriceApi] = useState(false);
 
   const {
     data: gridData,
@@ -40,15 +40,15 @@ const GridVisualization: React.FC = () => {
     refetchInterval: autoRefresh ? 10000 : undefined,
   });
 
-  // Test HermesClient integration
+  // Test Live Price API integration
   const {
     prices,
     connectionStatus,
-    error: hermesError,
+    error: priceApiError,
   } = useLivePrices({
-    symbols: testHermesClient ? ["SOL/USD", "BTC/USD"] : [],
+    tokenIds: testLivePriceApi ? ["SOL", "BTC"] : [],
     onPriceUpdate: (update) => {
-      console.log("Hermes price update:", update);
+      console.log("Live price update:", update);
     },
   });
 
@@ -60,8 +60,8 @@ const GridVisualization: React.FC = () => {
     setAutoRefresh(!autoRefresh);
   };
 
-  const toggleHermesTest = () => {
-    setTestHermesClient(!testHermesClient);
+  const toggleLivePriceTest = () => {
+    setTestLivePriceApi(!testLivePriceApi);
   };
 
   const getTotalStats = () => {
@@ -107,11 +107,11 @@ const GridVisualization: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={toggleHermesTest}
-              className={testHermesClient ? "bg-blue-50 border-blue-200" : ""}
+              onClick={toggleLivePriceTest}
+              className={testLivePriceApi ? "bg-blue-50 border-blue-200" : ""}
             >
               <TestTube className="w-4 h-4 mr-2" />
-              Test Hermes Client {testHermesClient ? "ON" : "OFF"}
+              Test Live Price API {testLivePriceApi ? "ON" : "OFF"}
             </Button>
             <Button
               variant="outline"
@@ -182,13 +182,13 @@ const GridVisualization: React.FC = () => {
             </CardContent>
           </Card>{" "}
         </div>
-        {/* HermesClient Test Panel */}
-        {testHermesClient && (
+        {/* Live Price API Test Panel */}
+        {testLivePriceApi && (
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-700">
                 <TestTube className="w-5 h-5" />
-                HermesClient Live Test
+                Live Price API Test
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -223,9 +223,9 @@ const GridVisualization: React.FC = () => {
                   )}
                 </div>
 
-                {hermesError && (
+                {priceApiError && (
                   <div className="bg-red-100 border border-red-200 rounded p-2">
-                    <p className="text-sm text-red-700">{hermesError}</p>
+                    <p className="text-sm text-red-700">{priceApiError}</p>
                   </div>
                 )}
 
@@ -349,8 +349,8 @@ const GridVisualization: React.FC = () => {
               <div className="flex items-center gap-2 text-blue-700">
                 <Activity className="w-4 h-4" />
                 <span className="text-sm font-medium">
-                  Live Hermes SSE Connection - Real-time Pyth Network price
-                  feeds
+                  Live Price API Connection - Real-time price feeds every 2
+                  seconds
                 </span>
               </div>
               <div className="flex items-center gap-4 text-xs text-gray-600">

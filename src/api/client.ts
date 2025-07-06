@@ -189,4 +189,11 @@ export const api = {
   xp: {
     leaderboard: () => axiosInstance.get<Leaderboard>("/xp/leaderboard"),
   },
+  price: {
+    getDetails: (tokenId: string) =>
+      axiosInstance.get<{
+        price: number;
+        message: string;
+      }>(`/available/price/${tokenId}`),
+  },
 };

@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bangjelkoski/node-stdlib-browser": "^0.0.1",
     "@bangjelkoski/vite-plugin-node-polyfills": "^0.0.2",
     "@hookform/resolvers": "^3.9.0",
     "@injectivelabs/networks": "^1.15.31",
@@ -24,7 +25,6 @@
     "@injectivelabs/wallet-private-key": "^1.15.25",
     "@injectivelabs/wallet-strategy": "^1.15.34",
     "@injectivelabs/wallet-wallet-connect": "latest",
-    "@pythnetwork/hermes-client": "^2.0.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
