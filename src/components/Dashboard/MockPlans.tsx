@@ -24,7 +24,7 @@ const MockPlans = () => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Paper Trades</h2>
         <Link
-          to="/app/strategies"
+          to="/app/strategies?tab=paper"
           className="text-blue-600 text-sm flex items-center"
         >
           View all <ArrowRight size={16} className="ml-1" />

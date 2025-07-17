@@ -126,11 +126,6 @@ export const api = {
       axiosInstance.get<{ data: UserStrategy }>(
         `/user/analytics/strategies/${strategyId}`
       ),
-    getMockChartData: (strategyId: string) =>
-      axiosInstance.get<{
-        data: { timestamp: number; price: number }[];
-        totalInvestment: number;
-      }>(`/mocktrades/chart/${strategyId}`),
     getChartData: (strategyId: string) =>
       axiosInstance.get<{
         data: { timestamp: number; price: number }[];

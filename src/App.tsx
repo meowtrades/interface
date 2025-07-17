@@ -123,14 +123,6 @@ const App = () => (
           }
         />{" "}
         <Route
-          path="/app/wallet"
-          element={
-            <RequireAuth>
-              <Wallet />
-            </RequireAuth>
-          }
-        />
-        <Route
           path="/app/grid-visualization"
           element={
             <RequireAuth>
