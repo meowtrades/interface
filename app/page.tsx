@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
     ArrowRight,
@@ -16,13 +16,13 @@ import {
     Activity,
     Zap,
     Package,
+    PawPrint,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MockTradingChart from "@/components/charts/MockTradingChart";
 
 const Index = () => {
-    const router = useRouter();
     const heroRef = useRef(null);
     const strategiesRef = useRef(null);
     const featuresRef = useRef(null);
@@ -53,57 +53,49 @@ const Index = () => {
         return () => observer.disconnect();
     }, []);
 
-    const handleStartStrategy = () => {
-        router.push("/app/dashboard");
-    };
-
-    const handleExploreDemo = () => {
-        router.push("/app/paper-trades");
-    };
-
-      const strategyCards = [
+          const strategyCards = [
     {
-      name: "Whisker DCA",
+      name: "Smart DCA",
       description:
         "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
       timeframe: "1 Year",
-      icon: <Activity className="w-8 h-8 text-blue-600" />,
+      icon: <Activity className="w-9 h-9 text-blue-600" />,
     },
     {
-      name: "Paw Grid Trading",
+      name: "Automated Grid Trading",
       description:
         "Automated trading across price ranges. Pounce on opportunities with calculated moves, just like a cat hunting.",
       timeframe: "1 Year",
-      icon: <TrendingUp className="w-8 h-8 text-blue-600" />,
+      icon: <TrendingUp className="w-9 h-9 text-blue-600" />,
     },
   ];
 
-      const features = [
-    {
-      icon: <MousePointerClick className="w-6 h-6 text-blue-600" />,
-      title: "One-Click Trading",
-      description:
-        "Start trading with just one click. No complex setup, no technical knowledge required - it's that simple.",
-    },
-    {
-      icon: <Package className="w-6 h-6 text-blue-600" />,
-      title: "Multiple Strategies",
-      description:
-        "Access a diverse collection of automated trading strategies, each designed for different market conditions.",
-    },
-    {
-      icon: <BarChart2 className="w-6 h-6 text-blue-600" />,
-      title: "Performance Preview",
-      description:
-        "See how each strategy would have performed over different timeframes before you invest.",
-    },
-    {
-      icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
-      title: "Risk-Free Mock Trading",
-      description:
-        "Practice with virtual funds before risking real money. Perfect your strategy in a safe environment.",
-    },
-  ];
+    const features = [
+        {
+            icon: <MousePointerClick className="w-6 h-6 text-blue-600" />,
+            title: "One-Click Trading",
+            description:
+                "Start trading with just one click. No complex setup, no technical knowledge required - it's that simple.",
+        },
+        {
+            icon: <Package className="w-6 h-6 text-blue-600" />,
+            title: "Multiple Strategies",
+            description:
+                "Access a diverse collection of automated trading strategies, each designed for different market conditions.",
+        },
+        {
+            icon: <BarChart2 className="w-6 h-6 text-blue-600" />,
+            title: "Performance Preview",
+            description:
+                "See how each strategy would have performed over different timeframes before you invest.",
+        },
+        {
+            icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
+            title: "Risk-Free Mock Trading",
+            description:
+                "Practice with virtual funds before risking real money. Perfect your strategy in a safe environment.",
+        },
+    ];
 
     const steps = [
         {
@@ -130,24 +122,79 @@ const Index = () => {
         <div className="min-h-screen flex flex-col bg-slate-50">
             <Navbar />
 
-                  {/* Hero Section */}
-      <section
-        ref={heroRef}
-        className="relative pt-28 pb-16 px-6 overflow-hidden"
-      >
+            {/* Hero Section */}
+            <section
+                ref={heroRef}
+                className="relative pt-32 pb-42 px-6 overflow-hidden min-h-screen"
+            >
                 {/* Clean Blue Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700"></div>
 
-                {/* Subtle decorative elements */}
-                <div className="absolute top-1/4 right-[20%] w-32 h-32 bg-white/5 rounded-full animate-pulse-slow"></div>
+                {/* Enhanced animated background elements */}
+                {/* Large morphing shapes */}
+                <div className="absolute top-1/4 right-[20%] w-32 h-32 bg-white/5 animate-morph"></div>
                 <div
-                    className="absolute bottom-1/4 left-[15%] w-24 h-24 bg-white/5 rounded-full animate-pulse-slow"
-                    style={{ animationDelay: "2s" }}
+                    className="absolute bottom-1/4 left-[15%] w-24 h-24 bg-white/5 animate-morph"
+                    style={{ animationDelay: "5s" }}
                 ></div>
+                
+                {/* Floating circles with different animations */}
                 <div className="absolute top-1/2 left-[10%] w-16 h-16 bg-white/10 rounded-full animate-float blur-lg"></div>
                 <div
                     className="absolute bottom-1/3 right-[15%] w-20 h-20 bg-white/10 rounded-full animate-float blur-lg"
                     style={{ animationDelay: "1s" }}
+                ></div>
+                <div
+                    className="absolute top-[60%] left-[25%] w-12 h-12 bg-white/8 rounded-full animate-drift blur-md"
+                    style={{ animationDelay: "3s" }}
+                ></div>
+                <div
+                    className="absolute top-[20%] left-[70%] w-28 h-28 bg-white/6 rounded-full animate-float-alternate blur-lg"
+                    style={{ animationDelay: "2s" }}
+                ></div>
+                
+                {/* Geometric shapes */}
+                <div
+                    className="absolute top-[35%] right-[25%] w-8 h-8 bg-white/15 animate-rotate-slow"
+                    style={{ 
+                        clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                        animationDelay: "1.5s"
+                    }}
+                ></div>
+                <div
+                    className="absolute bottom-[40%] left-[20%] w-6 h-6 bg-white/20 animate-rotate-slow"
+                    style={{ 
+                        animationDelay: "4s",
+                        animationDirection: "reverse"
+                    }}
+                ></div>
+                
+                {/* Moving gradient lines */}
+                <div
+                    className="absolute top-[15%] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-slide-horizontal blur-sm"
+                    style={{ animationDelay: "2.5s" }}
+                ></div>
+                <div
+                    className="absolute bottom-[25%] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-slide-horizontal blur-sm"
+                    style={{ animationDelay: "6s" }}
+                ></div>
+                
+                {/* Additional floating particles */}
+                <div
+                    className="absolute top-[25%] left-[5%] w-3 h-3 bg-white/25 rounded-full animate-drift"
+                    style={{ animationDelay: "7s" }}
+                ></div>
+                <div
+                    className="absolute bottom-[35%] right-[8%] w-4 h-4 bg-white/20 rounded-full animate-float-alternate"
+                    style={{ animationDelay: "3.5s" }}
+                ></div>
+                <div
+                    className="absolute top-[40%] right-[5%] w-2 h-2 bg-white/30 rounded-full animate-pulse-slow"
+                    style={{ animationDelay: "8s" }}
+                ></div>
+                <div
+                    className="absolute bottom-[15%] left-[8%] w-5 h-5 bg-white/15 rounded-full animate-drift blur-sm"
+                    style={{ animationDelay: "4.5s" }}
                 ></div>
 
                 <div className="container mx-auto relative z-10">
@@ -171,54 +218,58 @@ const Index = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                            <Button
-                                onClick={handleStartStrategy}
-                                className="group bg-white text-blue-600 hover:bg-white/95 px-6 py-4 text-base rounded-xl shadow-lg hover:shadow-xl hover-lift font-semibold transition-all duration-300"
-                            >
-                                <span className="flex items-center">
-                                    Trade with One Click
-                                    <Zap className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                                </span>
-                            </Button>
+                            <Link href="/app/dashboard">
+                                <Button className="group bg-white text-blue-600 hover:bg-white/95 px-6 py-4 text-base rounded-xl shadow-lg hover:shadow-xl hover-lift font-semibold transition-all duration-300">
+                                    <span className="flex items-center">
+                                        Trade with One Click
+                                        <Zap className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                                    </span>
+                                </Button>
+                            </Link>
 
-                            <Button
-                                onClick={handleExploreDemo}
-                                variant="outline"
-                                className="group px-6 py-4 text-base rounded-xl text-white bg-white/10 hover:bg-white/20 shadow-lg hover:shadow-xl hover-lift border-2 border-white/30 backdrop-blur-sm transition-all duration-300 hover:border-white/50"
-                            >
-                                <span className="flex items-center">
-                                    Try Risk-Free Demo
-                                    <TrendingUp className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                                </span>
-                            </Button>
+                            <Link href="/paws-program">
+                                <Button
+                                    variant="outline"
+                                    className="group px-6 py-4 text-base rounded-xl text-white bg-white/10 hover:bg-white/20 shadow-lg hover:shadow-xl hover-lift border-2 border-white/30 backdrop-blur-sm transition-all duration-300 hover:border-white/50"
+                                >
+                                    <span className="flex items-center">
+                                        Earn Paws
+                                        <PawPrint className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                    </span>
+                                </Button>
+                            </Link>
                         </div>
 
                         {/* Strategy Cards Preview */}
-                        <div className="max-w-5xl mx-auto">
-                            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-3d border border-white/20">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-10 shadow-3d border border-white/20">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     {strategyCards.map((strategy, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white rounded-2xl p-6 shadow-3d-soft hover:shadow-3d-hover-soft hover-lift transition-all duration-300"
+                                            className="bg-white rounded-2xl p-8 shadow-3d-soft hover:shadow-3d-hover-soft hover-lift transition-all duration-300"
                                         >
-                                                                                    <div className="flex items-center gap-3 mb-4">
+                                                                                    <div className="flex items-center gap-4 mb-6">
                                             {strategy.icon}
-                                            <h3 className="font-bold text-lg text-gray-900">
+                                            <h3 className="font-bold text-xl text-gray-900">
                                                 {strategy.name}
                                             </h3>
                                         </div>
-                                        <p className="text-gray-600 mb-6 text-xs leading-relaxed">
+                                                                                    <p className="text-gray-600 mb-8 text-sm leading-relaxed">
                                             {strategy.description}
                                         </p>
-                                                                                    <Button
-                                            size="sm"
-                                            onClick={handleStartStrategy}
-                                            className="w-full group gradient-bg-primary hover:opacity-90 text-white shadow-sm hover:shadow-md text-xs"
-                                        >
-                                            Start With One Click
-                                            <ArrowRight className="ml-2 h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
-                                        </Button>
+                                                                                         <Link
+                                                 href="/app/paper-trades"
+                                                 className="w-full"
+                                             >
+                                                  <Button
+                                                      size="sm"
+                                                      className="w-full group gradient-bg-primary hover:opacity-90 text-white shadow-sm hover:shadow-md text-sm py-3"
+                                                  >
+                                                      Try Risk-Free Demo
+                                                      <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                                  </Button>
+                                             </Link>
                                         </div>
                                     ))}
                                 </div>
@@ -226,10 +277,26 @@ const Index = () => {
                         </div>
                     </div>
                 </div>
+                
+                {/* Wavy Section Divider */}
+                <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+                    <svg
+                        className="relative block w-full h-20"
+                        data-name="Layer 1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 1200 120"
+                        preserveAspectRatio="none"
+                    >
+                        <path
+                            d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"
+                            className="fill-white/50"
+                        ></path>
+                    </svg>
+                </div>
             </section>
 
-                  {/* Strategies Showcase Section */}
-      <section ref={strategiesRef} className="py-20 px-6 bg-white/50">
+            {/* Strategies Showcase Section */}
+            <section ref={strategiesRef} className="py-20 px-6 bg-white/50">
                 <div className="container mx-auto">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12 animate-on-scroll">
@@ -263,32 +330,32 @@ const Index = () => {
                             </div>
 
                             <div className="space-y-6 animate-on-scroll">
-                                                                    {[
-                                        {
-                                            icon: (
-                                                <BadgeDollarSign className="w-6 h-6 text-blue-600" />
-                                            ),
-                                            title: "Historical Performance",
-                                            description:
-                                                "See how each strategy would have performed with a $100 investment over different timeframes.",
-                                        },
-                                        {
-                                            icon: (
-                                                <LineChart className="w-6 h-6 text-blue-600" />
-                                            ),
-                                            title: "Strategy Diversity",
-                                            description:
-                                                "Choose from multiple strategies with different approaches to market volatility and risk profiles.",
-                                        },
-                                        {
-                                            icon: (
-                                                <MousePointerClick className="w-6 h-6 text-blue-600" />
-                                            ),
-                                            title: "One-Click Entry",
-                                            description:
-                                                "Start trading any strategy with just one click - no complex setup or technical knowledge required.",
-                                        },
-                                    ].map((item, index) => (
+                                {[
+                                    {
+                                        icon: (
+                                            <BadgeDollarSign className="w-6 h-6 text-blue-600" />
+                                        ),
+                                        title: "Historical Performance",
+                                        description:
+                                            "See how each strategy would have performed with a $100 investment over different timeframes.",
+                                    },
+                                    {
+                                        icon: (
+                                            <LineChart className="w-6 h-6 text-blue-600" />
+                                        ),
+                                        title: "Strategy Diversity",
+                                        description:
+                                            "Choose from multiple strategies with different approaches to market volatility and risk profiles.",
+                                    },
+                                    {
+                                        icon: (
+                                            <MousePointerClick className="w-6 h-6 text-blue-600" />
+                                        ),
+                                        title: "One-Click Entry",
+                                        description:
+                                            "Start trading any strategy with just one click - no complex setup or technical knowledge required.",
+                                    },
+                                ].map((item, index) => (
                                     <div
                                         key={index}
                                         className="flex items-start gap-4 hover-lift transition-all duration-300"
@@ -308,13 +375,12 @@ const Index = () => {
                                 ))}
 
                                 <div className="pt-4">
-                                    <Button
-                                        onClick={handleExploreDemo}
-                                        className="group bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white py-3 px-6 rounded-xl shadow-3d-blue hover:shadow-3d-hover-blue hover-lift text-sm"
-                                    >
-                                        Explore All Strategies
-                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                                    </Button>
+                                    <Link href="/app/paper-trades">
+                                        <Button className="group bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white py-3 px-6 rounded-xl shadow-3d-blue hover:shadow-3d-hover-blue hover-lift text-sm">
+                                            Explore All Strategies
+                                            <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -322,8 +388,8 @@ const Index = () => {
                 </div>
             </section>
 
-                  {/* Features Section */}
-      <section ref={featuresRef} className="py-20 px-6 bg-slate-50">
+            {/* Features Section */}
+            <section ref={featuresRef} className="py-20 px-6 bg-slate-50">
                 <div className="container mx-auto">
                     <h2 className="text-2xl md:text-4xl font-bold text-center mb-16 text-gray-900 animate-on-scroll">
                         Trading Made{" "}
@@ -354,8 +420,8 @@ const Index = () => {
                 </div>
             </section>
 
-                  {/* How It Works Section */}
-      <section ref={stepsRef} className="py-20 px-6 bg-white/50">
+            {/* How It Works Section */}
+            <section ref={stepsRef} className="py-20 px-6 bg-white/50">
                 <div className="container mx-auto">
                     <h2 className="text-2xl md:text-4xl font-bold text-center mb-12 text-gray-900 animate-on-scroll">
                         How It <span className="text-gradient">Works</span>
@@ -364,7 +430,7 @@ const Index = () => {
                     <div className="max-w-4xl mx-auto">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
                             {/* Connection line */}
-                            <div className="hidden md:block absolute top-16 left-[12%] right-[12%] h-1 bg-gradient-to-r from-blue-500/30 via-blue-400/30 to-blue-600/30 rounded-full"></div>
+                            <div className="hidden md:block absolute top-20 left-[12%] right-[12%] h-1 bg-gradient-to-r from-blue-500/30 via-blue-400/30 to-blue-600/30 rounded-full"></div>
 
                             {steps.map((step, index) => (
                                 <div
@@ -390,8 +456,8 @@ const Index = () => {
                 </div>
             </section>
 
-                  {/* CTA Section */}
-      <section className="py-20 px-6 relative overflow-hidden">
+            {/* CTA Section */}
+            <section className="py-20 px-6 relative overflow-hidden">
                 <div className="absolute inset-0 gradient-bg-primary"></div>
                 <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
 
@@ -410,20 +476,18 @@ const Index = () => {
                             market conditions.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <Button
-                                onClick={handleExploreDemo}
-                                className="group bg-white text-blue-600 hover:bg-white/95 px-6 py-4 text-base rounded-xl shadow-3d-soft hover:shadow-3d-hover-soft hover-lift"
-                            >
-                                Try Mock Trading
-                                <TrendingUp className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                            </Button>
-                            <Button
-                                onClick={handleStartStrategy}
-                                className="group bg-meow-midnight text-white hover:bg-meow-midnight/90 px-6 py-4 text-base rounded-xl shadow-3d hover:shadow-3d-hover hover-lift"
-                            >
-                                Access All Strategies
-                                <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                            </Button>
+                            <Link href="/app/paper-trades">
+                                <Button className="group bg-white text-blue-600 hover:bg-white/95 px-6 py-4 text-base rounded-xl shadow-3d hover:shadow-3d-hover hover-lift">
+                                    Try Mock Trading
+                                    <TrendingUp className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                </Button>
+                            </Link>
+                            <Link href="/app/dashboard">
+                                <Button className="group bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 px-6 py-4 text-base rounded-xl shadow-3d hover:shadow-3d-hover hover-lift">
+                                    Access All Strategies
+                                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
