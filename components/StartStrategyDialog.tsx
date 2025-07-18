@@ -1,8 +1,9 @@
 /** @format */
 
+"use client";
+
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -101,6 +102,7 @@ const StartStrategyDialog = ({
 
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -220,10 +222,9 @@ const StartStrategyDialog = ({
   const handleSuccessClose = () => {
     setShowSuccess(false);
     onClose();
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, tab: "active" },
-    });
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", "active");
+    router.push(`${pathname}?${params.toString()}`);
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>

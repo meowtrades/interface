@@ -1,4 +1,4 @@
-/** @format */
+"use client"
 
 import { api } from "@/api";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";

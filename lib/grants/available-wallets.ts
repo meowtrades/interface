@@ -1,4 +1,4 @@
-/** @format */
+"use client"
 
 import { getKeplrGrant } from "./Keplr";
 

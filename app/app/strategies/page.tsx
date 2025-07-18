@@ -461,7 +461,7 @@ const Strategies = () => {
                 You haven&apos;t started any paper trades. Go to the Available
                 Strategies tab to get started.
               </p>
-              <Link href="/app/mock-trades">
+              <Link href="/app/paper-trades">
                 <Button variant="outline">View Available Strategies</Button>
               </Link>
             </div>

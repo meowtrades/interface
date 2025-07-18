@@ -1,5 +1,7 @@
 /** @format */
 
+"use client";
+
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";

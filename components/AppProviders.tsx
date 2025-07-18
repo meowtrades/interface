@@ -6,6 +6,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { StrategiesProvider } from "@/lib/context/StrategiesContext";
 
 // Create a QueryClient instance for React Query
 const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {children}
+        <StrategiesProvider>
+          {children}
+        </StrategiesProvider>
       </TooltipProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

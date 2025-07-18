@@ -1,6 +1,6 @@
 /** @format */
 
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Frequency, FREQUENCY_RANGE_MAP } from "./types";
 import { Transaction } from "@/api/types/dtos";

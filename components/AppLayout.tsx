@@ -61,7 +61,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     {
       icon: <CircleDollarSign size={20} />,
       label: "Paper Trades",
-      path: "/app/mock-trades",
+      path: "/app/paper-trades",
     },
     // {
     //   icon: <Wallet size={20} />,
