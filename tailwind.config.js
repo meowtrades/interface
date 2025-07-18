@@ -89,6 +89,8 @@ module.exports = {
         // Custom Meow theme colors
         "meow-midnight": "hsl(var(--meow-midnight))",
         "meow-cream": "hsl(var(--meow-cream))",
+        "meow-paw": "#f97316", // Orange-500
+        "meow-tabby": "#ea580c", // Orange-600
       },
       
       // Professional typography
