@@ -154,7 +154,9 @@ const Leaderboard = () => {
               </div>
             </div>
           </div>
-          <p className="text-lg" style={{ color: "#6B7280" }}></p>
+          <p className="text-lg" style={{ color: "#6B7280" }}>
+            Compete with other traders and earn PawScore for your strategy executions
+          </p>
         </div>
 
         {/* Top 3 Players Podium */}

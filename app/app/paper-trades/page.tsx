@@ -205,7 +205,10 @@ const MockTrades = () => {
   return (
     <AppLayout>
       <div className="mb-8 px-1">
-        <p className="text-lg text-contrast-medium">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Paper Trades
+        </h1>
+        <p className="text-muted-foreground">
           Test strategies with virtual funds before investing real money.
         </p>
       </div>

@@ -2,10 +2,10 @@
 
 import React from "react";
 import AppLayout from "@/components/AppLayout";
-import HeroSection from "@/components/Leaderboard/InfoHero";
+import HeroSection from "@/components/Leaderboard/Info/InfoHero";
 import HowItWorksSection from "@/components/Leaderboard/InfoHowItWorks";
 import WhyEarnSection from "@/components/Leaderboard/InfoWhyEarn";
-import FAQSection from "@/components/Leaderboard/InfoFaq";
+import FAQSection from "@/components/Leaderboard/Info/InfoFaq";
 
 const LeaderboardInfo = () => {
   return (

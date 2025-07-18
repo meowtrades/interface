@@ -85,6 +85,14 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     return "Dashboard";
   };
 
+  const getSubtitle = () => {
+    if (pathname.includes("dashboard")) return "Welcome back! Here's your trading overview.";
+    if (pathname.includes("strategies")) return "Explore and launch one-click trading strategies.";
+    if (pathname.includes("paper-trades")) return "Paper Trades";
+    if (pathname.includes("grid-visualization")) return "Grid Visualization";
+    if (pathname.includes("leaderboard")) return "Leaderboard";
+  };
+
   return (
     <StrategiesProvider>
       <WalletProvider>
@@ -93,8 +101,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           pathname.includes("leaderboard") && "bg-gradient-to-br from-background via-muted to-background"
         )}>
           {/* Desktop Sidebar - Fixed positioned */}
-          <aside className="hidden lg:flex flex-col w-72 border-r border-border bg-card fixed inset-y-0 left-0 z-50">
-            <div className="p-6 border-b border-border bg-card flex-shrink-0">
+          <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-card fixed inset-y-0 left-0 z-50">
+            <div className="h-[88px] px-6 py-6 border-b border-border bg-card flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center gap-3">
                 <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
               </Link>
@@ -133,9 +141,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             </div>
           </aside>
 
-          <div className="flex-1 flex flex-col lg:ml-72">
+          <div className="flex-1 flex flex-col lg:ml-64">
             {/* Top Header Bar */}
-            <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
+            <header className="h-[88px] bg-card border-b border-border px-6 py-6 flex items-center justify-between">
               {/* Mobile Menu Button */}
               <div className="lg:hidden">
                 <button
@@ -151,6 +159,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 <h1 className="text-title font-semibold text-foreground">
                   {getPageTitle()}
                 </h1>
+                {/* <p className="text-body font-medium text-muted-foreground">
+                  {getSubtitle()}
+                </p> */}
               </div>
               
               {/* Right Side Actions */}
