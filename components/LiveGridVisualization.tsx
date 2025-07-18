@@ -17,6 +17,7 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
+import { cn, getProfitLossColor, formatCurrency } from "@/lib/design-system";
 
 interface LiveGridVisualizationProps {
   data: GridVisualizationData;
@@ -91,25 +92,26 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
   const getRiskLevelColor = (riskLevel: string) => {
     switch (riskLevel) {
       case "LOW_RISK":
-        return "bg-green-100 text-green-800";
+        return "bg-success/10 text-success border-success/20";
       case "MEDIUM_RISK":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-warning/10 text-warning border-warning/20";
       case "HIGH_RISK":
-        return "bg-red-100 text-red-800";
+        return "bg-destructive/10 text-destructive border-destructive/20";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
+
   const getConnectionStatusIcon = () => {
     switch (connectionStatus) {
       case "Open":
-        return <Wifi className="h-4 w-4 text-green-500" />;
+        return <Wifi className="h-4 w-4 text-success" />;
       case "Connecting":
-        return <RefreshCw className="h-4 w-4 text-yellow-500 animate-spin" />;
+        return <RefreshCw className="h-4 w-4 text-warning animate-spin" />;
       case "Error":
-        return <WifiOff className="h-4 w-4 text-red-500" />;
+        return <WifiOff className="h-4 w-4 text-destructive" />;
       default:
-        return <WifiOff className="h-4 w-4 text-gray-500" />;
+        return <WifiOff className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -117,18 +119,21 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
   const chartWidth = isFullscreen && typeof window !== 'undefined' ? window.innerWidth - 100 : 800;
 
   return (
-    <Card className={`${isFullscreen ? "fixed inset-4 z-50 bg-white" : ""}`}>
+    <Card className={cn(
+      "border border-border bg-card",
+      isFullscreen && "fixed inset-4 z-50 bg-card"
+    )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div className="flex items-center space-x-4">
-          <CardTitle className="text-xl font-bold">
+          <CardTitle className="text-title font-semibold text-foreground">
             {data.tokenSymbol} Grid Trading
-          </CardTitle>{" "}
+          </CardTitle>
           <Badge className={getRiskLevelColor(data.riskLevel)}>
             {data.riskLevel.replace("_", " ")}
           </Badge>
           <div className="flex items-center space-x-2">
             {getConnectionStatusIcon()}
-            <span className="text-sm text-gray-600 capitalize">
+            <span className="text-caption text-muted-foreground capitalize">
               {connectionStatus}
             </span>
           </div>
@@ -153,51 +158,50 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
         {/* Price Info */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <p className="text-sm text-gray-600">Current Price</p>
-            <p className="text-2xl font-bold text-blue-600">
-              ${currentPrice.toFixed(4)}
+            <p className="text-caption text-muted-foreground">Current Price</p>
+            <p className="text-title font-bold text-primary metric-display">
+              {formatCurrency(currentPrice)}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600">24h Change</p>
+            <p className="text-caption text-muted-foreground">24h Change</p>
             <div className="flex items-center justify-center space-x-1">
               {priceChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-4 w-4 text-success" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-4 w-4 text-destructive" />
               )}
-              <span
-                className={`font-semibold ${
-                  priceChange >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
+              <span className={cn(
+                "text-body font-medium metric-display",
+                getProfitLossColor(priceChange)
+              )}>
                 {priceChangePercent.toFixed(2)}%
               </span>
             </div>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600">Grid Lines</p>
-            <p className="text-lg font-semibold">{data.gridLines.length}</p>
+            <p className="text-caption text-muted-foreground">Grid Lines</p>
+            <p className="text-subtitle font-semibold text-foreground">{data.gridLines.length}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600">Executions</p>
+            <p className="text-caption text-muted-foreground">Executions</p>
             <div className="flex items-center justify-center space-x-1">
-              <Activity className="h-4 w-4 text-blue-500" />
-              <span className="font-semibold">{data.executionCount}</span>
+              <Activity className="h-4 w-4 text-primary" />
+              <span className="text-body font-medium text-foreground">{data.executionCount}</span>
             </div>
-          </div>{" "}
+          </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
             <div className="flex items-center space-x-2">
-              <WifiOff className="h-4 w-4 text-red-500" />
-              <span className="text-sm text-red-700 font-medium">
+              <WifiOff className="h-4 w-4 text-destructive" />
+              <span className="text-caption text-destructive font-medium">
                 Connection Error
               </span>
             </div>
-            <p className="text-sm text-red-600 mt-1">{error}</p>
+            <p className="text-caption text-destructive mt-1">{error}</p>
           </div>
         )}
 
@@ -209,34 +213,29 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
             currentPrice={currentPrice}
             width={chartWidth}
             height={chartHeight}
-            className="border rounded-lg"
+            className="border border-border rounded-lg"
           />
         </div>
 
         {/* Grid Lines Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h4 className="font-semibold text-green-700 mb-2">Buy Orders</h4>
+            <h4 className="text-body font-semibold text-success mb-2">Buy Orders</h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {data.gridLines
                 .filter((line) => line.type === "buy")
                 .sort((a, b) => b.price - a.price)
                 .slice(0, 5)
                 .map((line, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span
-                      className={
-                        line.status === "active"
-                          ? "text-green-700"
-                          : "text-gray-500"
-                      }
-                    >
-                      ${line.price.toFixed(4)}
+                  <div key={index} className="flex justify-between text-caption">
+                    <span className={cn(
+                      "metric-display",
+                      line.status === "active" ? "text-success" : "text-muted-foreground"
+                    )}>
+                      {formatCurrency(line.price)}
                     </span>
                     <Badge
-                      variant={
-                        line.status === "active" ? "default" : "secondary"
-                      }
+                      variant={line.status === "active" ? "default" : "secondary"}
                       className="text-xs"
                     >
                       {line.status}
@@ -247,27 +246,22 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
           </div>
 
           <div>
-            <h4 className="font-semibold text-red-700 mb-2">Sell Orders</h4>
+            <h4 className="text-body font-semibold text-destructive mb-2">Sell Orders</h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {data.gridLines
                 .filter((line) => line.type === "sell")
                 .sort((a, b) => a.price - b.price)
                 .slice(0, 5)
                 .map((line, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span
-                      className={
-                        line.status === "active"
-                          ? "text-red-700"
-                          : "text-gray-500"
-                      }
-                    >
-                      ${line.price.toFixed(4)}
+                  <div key={index} className="flex justify-between text-caption">
+                    <span className={cn(
+                      "metric-display",
+                      line.status === "active" ? "text-destructive" : "text-muted-foreground"
+                    )}>
+                      {formatCurrency(line.price)}
                     </span>
                     <Badge
-                      variant={
-                        line.status === "active" ? "default" : "secondary"
-                      }
+                      variant={line.status === "active" ? "default" : "secondary"}
                       className="text-xs"
                     >
                       {line.status}
@@ -280,7 +274,7 @@ export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
 
         {/* Last Update Info */}
         {lastUpdate && (
-          <div className="text-sm text-gray-600 text-center">
+          <div className="text-caption text-muted-foreground text-center">
             Last update: {new Date(lastUpdate.timestamp).toLocaleTimeString()}
           </div>
         )}

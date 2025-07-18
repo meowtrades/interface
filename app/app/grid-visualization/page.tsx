@@ -26,6 +26,7 @@ import {
   WifiOff,
   TestTube,
 } from "lucide-react";
+import { cn, formatCurrency } from "@/lib/design-system";
 
 const GridVisualization: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -97,20 +98,21 @@ const GridVisualization: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Grid className="w-8 h-8 text-blue-600" />
-              Grid Trading Visualization
+            <h1 className="text-display font-bold text-foreground mb-2">
+              Grid Visualization
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-body text-muted-foreground">
               Real-time monitoring of your grid trading strategies
             </p>
-          </div>{" "}
+          </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={toggleLivePriceTest}
-              className={testLivePriceApi ? "bg-blue-50 border-blue-200" : ""}
+              className={cn(
+                testLivePriceApi && "bg-info/10 border-info/20 text-info"
+              )}
             >
               <TestTube className="w-4 h-4 mr-2" />
               Test Live Price API {testLivePriceApi ? "ON" : "OFF"}
@@ -119,10 +121,12 @@ const GridVisualization: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={toggleAutoRefresh}
-              className={autoRefresh ? "bg-green-50 border-green-200" : ""}
+              className={cn(
+                autoRefresh && "bg-success/10 border-success/20 text-success"
+              )}
             >
               <Activity
-                className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-pulse" : ""}`}
+                className={cn("w-4 h-4 mr-2", autoRefresh && "animate-pulse")}
               />
               Auto Refresh {autoRefresh ? "ON" : "OFF"}
             </Button>
@@ -133,11 +137,11 @@ const GridVisualization: React.FC = () => {
               disabled={isRefetching}
             >
               <RefreshCw
-                className={`w-4 h-4 mr-2 ${isRefetching ? "animate-spin" : ""}`}
+                className={cn("w-4 h-4 mr-2", isRefetching && "animate-spin")}
               />
               Refresh
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Link href="/strategies">
                 <Settings className="w-4 h-4 mr-2" />
                 Manage Strategies
@@ -145,50 +149,52 @@ const GridVisualization: React.FC = () => {
             </Button>
           </div>
         </div>
+
         {/* Summary Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
+          <Card className="border border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-title font-semibold text-primary metric-display">
                 {stats.totalPlans}
               </div>
-              <div className="text-sm text-muted-foreground">Active Plans</div>
+              <div className="text-caption text-muted-foreground">Active Plans</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-title font-semibold text-success metric-display">
                 {stats.totalExecutions}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-caption text-muted-foreground">
                 Total Executions
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                ${stats.totalInvestment.toLocaleString()}
+              <div className="text-title font-semibold text-foreground metric-display">
+                {formatCurrency(stats.totalInvestment)}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-caption text-muted-foreground">
                 Total Invested
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-title font-semibold text-warning metric-display">
                 {stats.activeTokens}
               </div>
-              <div className="text-sm text-muted-foreground">Active Tokens</div>
+              <div className="text-caption text-muted-foreground">Active Tokens</div>
             </CardContent>
-          </Card>{" "}
+          </Card>
         </div>
+
         {/* Live Price API Test Panel */}
         {testLivePriceApi && (
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="border border-info/20 bg-info/5">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-blue-700">
+              <CardTitle className="flex items-center gap-2 text-info">
                 <TestTube className="w-5 h-5" />
                 Live Price API Test
               </CardTitle>
@@ -196,29 +202,29 @@ const GridVisualization: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
+                  <span className="text-caption font-medium text-foreground">
                     Connection Status:
                   </span>
                   {connectionStatus === "Open" && (
-                    <Badge className="bg-green-100 text-green-800">
+                    <Badge className="bg-success/10 text-success border-success/20">
                       <Wifi className="w-3 h-3 mr-1" />
                       Connected
                     </Badge>
                   )}
                   {connectionStatus === "Connecting" && (
-                    <Badge className="bg-yellow-100 text-yellow-800">
+                    <Badge className="bg-warning/10 text-warning border-warning/20">
                       <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
                       Connecting
                     </Badge>
                   )}
                   {connectionStatus === "Error" && (
-                    <Badge className="bg-red-100 text-red-800">
+                    <Badge className="bg-destructive/10 text-destructive border-destructive/20">
                       <WifiOff className="w-3 h-3 mr-1" />
                       Error
                     </Badge>
                   )}
                   {connectionStatus === "Closed" && (
-                    <Badge className="bg-gray-100 text-gray-800">
+                    <Badge className="bg-muted text-muted-foreground border-border">
                       <WifiOff className="w-3 h-3 mr-1" />
                       Closed
                     </Badge>
@@ -226,20 +232,20 @@ const GridVisualization: React.FC = () => {
                 </div>
 
                 {priceApiError && (
-                  <div className="bg-red-100 border border-red-200 rounded p-2">
-                    <p className="text-sm text-red-700">{priceApiError}</p>
+                  <div className="bg-destructive/10 border border-destructive/20 rounded p-3">
+                    <p className="text-caption text-destructive">{priceApiError}</p>
                   </div>
                 )}
 
                 {Object.keys(prices).length > 0 && (
                   <div className="grid grid-cols-2 gap-4">
                     {Object.entries(prices).map(([symbol, priceData]) => (
-                      <div key={symbol} className="bg-white p-3 rounded border">
-                        <div className="font-medium">{symbol}</div>
-                        <div className="text-lg font-bold">
-                          ${priceData.price.toFixed(4)}
+                      <div key={symbol} className="bg-card border border-border p-3 rounded">
+                        <div className="text-body font-medium text-foreground">{symbol}</div>
+                        <div className="text-title font-bold text-primary metric-display">
+                          {formatCurrency(priceData.price)}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-caption text-muted-foreground">
                           {new Date(priceData.timestamp).toLocaleTimeString()}
                         </div>
                       </div>
@@ -250,6 +256,7 @@ const GridVisualization: React.FC = () => {
             </CardContent>
           </Card>
         )}
+
         {/* Main Content */}
         <Tabs defaultValue="visualizations" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
@@ -268,15 +275,15 @@ const GridVisualization: React.FC = () => {
 
           <TabsContent value="visualizations" className="space-y-6">
             {error ? (
-              <Card className="border-red-200 bg-red-50">
+              <Card className="border-destructive/20 bg-destructive/5">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-red-700">
+                  <CardTitle className="flex items-center gap-2 text-destructive">
                     <AlertCircle className="w-5 h-5" />
                     Error Loading Grid Data
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-red-600 mb-4">
+                  <p className="text-body text-destructive mb-4">
                     Failed to load grid visualization data. Please try
                     refreshing the page.
                   </p>
@@ -289,7 +296,7 @@ const GridVisualization: React.FC = () => {
             ) : isLoading ? (
               <div className="space-y-6">
                 {[1, 2].map((i) => (
-                  <Card key={i}>
+                  <Card key={i} className="border border-border bg-card">
                     <CardHeader>
                       <div className="flex justify-between items-center">
                         <Skeleton className="h-6 w-48" />
@@ -311,16 +318,16 @@ const GridVisualization: React.FC = () => {
                 ))}
               </div>
             ) : !gridData || gridData.length === 0 ? (
-              <Card>
+              <Card className="border border-border bg-card">
                 <CardContent className="p-12 text-center">
                   <Grid className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-subtitle font-semibold text-foreground mb-2">
                     No Grid Strategies Found
                   </h3>
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-body text-muted-foreground mb-6">
                     You don&apos;t have any active grid trading strategies yet.
                   </p>
-                  <Button asChild>
+                  <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Link href="/strategies">
                       <TrendingUp className="w-4 h-4 mr-2" />
                       Create Your First Grid Strategy
@@ -332,7 +339,6 @@ const GridVisualization: React.FC = () => {
               <div className="space-y-6">
                 {gridData.map((plan) => (
                   <div key={plan.planId}>
-                    {" "}
                     <LiveGridVisualization data={plan} />
                   </div>
                 ))}
@@ -343,19 +349,20 @@ const GridVisualization: React.FC = () => {
           <TabsContent value="health">
             <GridServiceHealthMonitor />
           </TabsContent>
-        </Tabs>{" "}
+        </Tabs>
+
         {/* Footer Info */}
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+        <Card className="border border-border bg-muted/30">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-blue-700">
+              <div className="flex items-center gap-2 text-primary">
                 <Activity className="w-4 h-4" />
-                <span className="text-sm font-medium">
+                <span className="text-caption font-medium">
                   Live Price API Connection - Real-time price feeds every 2
                   seconds
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-xs text-gray-600">
+              <div className="flex items-center gap-4 text-caption text-muted-foreground">
                 <span>Canvas-based TradingView-style charts</span>
                 <span>•</span>
                 <span>Grid line visualization</span>

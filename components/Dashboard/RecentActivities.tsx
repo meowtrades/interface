@@ -6,35 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
+import { cn, formatCurrency } from "@/lib/design-system";
 
 const RecentActivities = () => {
-  // Mock data - in a real app, this would come from an API
-  // const activities = [
-  //   {
-  //     id: "act1",
-  //     type: "Buy",
-  //     token: "INJ",
-  //     amount: "2.5 INJ",
-  //     value: "$12.75",
-  //     time: "2 hours ago",
-  //   },
-  //   {
-  //     id: "act2",
-  //     type: "Sell",
-  //     token: "INJ",
-  //     amount: "3.8 INJ",
-  //     value: "$38.76",
-  //     time: "5 hours ago",
-  //   },
-  //   {
-  //     id: "act3",
-  //     type: "Buy",
-  //     token: "USDT",
-  //     amount: "100 USDT",
-  //     value: "$100.00",
-  //     time: "1 day ago",
-  //   },
-  // ];
   const { data: activities } = useQuery({
     queryKey: ["recentActivities"],
     queryFn: async () => {
@@ -45,7 +19,7 @@ const RecentActivities = () => {
 
   if (!activities) {
     return (
-      <Card className="shadow-sm">
+      <Card className="border border-border bg-card">
         <CardContent className="p-6">
           <Skeleton className="h-6 w-1/3 mb-4" />
           <Skeleton className="h-4 w-full mb-2" />
@@ -57,20 +31,27 @@ const RecentActivities = () => {
   }
 
   return (
-    <div className="mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Recent Activities</h2>
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-title font-semibold text-foreground mb-2">
+            Recent Activities
+          </h2>
+          <p className="text-caption text-muted-foreground">
+            Your latest trading activities and transactions
+          </p>
+        </div>
         <Link
           href="/app/history"
-          className="text-blue-600 text-sm flex items-center"
+          className="text-primary hover:text-primary/80 text-caption font-medium flex items-center gap-1 transition-colors"
         >
-          View all <ArrowRight size={16} className="ml-1" />
+          View all <ArrowRight size={16} />
         </Link>
       </div>
 
-      <Card className="shadow-sm">
+      <Card className="border border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
         <CardContent className="p-0">
-          <div className="divide-y">
+          <div className="divide-y divide-border">
             {activities.map((activity) => {
               // Format the date
               activity.createdAt = Intl.DateTimeFormat("en-US", {
@@ -80,40 +61,43 @@ const RecentActivities = () => {
                 minute: "2-digit",
               }).format(new Date(activity.createdAt));
 
-              // console.log(activity);
+              const isBuy = activity.type === "swap";
 
               return (
                 <div
                   key={activity._id}
-                  className="flex items-center justify-between p-5"
+                  className="flex items-center justify-between p-6 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-11 h-11 rounded-full flex items-center justify-center ${
-                        activity.type === "swap"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-amber-100 text-amber-600"
-                      }`}
+                      className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center",
+                        isBuy 
+                          ? "bg-success/10 text-success" 
+                          : "bg-warning/10 text-warning"
+                      )}
                     >
-                      {activity.type === "swap" ? (
+                      {isBuy ? (
                         <TrendingUp size={20} />
                       ) : (
                         <TrendingDown size={20} />
                       )}
                     </div>
                     <div>
-                      <div className="font-medium">
-                        Buy {activity.to.token}{" "}
+                      <div className="text-body font-medium text-foreground">
+                        Buy {activity.to.token}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-caption text-muted-foreground">
                         {activity.createdAt}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium">{activity.from.token}</div>
-                    <div className="text-xs text-slate-500">
-                      ${activity.invested}
+                    <div className="text-body font-medium text-foreground">
+                      {activity.from.token}
+                    </div>
+                    <div className="text-caption text-muted-foreground metric-display">
+                      {formatCurrency(activity.invested)}
                     </div>
                   </div>
                 </div>

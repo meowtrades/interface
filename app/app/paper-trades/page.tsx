@@ -204,24 +204,25 @@ const MockTrades = () => {
 
   return (
     <AppLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Paper Trades</h1>
-        <p className="text-slate-600">
+      <div className="mb-8 px-1">
+        <p className="text-lg text-contrast-medium">
           Test strategies with virtual funds before investing real money.
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 mb-8">
-        <Card className="w-full lg:w-1/3">
-          <CardHeader>
-            <CardTitle>Start a Paper Trade</CardTitle>
-            <CardDescription>
+      <div className="flex flex-col lg:flex-row gap-8 mb-8">
+        <Card className="w-full lg:w-1/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
+          <CardHeader className="pb-4 pt-6 px-6">
+            <CardTitle className="text-xl font-bold text-contrast-high">
+              Start a Paper Trade
+            </CardTitle>
+            <CardDescription className="text-contrast-medium">
               Simulate how a strategy would perform with virtual funds
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6 px-6">
             <div>
-              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+              <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Amount
               </label>
               <Input
@@ -230,28 +231,28 @@ const MockTrades = () => {
                 max="1000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="focus:border-crypto-blue"
+                className="focus:border-blue-500 focus:ring-2 focus:ring-blue-200 border-2 bg-white text-contrast-high font-medium"
                 placeholder="Enter amount"
               />
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-contrast-medium mt-2">
                 Default mock amount is $100
               </p>
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+              <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Strategy
               </label>
               <Select
                 value={selectedStrategy}
                 onValueChange={setSelectedStrategy}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                   <SelectValue placeholder="Select a strategy" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-2 shadow-lg">
                   {strategies?.map((strategy: string) => (
-                    <SelectItem key={strategy} value={strategy}>
+                    <SelectItem key={strategy} value={strategy} className="text-contrast-high font-medium">
                       {strategy}
                     </SelectItem>
                   ))}
@@ -260,16 +261,16 @@ const MockTrades = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+              <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Token
               </label>
               <Select value={selectedToken} onValueChange={setSelectedToken}>
-                <SelectTrigger>
+                <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                   <SelectValue placeholder="Select a token" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-2 shadow-lg">
                   {tokens?.map((token: string) => (
-                    <SelectItem key={token} value={token}>
+                    <SelectItem key={token} value={token} className="text-contrast-high font-medium">
                       {token}
                     </SelectItem>
                   ))}
@@ -278,7 +279,7 @@ const MockTrades = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+              <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Risk Level
               </label>
               <Slider
@@ -287,9 +288,9 @@ const MockTrades = () => {
                 min={1}
                 max={3}
                 step={1}
-                className="w-full"
+                className="w-full py-2"
               />
-              <div className="flex justify-between text-xs text-slate-500 mt-1">
+              <div className="flex justify-between text-xs text-contrast-medium mt-2 font-medium">
                 <span>Conservative</span>
                 <span>Moderate</span>
                 <span>Aggressive</span>
@@ -297,25 +298,19 @@ const MockTrades = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1.5 text-slate-700">
+              <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Frequency
               </label>
               <Select
                 value={frequency}
                 onValueChange={(value: string) => setFrequency(value as Frequency)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
-                <SelectContent>
-                  {/* <SelectItem value={Frequency.TEST_MINUTE}>
-                    {formatFrequency(Frequency.TEST_MINUTE)}
-                  </SelectItem>
-                  <SelectItem value={Frequency.DAILY}>Daily</SelectItem>
-                  <SelectItem value={Frequency.WEEKLY}>Weekly</SelectItem>
-                  <SelectItem value={Frequency.MONTHLY}>Monthly</SelectItem> */}
+                <SelectContent className="bg-white border-2 shadow-lg">
                   {Object.values(Frequency).map((freq) => (
-                    <SelectItem key={freq} value={freq}>
+                    <SelectItem key={freq} value={freq} className="text-contrast-high font-medium">
                       {formatFrequency(freq)}
                     </SelectItem>
                   ))}
@@ -323,42 +318,44 @@ const MockTrades = () => {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg text-slate-700">
-              <AlertCircle size={18} className="text-crypto-blue" />
-              <p className="text-sm">
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 text-contrast-high">
+              <AlertCircle size={20} className="text-blue-600 flex-shrink-0" />
+              <p className="text-sm font-medium">
                 This is a simulation using historical data. Past performance
                 does not guarantee future results.
               </p>
             </div>
           </CardContent>
 
-          <CardFooter>
+          <CardFooter className="px-6 pt-2 pb-6">
             <Button
               onClick={handleStartMockTrade}
-              className="w-full bg-crypto-blue hover:bg-crypto-blue/90"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 shadow-sm hover:shadow-md transition-all duration-200"
             >
               Start Paper Trade
             </Button>
           </CardFooter>
         </Card>
 
-        <Card className="w-full lg:w-2/3">
-          <CardHeader>
-            <CardTitle>SDCA Performance</CardTitle>
-            <CardDescription>
+        <Card className="w-full lg:w-2/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
+          <CardHeader className="pb-4 pt-6 px-6">
+            <CardTitle className="text-xl font-bold text-contrast-high">
+              SDCA Performance
+            </CardTitle>
+            <CardDescription className="text-contrast-medium">
               How a $1000 daily investment would have performed over time
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex justify-end space-x-2 mb-4">
+          <CardContent className="px-6">
+            <div className="flex justify-end space-x-2 mb-6">
               <Button
                 variant={chartTimeframe === "1m" ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleTimeframeChange("1m")}
                 className={
                   chartTimeframe === "1m"
-                    ? "bg-purple-700 hover:bg-purple-800"
-                    : ""
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
+                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
                 }
               >
                 1M
@@ -369,8 +366,8 @@ const MockTrades = () => {
                 onClick={() => handleTimeframeChange("3m")}
                 className={
                   chartTimeframe === "3m"
-                    ? "bg-purple-700 hover:bg-purple-800"
-                    : ""
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
+                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
                 }
               >
                 3M
@@ -381,8 +378,8 @@ const MockTrades = () => {
                 onClick={() => handleTimeframeChange("6m")}
                 className={
                   chartTimeframe === "6m"
-                    ? "bg-purple-700 hover:bg-purple-800"
-                    : ""
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
+                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
                 }
               >
                 6M
@@ -393,8 +390,8 @@ const MockTrades = () => {
                 onClick={() => handleTimeframeChange("1y")}
                 className={
                   chartTimeframe === "1y"
-                    ? "bg-purple-700 hover:bg-purple-800"
-                    : ""
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
+                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
                 }
               >
                 1Y

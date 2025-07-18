@@ -148,7 +148,6 @@ const Strategies = () => {
   return (
     <AppLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Trading Strategies</h1>
         <p className="text-slate-600">
           Explore and launch one-click trading strategies.
         </p>

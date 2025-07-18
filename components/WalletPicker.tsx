@@ -25,7 +25,7 @@ const WalletPicker = ({
       <DialogTrigger asChild>
         <Button
           disabled={disabled}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-sm hover:shadow-md transition-all duration-200"
         >
           {isLoading ? <Loader2 className="animate-spin" /> : "Start Strategy"}
         </Button>

@@ -1,7 +1,7 @@
 /** @format */
 
 import Link from "next/link";
-import { ArrowRight, Grid } from "lucide-react";
+import { ArrowRight, BarChart3 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,41 +21,56 @@ const MockPlans = () => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Paper Trades</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-title font-semibold text-foreground mb-2">
+            Paper Trades
+          </h2>
+          <p className="text-caption text-muted-foreground">
+            Practice trading strategies without real money
+          </p>
+        </div>
         <Link
           href="/app/strategies?tab=paper"
-          className="text-blue-600 text-sm flex items-center"
+          className="text-primary hover:text-primary/80 text-caption font-medium flex items-center gap-1 transition-colors"
         >
-          View all <ArrowRight size={16} className="ml-1" />
+          View all <ArrowRight size={16} />
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           <>
-            <Skeleton className="h-64 w-full" />
-            <Skeleton className="h-64 w-full" />
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="border border-border bg-card">
+                <CardContent className="p-6">
+                  <Skeleton className="h-6 w-32 mb-4" />
+                  <Skeleton className="h-8 w-24 mb-3" />
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4" />
+                </CardContent>
+              </Card>
+            ))}
           </>
-        ) : activeStrategiesAnalytics?.length > 0 ? (
+        ) : activeStrategiesAnalytics && activeStrategiesAnalytics.length > 0 ? (
           activeStrategiesAnalytics.map((strategy) => {
             return <PlanCard key={strategy._id} {...strategy} />;
           })
         ) : (
-          <Card className="border-dashed border-2 border-slate-200 shadow-sm">
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-              <div className="h-14 w-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
-                <Grid size={24} />
+          <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+            <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[280px]">
+              <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                <BarChart3 size={24} />
               </div>
-              <h3 className="text-lg font-medium mb-3">
+              <h3 className="text-subtitle font-semibold text-foreground mb-3">
                 Start Your First Mock Strategy
               </h3>
-              <p className="text-slate-500 mb-5">
+              <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
                 Try out our strategies in mock mode to test your trading
                 strategies risk-free.
               </p>
               <Link href="/app/strategies">
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover">
                   Explore Mock Strategies
                 </Button>
               </Link>

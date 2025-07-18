@@ -37,14 +37,15 @@ const DashboardContent = () => {
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-600 rounded-md">
-        Error loading dashboard data: {error}
+      <div className="p-6 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
+        <h3 className="text-subtitle font-semibold mb-2">Error loading dashboard data</h3>
+        <p className="text-body">{error}</p>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="space-y-6">
       <DashboardHeader />
 
       <StrategyPopup
@@ -57,7 +58,7 @@ const DashboardContent = () => {
       <ActivePlans />
       <MockPlans />
       <RecentActivities />
-    </>
+    </div>
   );
 };
 

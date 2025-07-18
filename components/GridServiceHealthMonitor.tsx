@@ -239,8 +239,8 @@ const GridServiceHealthMonitor: React.FC = () => {
           <div
             className={`flex items-center gap-2 p-2 rounded ${
               health.isInitialized
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-success/10 text-success border border-success/20"
+                : "bg-destructive/10 text-destructive border border-destructive/20"
             }`}
           >
             {health.isInitialized ? (
@@ -248,14 +248,14 @@ const GridServiceHealthMonitor: React.FC = () => {
             ) : (
               <AlertCircle className="w-4 h-4" />
             )}
-            <span className="text-sm font-medium">Service Initialized</span>
+            <span className="text-caption font-medium">Service Initialized</span>
           </div>
 
           <div
             className={`flex items-center gap-2 p-2 rounded ${
               health.activeTokensPolling.length > 0
-                ? "bg-green-50 text-green-700"
-                : "bg-yellow-50 text-yellow-700"
+                ? "bg-success/10 text-success border border-success/20"
+                : "bg-warning/10 text-warning border border-warning/20"
             }`}
           >
             {health.activeTokensPolling.length > 0 ? (
@@ -263,14 +263,14 @@ const GridServiceHealthMonitor: React.FC = () => {
             ) : (
               <AlertCircle className="w-4 h-4" />
             )}
-            <span className="text-sm font-medium">Price Feeds Active</span>
+            <span className="text-caption font-medium">Price Feeds Active</span>
           </div>
 
           <div
             className={`flex items-center gap-2 p-2 rounded ${
               health.totalGridLines > 0
-                ? "bg-green-50 text-green-700"
-                : "bg-yellow-50 text-yellow-700"
+                ? "bg-success/10 text-success border border-success/20"
+                : "bg-warning/10 text-warning border border-warning/20"
             }`}
           >
             {health.totalGridLines > 0 ? (
@@ -278,7 +278,7 @@ const GridServiceHealthMonitor: React.FC = () => {
             ) : (
               <AlertCircle className="w-4 h-4" />
             )}
-            <span className="text-sm font-medium">Grid Lines Cached</span>
+            <span className="text-caption font-medium">Grid Lines Cached</span>
           </div>
         </div>
       </CardContent>

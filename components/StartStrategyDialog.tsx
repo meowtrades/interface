@@ -327,17 +327,21 @@ const StartStrategyDialog = ({
                     <RefreshCw size={16} />
                   )}
                 </div>
-                <DialogTitle>Start {strategy.name}</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-contrast-high">
+                  Start {strategy.name}
+                </DialogTitle>
               </div>
-              <DialogDescription>
+              <DialogDescription className="text-contrast-medium">
                 Configure your strategy settings to begin automated trading.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-6 py-4">
-              <div className="grid gap-4">
+              <div className="grid gap-5">
                 {" "}
                 <div>
-                  <Label htmlFor="investment">Investment Amount (USD)</Label>
+                  <Label htmlFor="investment" className="text-sm font-semibold text-contrast-high">
+                    Investment Amount (USD)
+                  </Label>
                   <Input
                     id="investment"
                     type="number"
@@ -345,15 +349,16 @@ const StartStrategyDialog = ({
                     onChange={(e) => setAmount(e.target.value)}
                     min="10"
                     step="10"
+                    className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   />
                   {strategy.minInvestment && (
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-contrast-medium mt-2">
                       Minimum investment: $
                       {strategy.minInvestment[strategy.supportedChains[0]] ||
                         10}
                     </p>
                   )}
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-blue-600 mt-1 font-medium">
                     Balance required on each execution: $
                     {(parseFloat(amount || "0") * (1 + MANAGEMENT_FEE)).toFixed(
                       2
@@ -361,43 +366,21 @@ const StartStrategyDialog = ({
                     (includes {(MANAGEMENT_FEE * 100).toFixed(1)}% platform fee)
                   </p>
                 </div>
+
                 {strategy.id === "SDCA" && (
                   <div>
-                    <Label htmlFor="frequency">Frequency</Label>
-                    <Select
-                      value={frequency}
-                      onValueChange={(value: Frequency) =>
-                        setFrequency(value as Frequency)
-                      }
-                    >
-                      <SelectTrigger id="frequency">
-                        <SelectValue placeholder="Select frequency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Frequency</SelectLabel>
-                          {frequencyOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                {strategy.id === "SDCA" && (
-                  <div>
-                    <Label htmlFor="recipient">Recipient Address</Label>
-                    <div className="flex space-x-2">
+                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
+                      Recipient Address
+                    </Label>
+                    <div className="flex space-x-2 mt-2">
                       <Input
                         id="recipient"
                         type="text"
-                        className={`flex-1 ${
+                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
                           isRecipientAddressValid
-                            ? "border-green-500"
-                            : "border-red-500"
-                        }`}
+                            ? "border-green-500 focus:ring-green-200"
+                            : "border-red-500 focus:ring-red-200"
+                        } focus:ring-2`}
                         placeholder="Enter recipient address"
                         value={recipientAddress}
                         onChange={(e) => {
@@ -422,6 +405,7 @@ const StartStrategyDialog = ({
                             }
                           })
                         }
+                        className="font-medium"
                       >
                         Use My Address
                       </Button>
@@ -430,16 +414,18 @@ const StartStrategyDialog = ({
                 )}
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
-                    <Label htmlFor="token">Token</Label>
+                    <Label htmlFor="token" className="text-sm font-semibold text-contrast-high">
+                      Token
+                    </Label>
                     <Select value={tokenId} onValueChange={setTokenId}>
-                      <SelectTrigger id="token">
+                      <SelectTrigger id="token" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select token" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white border-2 shadow-lg">
                         <SelectGroup>
-                          <SelectLabel>Tokens</SelectLabel>
+                          <SelectLabel className="text-contrast-medium font-semibold">Tokens</SelectLabel>
                           {strategy.supportedTokens.map((token) => (
-                            <SelectItem key={token} value={token}>
+                            <SelectItem key={token} value={token} className="text-contrast-high font-medium">
                               {token.toUpperCase()}
                             </SelectItem>
                           ))}
@@ -448,19 +434,21 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                   <div className={"w-2/3"}>
-                    <Label htmlFor="chain">Chain</Label>
+                    <Label htmlFor="chain" className="text-sm font-semibold text-contrast-high">
+                      Chain
+                    </Label>
                     <Select
                       value={chain}
                       onValueChange={(value: string) => setChain(value)}
                     >
-                      <SelectTrigger id="frequency">
+                      <SelectTrigger id="frequency" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select frequency" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white border-2 shadow-lg">
                         <SelectGroup>
-                          <SelectLabel>Chains</SelectLabel>
+                          <SelectLabel className="text-contrast-medium font-semibold">Chains</SelectLabel>
                           {supportedChains.map((option) => (
-                            <SelectItem key={option} value={option}>
+                            <SelectItem key={option} value={option} className="text-contrast-high font-medium">
                               {option
                                 .split("-")
                                 .map(
@@ -479,8 +467,10 @@ const StartStrategyDialog = ({
                 {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="risk-level">Risk Level</Label>
-                      <span className="text-sm font-medium">
+                      <Label htmlFor="risk-level" className="text-sm font-semibold text-contrast-high">
+                        Risk Level
+                      </Label>
+                      <span className="text-sm font-semibold text-contrast-medium">
                         {getRiskLevelDisplayName(riskLevel)}
                       </span>
                     </div>
@@ -495,7 +485,7 @@ const StartStrategyDialog = ({
                       }
                       className="py-4"
                     />
-                    <div className="flex justify-between text-xs text-slate-500">
+                    <div className="flex justify-between text-xs text-contrast-medium font-medium">
                       <span>Lower Risk</span>
                       <span>Higher Risk</span>
                     </div>
@@ -503,8 +493,10 @@ const StartStrategyDialog = ({
                 }
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <Label htmlFor="slippage">Slippage Tolerance (%)</Label>
-                    <span className="text-sm font-medium">
+                    <Label htmlFor="slippage" className="text-sm font-semibold text-contrast-high">
+                      Slippage Tolerance (%)
+                    </Label>
+                    <span className="text-sm font-semibold text-contrast-medium">
                       {slippage === -1 ? "Auto Slippage" : `${slippage}%`}
                     </span>
                   </div>
@@ -517,22 +509,22 @@ const StartStrategyDialog = ({
                     onValueChange={(values: number[]) => setSlippage(values[0])}
                     className="py-4"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-contrast-medium mt-2 font-medium">
                     {slippage === -1 &&
                       "Auto slippage will be applied based on risk level."}
                   </p>
                 </div>
-              </div>{" "}
-              <div className="bg-amber-50 p-4 rounded-lg text-amber-800 text-sm">
-                <p className="font-medium mb-1">Important Note</p>
-                <p>
+              </div>
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg text-amber-800 text-sm border border-amber-200">
+                <p className="font-semibold mb-1">Important Note</p>
+                <p className="font-medium">
                   Past performance does not guarantee future results. Your
                   investment may lose value.
                 </p>
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} className="font-medium">
                 Cancel
               </Button>
               <WalletPicker
