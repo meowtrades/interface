@@ -154,7 +154,7 @@ const Index = () => {
                     <div className="max-w-4xl mx-auto text-center animate-on-scroll">
                         <div className="inline-block mb-4 py-2 px-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
                             <p className="text-white/90 font-semibold text-sm uppercase tracking-wide">
-                                AUTOMATED TRADING STRATEGIES
+                                AI TRADING STRATEGIES
                             </p>
                         </div>
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 tracking-tight">

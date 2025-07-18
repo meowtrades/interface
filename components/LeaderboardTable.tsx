@@ -1,7 +1,17 @@
 /** @format */
 
 import { Card } from "@/components/ui/card";
-import { RankedLeaderboardUser } from "./types";
+
+export type LeaderboardUser = {
+  _id: string;
+  avatarUrl: string;
+  name: string;
+  address: string;
+  executions: number;
+  xp: number;
+};
+
+export type RankedLeaderboardUser = LeaderboardUser & { rank: number };
 
 interface LeaderboardTableProps {
   players: RankedLeaderboardUser[];

@@ -13,7 +13,7 @@ import {
   PlatformStatistics,
 } from "./types/dtos";
 import { ActiveStrategyAnalytics } from "./types";
-import type { Leaderboard } from "@/pages/Leaderboard.tsx";
+import type { LeaderboardUser } from "@/components/LeaderboardTable";
 
 export const api = {
   plans: {
@@ -182,7 +182,7 @@ export const api = {
       axiosInstance.patch(`/user/address`, { newAddress }),
   },
   xp: {
-    leaderboard: () => axiosInstance.get<Leaderboard>("/xp/leaderboard"),
+    leaderboard: () => axiosInstance.get<LeaderboardUser[]>("/xp/leaderboard"),
   },
   price: {
     getDetails: (tokenId: string) =>

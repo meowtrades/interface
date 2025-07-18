@@ -19,6 +19,7 @@ import {
   User,
   Grid,
   Trophy,
+  Info,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
@@ -166,6 +167,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               
               {/* Right Side Actions */}
               <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/paws-program"
+                  target="_blank"
+                  className="text-blue-600 flex items-center gap-1"
+                  title="How to earn PawScore"
+                >
+                  <span>Earn Paws</span>
+                  <Info size={24} />
+                </Link>
+              </div>
                 <button className="p-2.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground relative">
                   <Bell size={20} />
                   {/* Optional notification dot */}
