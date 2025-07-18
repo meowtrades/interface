@@ -177,7 +177,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
         <Separator className="my-4" />
 
-        <div>
+        {/* <div>
           <div className="text-sm font-medium text-slate-700 mb-4 flex items-center justify-between">
             <div className="flex items-center gap-1">
               <span>Historical Performance</span>
@@ -187,7 +187,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
           <div className="grid grid-cols-5 gap-3">
             {[
-              // { label: "1 Year", data: performance.year || 0 },
+              { label: "1 Year", data: performance.year || 0 },
               { label: "6 Months", data: performance.sixMonths || 0 },
               { label: "3 Months", data: performance.threeMonths || 0 },
               { label: "1 Month", data: performance.month || 0 },
@@ -202,7 +202,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 sm:flex-row">

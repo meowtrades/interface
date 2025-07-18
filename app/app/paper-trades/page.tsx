@@ -61,7 +61,21 @@ const generateMockChartData = (timeframe: string) => {
   const data = [];
   let value = 1000;
 
-  if (timeframe === "1m") {
+  if (timeframe === "7d") {
+    // 7 days data - daily points
+    for (let i = 7; i >= 0; i--) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - i);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      // Add some randomness to the value
+      value = value * (1 + (Math.random() * 0.02 - 0.01));
+      data.push({ date: formattedDate, value: Math.round(value) });
+    }
+  } else if (timeframe === "1m") {
     // 1 month data - daily points
     for (let i = 30; i >= 0; i--) {
       const date = new Date(currentDate);
@@ -88,32 +102,6 @@ const generateMockChartData = (timeframe: string) => {
       value = value * (1 + (Math.random() * 0.04 - 0.015));
       data.push({ date: formattedDate, value: Math.round(value) });
     }
-  } else if (timeframe === "6m") {
-    // 6 months data - weekly points
-    for (let i = 26; i >= 0; i--) {
-      const date = new Date(currentDate);
-      date.setDate(date.getDate() - i * 7);
-      const formattedDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-
-      value = value * (1 + (Math.random() * 0.05 - 0.02));
-      data.push({ date: formattedDate, value: Math.round(value) });
-    }
-  } else {
-    // 1 year data - bi-weekly points
-    for (let i = 26; i >= 0; i--) {
-      const date = new Date(currentDate);
-      date.setDate(date.getDate() - i * 14);
-      const formattedDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-
-      value = value * (1 + (Math.random() * 0.08 - 0.03));
-      data.push({ date: formattedDate, value: Math.round(value) });
-    }
   }
 
   // Make a new array that shows cumulative till that date
@@ -135,8 +123,8 @@ const MockTrades = () => {
   const [selectedToken, setSelectedToken] = useState("BTC");
   const [riskLevel, setRiskLevel] = useState(2); // Default to moderate (2)
   const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
-  const [chartTimeframe, setChartTimeframe] = useState("1y");
-  const [chartData, setChartData] = useState(generateMockChartData("1y"));
+  const [chartTimeframe, setChartTimeframe] = useState("1m");
+  const [chartData, setChartData] = useState(generateMockChartData("1m"));
 
   const mockTradeMutation = useCreateMockTrade();
 
@@ -352,6 +340,18 @@ const MockTrades = () => {
           <CardContent className="px-6">
             <div className="flex justify-end space-x-2 mb-6">
               <Button
+                variant={chartTimeframe === "7d" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleTimeframeChange("7d")}
+                className={
+                  chartTimeframe === "7d"
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
+                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
+                }
+              >
+                7D
+              </Button>
+              <Button
                 variant={chartTimeframe === "1m" ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleTimeframeChange("1m")}
@@ -374,30 +374,6 @@ const MockTrades = () => {
                 }
               >
                 3M
-              </Button>
-              <Button
-                variant={chartTimeframe === "6m" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleTimeframeChange("6m")}
-                className={
-                  chartTimeframe === "6m"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
-                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
-                }
-              >
-                6M
-              </Button>
-              <Button
-                variant={chartTimeframe === "1y" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleTimeframeChange("1y")}
-                className={
-                  chartTimeframe === "1y"
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-sm"
-                    : "border-2 text-contrast-high font-medium hover:bg-purple-50 transition-colors"
-                }
-              >
-                1Y
               </Button>
             </div>
             <div className="h-[320px]">
