@@ -11,7 +11,7 @@ import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { Wallet } from "@injectivelabs/wallet-base";
 import { MsgBroadcaster } from "@injectivelabs/wallet-core";
-import { Button } from "./ui/button";
+import { Button } from "../components/ui/button";
 
 declare global {
   interface Window {

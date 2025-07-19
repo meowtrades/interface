@@ -63,6 +63,22 @@ const frequencyOptions = [
   { value: Frequency.TEST_10_SECONDS, label: "Test 10 Seconds" },
 ];
 
+// Get default investment amount based on strategy type
+const getDefaultAmount = (strategy: Strategy): string => {
+  switch (strategy.type) {
+    case 'dca':
+      return "10";
+    case 'grid':
+      return "100";
+    case 'momentum':
+      return "50";
+    case 'custom':
+      return "25";
+    default:
+      return "100";
+  }
+};
+
 interface StartStrategyDialogProps {
   loading: boolean;
   strategy: Strategy;
@@ -91,7 +107,7 @@ const StartStrategyDialog = ({
   onStartStrategy,
 }: StartStrategyDialogProps) => {
   const [tokenId, setTokenId] = useState(defaultToken);
-  const [amount, setAmount] = useState("1000");
+  const [amount, setAmount] = useState(getDefaultAmount(strategy));
   const [frequency, setFrequency] = useState(Frequency.DAILY);
   const [recipientAddress, setRecipientAddress] = useState<string>();
   const [chain, setChain] = useState("injective"); // Default to TEST_MINUTE for simplicity
@@ -108,7 +124,7 @@ const StartStrategyDialog = ({
   useEffect(() => {
     if (strategy) {
       setTokenId(defaultToken);
-      setAmount("1000");
+      setAmount(getDefaultAmount(strategy));
       setFrequency(Frequency.DAILY);
       setRiskLevel(RiskLevel.MEDIUM_RISK);
       setShowSuccess(false);
@@ -228,7 +244,7 @@ const StartStrategyDialog = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50">
         {showSuccess ? ( // Success State
           <>
             {" "}
@@ -335,8 +351,8 @@ const StartStrategyDialog = ({
                 Configure your strategy settings to begin automated trading.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-5">
+            <div className="space-y-4 py-2">
+              <div className="space-y-4">
                 {" "}
                 <div>
                   <Label htmlFor="investment" className="text-sm font-semibold text-contrast-high">
@@ -349,7 +365,7 @@ const StartStrategyDialog = ({
                     onChange={(e) => setAmount(e.target.value)}
                     min="10"
                     step="10"
-                    className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   />
                   {strategy.minInvestment && (
                     <p className="text-xs text-contrast-medium mt-2">
@@ -372,7 +388,7 @@ const StartStrategyDialog = ({
                     <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
                       Recipient Address
                     </Label>
-                    <div className="flex space-x-2 mt-2">
+                    <div className="flex space-x-2 mt-1">
                       <Input
                         id="recipient"
                         type="text"
@@ -418,7 +434,7 @@ const StartStrategyDialog = ({
                       Token
                     </Label>
                     <Select value={tokenId} onValueChange={setTokenId}>
-                      <SelectTrigger id="token" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger id="token" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select token" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
@@ -441,7 +457,7 @@ const StartStrategyDialog = ({
                       value={chain}
                       onValueChange={(value: string) => setChain(value)}
                     >
-                      <SelectTrigger id="frequency" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger id="frequency" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select frequency" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
@@ -483,7 +499,7 @@ const StartStrategyDialog = ({
                       onValueChange={(values: number[]) =>
                         setRiskLevel(sliderValueToRiskLevel(values[0]))
                       }
-                      className="py-4"
+                      className="py-2"
                     />
                     <div className="flex justify-between text-xs text-contrast-medium font-medium">
                       <span>Lower Risk</span>
@@ -507,7 +523,7 @@ const StartStrategyDialog = ({
                     step={1}
                     value={[slippage]}
                     onValueChange={(values: number[]) => setSlippage(values[0])}
-                    className="py-4"
+                    className="py-2"
                   />
                   <p className="text-xs text-contrast-medium mt-2 font-medium">
                     {slippage === -1 &&
@@ -515,11 +531,10 @@ const StartStrategyDialog = ({
                   </p>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg text-amber-800 text-sm border border-amber-200">
-                <p className="font-semibold mb-1">Important Note</p>
-                <p className="font-medium">
-                  Past performance does not guarantee future results. Your
-                  investment may lose value.
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg text-amber-800 text-sm border border-amber-200">
+                <p className="font-semibold mb-1">⚠️ Important Note</p>
+                <p className="font-medium text-xs">
+                  Past performance does not guarantee future results. Your investment may lose value.
                 </p>
               </div>
             </div>

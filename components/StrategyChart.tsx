@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
@@ -86,7 +87,21 @@ const StrategyChart = ({
   }, [data]);
   
   if (!data || data.length === 0) {
-    return <Card className="w-full p-6 text-center">No data available</Card>;
+    return (
+      <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200 w-full">
+        <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+          <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+            <TrendingUp size={24} />
+          </div>
+          <h3 className="text-subtitle font-semibold text-foreground mb-3">
+            No Chart Data Available
+          </h3>
+          <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+            Chart data is not available for this strategy at the moment. Please check back later or contact support if this persists.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
   
   return (

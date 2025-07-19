@@ -201,7 +201,7 @@ const MockTrades = () => {
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 mb-8">
+      <div className="flex flex-col lg:flex-row gap-8 mb-8" data-start-trade-section>
         <Card className="w-full lg:w-1/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="text-xl font-bold text-contrast-high">
@@ -458,14 +458,40 @@ const MockTrades = () => {
 
       <Tabs defaultValue="active" className="mb-2">
         <TabsContent value="active" className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoadingActiveMockStrategiesAnalytics ? (
-              <>
-                <Skeleton className="h-80 w-full" />
-                <Skeleton className="h-80 w-full" />
-              </>
-            ) : (
-              activeMockStrategiesWithAnalytics?.map((trade) => {
+          {!isLoadingActiveMockStrategiesAnalytics && (!activeMockStrategiesWithAnalytics || activeMockStrategiesWithAnalytics.length === 0) ? (
+            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+              <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                  <TrendingUp size={24} />
+                </div>
+                <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                  No Active Paper Trades
+                </h3>
+                <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                  You don&apos;t have any active paper trades yet. Start your first simulation to test strategies with virtual funds before investing real money.
+                </p>
+                <Button 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
+                  onClick={() => {
+                    const startTradeSection = document.querySelector('[data-start-trade-section]');
+                    if (startTradeSection) {
+                      startTradeSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Start Your First Paper Trade
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {isLoadingActiveMockStrategiesAnalytics ? (
+                <>
+                  <Skeleton className="h-80 w-full" />
+                  <Skeleton className="h-80 w-full" />
+                </>
+              ) : (
+                activeMockStrategiesWithAnalytics?.map((trade) => {
                 const startedAt = Intl.DateTimeFormat("en-US", {
                   year: "numeric",
                   month: "short",
@@ -566,7 +592,8 @@ const MockTrades = () => {
                 );
               })
             )}
-          </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="completed" className="pt-6">

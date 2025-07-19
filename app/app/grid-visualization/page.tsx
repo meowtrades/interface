@@ -328,7 +328,7 @@ const GridVisualization: React.FC = () => {
                     You don&apos;t have any active grid trading strategies yet.
                   </p>
                   <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Link href="/strategies">
+                    <Link href="/app/strategies">
                       <TrendingUp className="w-4 h-4 mr-2" />
                       Create Your First Grid Strategy
                     </Link>

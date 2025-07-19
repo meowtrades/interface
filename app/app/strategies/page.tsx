@@ -9,6 +9,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -22,7 +23,7 @@ import StrategySimulationDialog from "@/components/StrategySimulationDialog";
 import StrategyCard from "@/components/StrategyCard";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
-import { RefreshCw, Grid, TrendingUp } from "lucide-react";
+import { RefreshCw, Grid, TrendingUp, Activity, Search, BarChart3 } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -248,19 +249,26 @@ const StrategiesContent = () => {
               ))}
             </div>
           ) : (
-            <div className="p-12 text-center bg-slate-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">No strategies found</h3>
-              <p className="text-slate-600 mb-4">
-                There are no strategies available for the selected chain and
-                token combination.
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => setSelectedChain(chains[0]?.id)}
-              >
-                Reset Filters
-              </Button>
-            </div>
+            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+              <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                  <Search size={24} />
+                </div>
+                <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                  No Strategies Found
+                </h3>
+                <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                  There are no strategies available for the selected chain and
+                  token combination.
+                </p>
+                <Button
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
+                  onClick={() => setSelectedChain(chains[0]?.id)}
+                >
+                  Reset Filters
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
 
@@ -353,17 +361,26 @@ const StrategiesContent = () => {
               })}
             </div>
           ) : (
-            <div className="p-12 text-center bg-slate-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">No Live strategies</h3>
-              <p className="text-slate-600 mb-4">
-                You haven&apos;t started any live strategies yet. Go to the Available
-                Strategies tab to get started.
-              </p>
-
-              <Button variant="outline" onClick={switchToAvailableTab}>
-                View Available Strategies
-              </Button>
-            </div>
+            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+              <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                  <Activity size={24} />
+                </div>
+                <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                  No Live Strategies
+                </h3>
+                <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                  You haven&apos;t started any live strategies yet. Go to the Available
+                  Strategies tab to get started.
+                </p>
+                <Button 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
+                  onClick={switchToAvailableTab}
+                >
+                  View Available Strategies
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
         <TabsContent value="paper" className="pt-6">
@@ -455,16 +472,25 @@ const StrategiesContent = () => {
               })}
             </div>
           ) : (
-            <div className="p-12 text-center bg-slate-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">No Paper Trades</h3>
-              <p className="text-slate-600 mb-4">
-                You haven&apos;t started any paper trades. Go to the Available
-                Strategies tab to get started.
-              </p>
-              <Link href="/app/paper-trades">
-                <Button variant="outline">View Available Strategies</Button>
-              </Link>
-            </div>
+            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+              <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                  <BarChart3 size={24} />
+                </div>
+                <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                  No Paper Trades
+                </h3>
+                <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                  You haven&apos;t started any paper trades. Go to the Available
+                  Strategies tab to get started.
+                </p>
+                <Link href="/app/paper-trades">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover">
+                    View Available Strategies
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
       </Tabs>

@@ -11,75 +11,75 @@ const Leaderboard = () => {
   const { data: leaderboard, isLoading } = useQuery<LeaderboardUser[]>({
     queryKey: ["leaderboard"],
     queryFn: async () => {
-      // const response = await api.xp.leaderboard();
-      // console.log(response.data);
-      // return response.data;
-      return [
-        {
-          _id: "1",
-          avatarUrl: "",
-          name: "Roger Korsgaard",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 12,
-          xp: 497,
-        },
-        {
-          _id: "2",
-          avatarUrl: "",
-          name: "Charlie Herwitz",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 8,
-          xp: 359,
-        },
-        {
-          _id: "3",
-          avatarUrl: "",
-          name: "Ahmad Mango",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 5,
-          xp: 248,
-        },
-        {
-          _id: "4",
-          avatarUrl: "",
-          name: "Cristofer George",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 3,
-          xp: 129,
-        },
-        {
-          _id: "5",
-          avatarUrl: "",
-          name: "Roger K.",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 2,
-          xp: 37,
-        },
-        {
-          _id: "6",
-          avatarUrl: "",
-          name: "Charlie H.",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 2,
-          xp: 12,
-        },
-        {
-          _id: "7",
-          avatarUrl: "",
-          name: "New Player",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 2,
-          xp: 10,
-        },
-        {
-          _id: "8",
-          avatarUrl: "",
-          name: "Another Player",
-          address: "0x1234567890abcdef1234567890abcdef12345678",
-          executions: 1,
-          xp: 5,
-        },
-      ];
+      const response = await api.xp.leaderboard();
+      console.log(response.data);
+      return response.data;
+      // return [
+      //   {
+      //     _id: "1",
+      //     avatarUrl: "",
+      //     name: "Roger Korsgaard",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 12,
+      //     xp: 497,
+      //   },
+      //   {
+      //     _id: "2",
+      //     avatarUrl: "",
+      //     name: "Charlie Herwitz",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 8,
+      //     xp: 359,
+      //   },
+      //   {
+      //     _id: "3",
+      //     avatarUrl: "",
+      //     name: "Ahmad Mango",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 5,
+      //     xp: 248,
+      //   },
+      //   {
+      //     _id: "4",
+      //     avatarUrl: "",
+      //     name: "Cristofer George",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 3,
+      //     xp: 129,
+      //   },
+      //   {
+      //     _id: "5",
+      //     avatarUrl: "",
+      //     name: "Roger K.",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 2,
+      //     xp: 37,
+      //   },
+      //   {
+      //     _id: "6",
+      //     avatarUrl: "",
+      //     name: "Charlie H.",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 2,
+      //     xp: 12,
+      //   },
+      //   {
+      //     _id: "7",
+      //     avatarUrl: "",
+      //     name: "New Player",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 2,
+      //     xp: 10,
+      //   },
+      //   {
+      //     _id: "8",
+      //     avatarUrl: "",
+      //     name: "Another Player",
+      //     address: "0x1234567890abcdef1234567890abcdef12345678",
+      //     executions: 1,
+      //     xp: 5,
+      //   },
+      // ];
     },
     refetchOnWindowFocus: false,
   });
