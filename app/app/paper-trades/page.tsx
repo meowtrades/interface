@@ -118,9 +118,9 @@ const generateMockChartData = (timeframe: string) => {
 };
 
 const MockTrades = () => {
-  const [amount, setAmount] = useState("100");
+  const [amount, setAmount] = useState("10");
   const [selectedStrategy, setSelectedStrategy] = useState("SDCA");
-  const [selectedToken, setSelectedToken] = useState("BTC");
+  const [selectedToken, setSelectedToken] = useState("INJ");
   const [riskLevel, setRiskLevel] = useState(2); // Default to moderate (2)
   const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
   const [chartTimeframe, setChartTimeframe] = useState("1m");
@@ -184,10 +184,6 @@ const MockTrades = () => {
           : RiskLevel.HIGH_RISK,
       frequency,
     });
-
-    toast.success("Paper Trade started successfully!", {
-      description: "You can track its performance in the Active Trades tab.",
-    });
   };
 
   return (
@@ -226,7 +222,7 @@ const MockTrades = () => {
                 placeholder="Enter amount"
               />
               <p className="text-xs text-contrast-medium mt-2">
-                Default mock amount is $100
+                Default mock amount is $10
               </p>
             </div>
 
