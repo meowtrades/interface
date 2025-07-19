@@ -1,0 +1,284 @@
+/** @format */
+
+import React, { useState, useEffect, useMemo } from "react";
+import { GridVisualizationData } from "@/api/hooks/useGridVisualization";
+import { useLivePrices, PriceUpdate } from "@/hooks/useLivePrices";
+import { CanvasGridChart, PricePoint } from "./CanvasGridChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+import { cn, getProfitLossColor, formatCurrency } from "@/lib/design-system";
+
+interface LiveGridVisualizationProps {
+  data: GridVisualizationData;
+  maxPricePoints?: number;
+  height?: number;
+  onPriceUpdate?: (update: PriceUpdate) => void;
+}
+
+export const LiveGridVisualization: React.FC<LiveGridVisualizationProps> = ({
+  data,
+  maxPricePoints = 200,
+  height = 400,
+  onPriceUpdate,
+}) => {
+  const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentLivePrice, setCurrentLivePrice] = useState(data.currentPrice);
+  const { prices, connectionStatus, lastUpdate, error } = useLivePrices({
+    tokenIds: [data.tokenSymbol],
+    onPriceUpdate: (update) => {
+      if (update.symbol === data.tokenSymbol) {
+        setCurrentLivePrice(update.price);
+
+        setPriceHistory((prev) => {
+          const newHistory = [
+            ...prev,
+            {
+              timestamp: update.timestamp,
+              price: update.price,
+            },
+          ];
+
+          if (newHistory.length > maxPricePoints) {
+            return newHistory.slice(-maxPricePoints);
+          }
+
+          return newHistory;
+        });
+
+        onPriceUpdate?.(update);
+      }
+    },
+  });
+
+  // Initialize price history with current price if empty
+  useEffect(() => {
+    if (priceHistory.length === 0) {
+      setPriceHistory([
+        {
+          timestamp: Date.now(),
+          price: data.currentPrice,
+        },
+      ]);
+    }
+  }, [data.currentPrice, priceHistory.length]);
+
+  // Simple price calculation without useMemo to avoid re-render issues
+  const currentPrice = prices[data.tokenSymbol]?.price || currentLivePrice;
+
+  const priceChange = (() => {
+    if (priceHistory.length < 2) return 0;
+    const firstPrice = priceHistory[0].price;
+    return currentPrice - firstPrice;
+  })();
+
+  const priceChangePercent = (() => {
+    if (priceHistory.length < 2) return 0;
+    const firstPrice = priceHistory[0].price;
+    return ((currentPrice - firstPrice) / firstPrice) * 100;
+  })();
+
+  const getRiskLevelColor = (riskLevel: string) => {
+    switch (riskLevel) {
+      case "LOW_RISK":
+        return "bg-success/10 text-success border-success/20";
+      case "MEDIUM_RISK":
+        return "bg-warning/10 text-warning border-warning/20";
+      case "HIGH_RISK":
+        return "bg-destructive/10 text-destructive border-destructive/20";
+      default:
+        return "bg-muted text-muted-foreground border-border";
+    }
+  };
+
+  const getConnectionStatusIcon = () => {
+    switch (connectionStatus) {
+      case "Open":
+        return <Wifi className="h-4 w-4 text-success" />;
+      case "Connecting":
+        return <RefreshCw className="h-4 w-4 text-warning animate-spin" />;
+      case "Error":
+        return <WifiOff className="h-4 w-4 text-destructive" />;
+      default:
+        return <WifiOff className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const chartHeight = isFullscreen && typeof window !== 'undefined' ? window.innerHeight - 200 : height;
+  const chartWidth = isFullscreen && typeof window !== 'undefined' ? window.innerWidth - 100 : 800;
+
+  return (
+    <Card className={cn(
+      "border border-border bg-card",
+      isFullscreen && "fixed inset-4 z-50 bg-card"
+    )}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <div className="flex items-center space-x-4">
+          <CardTitle className="text-title font-semibold text-foreground">
+            {data.tokenSymbol} Grid Trading
+          </CardTitle>
+          <Badge className={getRiskLevelColor(data.riskLevel)}>
+            {data.riskLevel.replace("_", " ")}
+          </Badge>
+          <div className="flex items-center space-x-2">
+            {getConnectionStatusIcon()}
+            <span className="text-caption text-muted-foreground capitalize">
+              {connectionStatus}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="h-4 w-4" />
+            ) : (
+              <Maximize2 className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {/* Price Info */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-caption text-muted-foreground">Current Price</p>
+            <p className="text-title font-bold text-primary metric-display">
+              {formatCurrency(currentPrice)}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-caption text-muted-foreground">24h Change</p>
+            <div className="flex items-center justify-center space-x-1">
+              {priceChange >= 0 ? (
+                <TrendingUp className="h-4 w-4 text-success" />
+              ) : (
+                <TrendingDown className="h-4 w-4 text-destructive" />
+              )}
+              <span className={cn(
+                "text-body font-medium metric-display",
+                getProfitLossColor(priceChange)
+              )}>
+                {priceChangePercent.toFixed(2)}%
+              </span>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-caption text-muted-foreground">Grid Lines</p>
+            <p className="text-subtitle font-semibold text-foreground">{data.gridLines.length}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-caption text-muted-foreground">Executions</p>
+            <div className="flex items-center justify-center space-x-1">
+              <Activity className="h-4 w-4 text-primary" />
+              <span className="text-body font-medium text-foreground">{data.executionCount}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <WifiOff className="h-4 w-4 text-destructive" />
+              <span className="text-caption text-destructive font-medium">
+                Connection Error
+              </span>
+            </div>
+            <p className="text-caption text-destructive mt-1">{error}</p>
+          </div>
+        )}
+
+        {/* Chart */}
+        <div className="flex justify-center">
+          <CanvasGridChart
+            data={data}
+            priceHistory={priceHistory}
+            currentPrice={currentPrice}
+            width={chartWidth}
+            height={chartHeight}
+            className="border border-border rounded-lg"
+          />
+        </div>
+
+        {/* Grid Lines Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-body font-semibold text-success mb-2">Buy Orders</h4>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {data.gridLines
+                .filter((line) => line.type === "buy")
+                .sort((a, b) => b.price - a.price)
+                .slice(0, 5)
+                .map((line, index) => (
+                  <div key={index} className="flex justify-between text-caption">
+                    <span className={cn(
+                      "metric-display",
+                      line.status === "active" ? "text-success" : "text-muted-foreground"
+                    )}>
+                      {formatCurrency(line.price)}
+                    </span>
+                    <Badge
+                      variant={line.status === "active" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {line.status}
+                    </Badge>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-body font-semibold text-destructive mb-2">Sell Orders</h4>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {data.gridLines
+                .filter((line) => line.type === "sell")
+                .sort((a, b) => a.price - b.price)
+                .slice(0, 5)
+                .map((line, index) => (
+                  <div key={index} className="flex justify-between text-caption">
+                    <span className={cn(
+                      "metric-display",
+                      line.status === "active" ? "text-destructive" : "text-muted-foreground"
+                    )}>
+                      {formatCurrency(line.price)}
+                    </span>
+                    <Badge
+                      variant={line.status === "active" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {line.status}
+                    </Badge>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Last Update Info */}
+        {lastUpdate && (
+          <div className="text-caption text-muted-foreground text-center">
+            Last update: {new Date(lastUpdate.timestamp).toLocaleTimeString()}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
