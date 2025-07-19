@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,7 @@ import { StrategyOverview } from "@/components/StrategyDetail/StrategyOverview";
 import { StrategyDetails } from "@/components/StrategyDetail/StrategyDetails";
 import { TransactionList } from "@/components/StrategyDetail/TransactionList";
 
-const StrategyDetail = () => {
+const StrategyDetailContent = () => {
   const { strategyId } = useParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -78,6 +78,21 @@ const StrategyDetail = () => {
 
       <TransactionList />
     </AppLayout>
+  );
+};
+
+const StrategyDetail = () => {
+  return (
+    <Suspense fallback={
+      <AppLayout>
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-96 w-full" />
+        </div>
+      </AppLayout>
+    }>
+      <StrategyDetailContent />
+    </Suspense>
   );
 };
 

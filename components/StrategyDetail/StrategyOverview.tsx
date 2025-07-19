@@ -30,7 +30,8 @@ import { AxiosError } from "axios";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 export const StrategyOverview = () => {
-  const { strategyId } = useParams();
+  const { strategyId: rawStrategyId } = useParams();
+  const strategyId = Array.isArray(rawStrategyId) ? rawStrategyId[0] : rawStrategyId;
   const searchParams = useSearchParams();
   const router = useRouter();
   const [_validRanges, setValidRanges] = useState<
@@ -69,6 +70,7 @@ export const StrategyOverview = () => {
   >({
     queryKey: ["transactions", strategyId, currentPage],
     queryFn: async () => {
+      if (!strategyId) throw new Error("Strategy ID is required");
       return (
         await api.strategies.getTransactions(strategyId, {
           page: currentPage,
@@ -123,7 +125,7 @@ export const StrategyOverview = () => {
     mutationFn: async () => {
       if (!strategyId) throw new Error("Strategy ID is required");
 
-      if (userStrategy.status === "active") {
+      if (userStrategy?.status === "active") {
         const { data } = await api.plans.pause(strategyId);
         return data;
       } else {
@@ -140,6 +142,7 @@ export const StrategyOverview = () => {
   });
 
   useEffect(() => {
+    if (!userStrategy) return;
     const ranges = getValidRanges(userStrategy.frequency as Frequency);
     setValidRanges(ranges);
 
@@ -150,7 +153,11 @@ export const StrategyOverview = () => {
         query: { ...router.query, range: ranges[0].value },
       });
     }
-  }, [userStrategy.frequency, range, router]);
+  }, [userStrategy?.frequency, range, router]);
+
+  if (!strategyId || !userStrategy) {
+    return <div>Loading...</div>;
+  }
 
   // Helper to format as currency
   const formatCurrency = (value: number) => {

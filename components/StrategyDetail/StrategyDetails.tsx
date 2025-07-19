@@ -9,7 +9,9 @@ import { useParams } from "next/navigation";
 import { api } from "@/api";
 
 export const StrategyDetails = () => {
-  const { strategyId } = useParams();
+  const { strategyId: rawStrategyId } = useParams();
+  const strategyId = Array.isArray(rawStrategyId) ? rawStrategyId[0] : rawStrategyId;
+  
   const { data: userStrategy } = useQuery<UserStrategy>({
     queryKey: ["userStrategy", strategyId],
     queryFn: async () => {
@@ -24,11 +26,21 @@ export const StrategyDetails = () => {
 
   // Get the proper icon based on strategy type
   const getStrategyIcon = () => {
-    const type = userStrategy.strategyTemplate?.type || "dca";
+    const type = userStrategy?.strategyTemplate?.type || "dca";
     if (type === "grid") return <Grid size={18} />;
     if (type === "momentum") return <TrendingUp size={18} />;
     return <RefreshCw size={18} />;
   };
+
+  // Return early if userStrategy is not loaded yet
+  if (!userStrategy) {
+    return (
+      <div className="bg-white rounded-lg p-5 shadow-sm">
+        <h3 className="font-medium text-lg mb-4">Strategy Details</h3>
+        <div className="text-center py-8">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg p-5 shadow-sm">
@@ -39,7 +51,7 @@ export const StrategyDetails = () => {
           <div className="flex items-center gap-2">
             {getStrategyIcon()}
             <span className="font-medium">
-              {userStrategy.strategyTemplate.name}
+              {userStrategy.strategyTemplate?.name}
             </span>
           </div>
         </div>
@@ -92,7 +104,7 @@ export const StrategyDetails = () => {
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Description</h4>
           <p className="text-sm text-slate-700">
-            {userStrategy.strategyTemplate.description}
+            {userStrategy.strategyTemplate?.description}
           </p>
         </div>
       </div>

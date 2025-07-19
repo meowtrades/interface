@@ -12,7 +12,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip.tsx";
+} from "@/components/ui/tooltip";
 import { Skeleton } from "../ui/skeleton";
 import {
   Cell,
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { transactionToTableValues } from "@/lib/utils";
 
-const getToolTipValue = (cell: Cell<unknown, unknown>) => {
+const getToolTipValue = <TData,>(cell: Cell<TData, unknown>) => {
   const value = cell.getValue();
 
   if (typeof value === "string") {
@@ -55,6 +55,8 @@ const getToolTipValue = (cell: Cell<unknown, unknown>) => {
 export const TransactionList = () => {
   const { strategyId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const strategyIdString = Array.isArray(strategyId) ? strategyId[0] : strategyId;
 
   const {
     data: transactionsData,
@@ -70,10 +72,11 @@ export const TransactionList = () => {
       };
     }
   >({
-    queryKey: ["transactions", strategyId, currentPage],
+    queryKey: ["transactions", strategyIdString, currentPage],
     queryFn: async () => {
+      if (!strategyIdString) throw new Error("Strategy ID is required");
       return (
-        await api.strategies.getTransactions(strategyId, {
+        await api.strategies.getTransactions(strategyIdString, {
           page: currentPage,
           limit: 5,
         })
@@ -81,7 +84,7 @@ export const TransactionList = () => {
     },
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: !!strategyId,
+    enabled: !!strategyIdString,
   });
 
   // Format dates for display

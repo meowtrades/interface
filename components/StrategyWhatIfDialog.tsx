@@ -40,7 +40,7 @@ const StrategyWhatIfDialog = ({ strategy, open, onClose, defaultToken = 'btc' }:
   
   // Get token performance
   const tokenPerformance = strategy.performance?.[tokenId] || {
-    year: 0,
+    Y: 0,
     sixMonths: 0,
     threeMonths: 0,
     month: 0,
@@ -66,7 +66,7 @@ const StrategyWhatIfDialog = ({ strategy, open, onClose, defaultToken = 'btc' }:
         returnPercentage = tokenPerformance.sixMonths || 0;
         break;
       case "1year":
-        returnPercentage = tokenPerformance.year || 0;
+        returnPercentage = tokenPerformance.Y || 0;
         break;
       default:
         returnPercentage = 0;
@@ -152,7 +152,7 @@ const StrategyWhatIfDialog = ({ strategy, open, onClose, defaultToken = 'btc' }:
                 {timeframe === "1month" && `+${tokenPerformance.month || 0}%`}
                 {timeframe === "3months" && `+${tokenPerformance.threeMonths || 0}%`}
                 {timeframe === "6months" && `+${tokenPerformance.sixMonths || 0}%`}
-                {timeframe === "1year" && `+${tokenPerformance.year || 0}%`}
+                {timeframe === "1year" && `+${tokenPerformance.Y || 0}%`}
               </div>
             </div>
             

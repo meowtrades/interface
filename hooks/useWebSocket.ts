@@ -46,7 +46,7 @@ export const useWebSocket = (
     "Connecting" | "Open" | "Closing" | "Closed"
   >("Closed");
 
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectCountRef = useRef(0);
   const socketRef = useRef<WebSocket | null>(null);
 

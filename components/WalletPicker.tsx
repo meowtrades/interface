@@ -36,7 +36,7 @@ const WalletPicker = ({
         </DialogHeader>
         {availableWallets
           .filter((wallet) => {
-            return typeof window !== "undefined" && window[wallet.windowKey];
+            return typeof window !== "undefined" && wallet.windowKey in window;
           })
           .map((wallet) => {
             return (
@@ -48,7 +48,7 @@ const WalletPicker = ({
                     try {
                       setIsLoading(true);
                       setisWalletGrantPending(true);
-                      await wallet.action(enteredBalance);
+                      await wallet.action(enteredBalance || 0);
                       setisWalletGrantPending(false);
                       toast.success(`Permission granted for ${wallet.name}`);
                       await callback(wallet.name);
