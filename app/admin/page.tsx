@@ -1,3 +1,10 @@
+/** @format */
+"use client";
+
+export default function Admin() {
+  return <div>Admin</div>;
+}
+
 // /** @format */
 
 // "use client";
