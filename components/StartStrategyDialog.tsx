@@ -35,8 +35,9 @@ import {
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
 import WalletPicker from "./WalletPicker";
+import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
-import { getLeapWalletAddress } from "@/lib/wallet";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 
 // Color map for strategy types
@@ -383,51 +384,6 @@ const StartStrategyDialog = ({
                   </p>
                 </div>
 
-                {strategy.id === "SDCA" && (
-                  <div>
-                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
-                      Recipient Address
-                    </Label>
-                    <div className="flex space-x-2 mt-1">
-                      <Input
-                        id="recipient"
-                        type="text"
-                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
-                          isRecipientAddressValid
-                            ? "border-green-500 focus:ring-green-200"
-                            : "border-red-500 focus:ring-red-200"
-                        } focus:ring-2`}
-                        placeholder="Enter recipient address"
-                        value={recipientAddress}
-                        onChange={(e) => {
-                          setRecipientAddress(e.target.value);
-
-                          if (!validateInjecitveWalletAddress(e.target.value)) {
-                            setIsRecipientAddressValid(false);
-                            return;
-                          }
-
-                          setIsRecipientAddressValid(true);
-                        }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          getLeapWalletAddress().then((addr) => {
-                            setRecipientAddress(addr);
-
-                            if (validateInjecitveWalletAddress(addr)) {
-                              setIsRecipientAddressValid(true);
-                            }
-                          })
-                        }
-                        className="font-medium"
-                      >
-                        Use My Address
-                      </Button>
-                    </div>
-                  </div>
-                )}
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
                     <Label htmlFor="token" className="text-sm font-semibold text-contrast-high">
@@ -479,6 +435,54 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 </div>
+
+                {strategy.id === "SDCA" && (
+                  <div>
+                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
+                      Recipient Address
+                    </Label>
+                    <div className="flex space-x-2 mt-1">
+                      <Input
+                        id="recipient"
+                        type="text"
+                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
+                          isRecipientAddressValid
+                            ? "border-green-500 focus:ring-green-200"
+                            : "border-red-500 focus:ring-red-200"
+                        } focus:ring-2`}
+                        placeholder="Enter recipient address"
+                        value={recipientAddress}
+                        onChange={(e) => {
+                          setRecipientAddress(e.target.value);
+
+                          if (!validateInjecitveWalletAddress(e.target.value)) {
+                            setIsRecipientAddressValid(false);
+                            return;
+                          }
+
+                          setIsRecipientAddressValid(true);
+                        }}
+                      />
+                      <WalletAddressPicker
+                        chain={chain}
+                        onAddressSelected={(addr) => {
+                          setRecipientAddress(addr);
+                          if (validateInjecitveWalletAddress(addr)) {
+                            setIsRecipientAddressValid(true);
+                          }
+                        }}
+                      >
+                        <Button
+                          variant="secondary"
+                          className="font-medium"
+                        >
+                          Use My Address
+                        </Button>
+                      </WalletAddressPicker>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Risk level slider for Smart DCA strategy */}
                 {
                   <div className="space-y-3">
@@ -546,6 +550,7 @@ const StartStrategyDialog = ({
                 disabled={!isRecipientAddressValid && strategy.id === "SDCA"}
                 callback={handleSubmit}
                 enteredBalance={parseFloat(amount)}
+                chain={chain}
               />
             </DialogFooter>
           </>

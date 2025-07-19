@@ -126,7 +126,7 @@ export const checkMinimumUSDTBalance = async (
     granter
   );
 
-  console.log(bankBalancesList);
+  console.log("bankBalancesList", bankBalancesList);
 
   const usdtBalance = bankBalancesList.find(
     (balance) => balance.denom === USDT_DENOM

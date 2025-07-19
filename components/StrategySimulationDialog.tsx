@@ -7,7 +7,7 @@ import { useState } from "react";
 import StartStrategyDialog from "./StartStrategyDialog";
 import { FrequencyOption, useCreateDcaPlan } from "@/api";
 import { authClient } from "@/lib/auth";
-import { getLeapWalletAddress } from "@/lib/wallet";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
 
 interface StrategySimulationDialogProps {
   strategy: Strategy;
