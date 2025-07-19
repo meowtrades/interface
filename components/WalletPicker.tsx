@@ -1,7 +1,7 @@
 /** @format */
 
 import { availableWallets } from "@/lib/grants/available-wallets";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -31,7 +31,9 @@ const WalletPicker = ({
         </Button>
       </DialogTrigger>{" "}
       <DialogContent>
-        <h2>Select a Wallet</h2>
+        <DialogHeader>
+          <DialogTitle>Select a Wallet</DialogTitle>
+        </DialogHeader>
         {availableWallets
           .filter((wallet) => {
             return typeof window !== "undefined" && window[wallet.windowKey];

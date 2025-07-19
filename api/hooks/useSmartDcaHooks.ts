@@ -9,7 +9,7 @@ import {
   TotalInvestment,
 } from "../types";
 import { toast } from "sonner";
-import { getKeplrGrant } from "@/lib/grants/Keplr";
+import { getKeplrGrant } from "@/lib/grants/auth-z";
 
 // Query keys for cache management
 export const SMART_DCA_KEYS = {

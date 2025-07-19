@@ -142,7 +142,7 @@ const GridVisualization: React.FC = () => {
               Refresh
             </Button>
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href="/strategies">
+              <Link href="/app/strategies">
                 <Settings className="w-4 h-4 mr-2" />
                 Manage Strategies
               </Link>

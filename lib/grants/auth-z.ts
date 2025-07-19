@@ -62,7 +62,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
     walletStrategy,
     simulateTx: true,
     network: Network.Testnet,
-    ethereumChainId: EthereumChainId.TestnetEvm,
+    // ethereumChainId: EthereumChainId.TestnetEvm,
     endpoints: getNetworkEndpoints(Network.Testnet),
   });
 

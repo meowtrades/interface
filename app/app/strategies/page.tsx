@@ -26,7 +26,7 @@ import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
-const Strategies = () => {
+const StrategiesContent = () => {
   const {
     strategies,
     chains,
@@ -135,18 +135,16 @@ const Strategies = () => {
 
   if (error) {
     return (
-      <AppLayout>
-        <div className="p-4 bg-red-50 text-red-600 rounded-md">
-          Error loading strategy data: {error}
-        </div>
-      </AppLayout>
+      <div className="p-4 bg-red-50 text-red-600 rounded-md">
+        Error loading strategy data: {error}
+      </div>
     );
   }
 
   console.log(availableStrategies, trendingStrategyId);
 
   return (
-    <AppLayout>
+    <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">
           Trading Strategies
@@ -480,6 +478,14 @@ const Strategies = () => {
           defaultToken={selectedToken || "btc"}
         />
       )}
+    </div>
+  );
+};
+
+const Strategies = () => {
+  return (
+    <AppLayout>
+      <StrategiesContent />
     </AppLayout>
   );
 };

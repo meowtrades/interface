@@ -1,8 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp, Clock, DollarSign, ArrowRight } from "lucide-react";
-import { format } from "date-fns";
-import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 
 interface StrategySimulationDialogProps {
@@ -65,10 +64,11 @@ const StrategySimulationDialog = ({
       <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
-            What if you invested $500 3 months ago?
+            What if you invested $10 daily for 3 months?
+            {/* What if you invested $500 3 months ago? */}
           </DialogTitle>
           <p className="text-slate-600 mt-1">
-            See how a $500 investment would have performed with the {strategy.name} strategy
+            See how a $900 investment would have performed with the {strategy.name} strategy
           </p>
         </DialogHeader>
         

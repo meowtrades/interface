@@ -331,10 +331,10 @@ const MockTrades = () => {
         <Card className="w-full lg:w-2/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="text-xl font-bold text-contrast-high">
-              SDCA Performance
+              Smart DCA Performance
             </CardTitle>
             <CardDescription className="text-contrast-medium">
-              How a $1000 daily investment would have performed over time
+              How $10 daily investment would have performed over time
             </CardDescription>
           </CardHeader>
           <CardContent className="px-6">
