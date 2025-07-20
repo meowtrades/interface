@@ -173,7 +173,7 @@ const MockTrades = () => {
         slippage: 0.5, // Default slippage for paper trading
       });
 
-      toast.success("🎉 Paper Trade Started!", {
+      toast.success("Paper Trade Started!", {
         description: `Successfully started ${selectedStrategy} strategy with $${amount} for ${selectedToken}`,
         duration: 5000,
       });
@@ -196,7 +196,7 @@ const MockTrades = () => {
   const handleStopMockTrade = async (tradeId: string) => {
     try {
       await stopDcaPlanMutation.mutateAsync(tradeId);
-      toast.success("📈 Paper Trade Stopped!", {
+      toast.success("Paper Trade Stopped!", {
         description: "Your paper trade has been stopped successfully. View the final results in your trade history.",
         duration: 5000,
       });
