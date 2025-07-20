@@ -6,6 +6,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "@/components/ui/sonner";
 
 // Create a QueryClient instance for React Query
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
       <TooltipProvider>
         {children}
       </TooltipProvider>
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axiosInstance from "../interceptors/axiosInterceptor";
+import { api } from "../client";
 import {
   AllocateFundsDto,
-  ChainToken,
   DepositFundsDto,
-  Token,
   WithdrawFundsDto,
 } from "../types";
 
@@ -12,40 +10,33 @@ import {
 export const USER_BALANCE_KEYS = {
   all: ["user", "balance"] as const,
   balances: () => [...USER_BALANCE_KEYS.all, "all"] as const,
-  chain: (chainId: number | string) =>
-    [...USER_BALANCE_KEYS.all, "chain", chainId.toString()] as const,
-  tokens: (chainId: number | string) =>
-    [...USER_BALANCE_KEYS.all, "tokens", chainId.toString()] as const,
+  chain: (chainId: string) =>
+    [...USER_BALANCE_KEYS.all, "chain", chainId] as const,
+  tokens: (chainId: string) =>
+    [...USER_BALANCE_KEYS.all, "tokens", chainId] as const,
 };
 
-// Commented out unused hooks - uncomment if needed
 /**
  * Get all user balances across all chains
  */
-// export const useUserBalances = () => {
-//   return useQuery({
-//     queryKey: USER_BALANCE_KEYS.balances(),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<{ data: ChainToken[] }>(
-//         "/user/balance"
-//       );
-//
-//       const data = response.data.data;
-//       return data.filter((chain) => chain.chainId === "injective");
-//     },
-//   });
-// };
+export const useUserBalances = () => {
+  return useQuery({
+    queryKey: USER_BALANCE_KEYS.balances(),
+    queryFn: async () => {
+      const response = await api.balances.get();
+      return response.data.balances;
+    },
+  });
+};
 
 /**
  * Get user balance for a specific chain
  */
-export const useChainBalance = (chainId: number) => {
+export const useChainBalance = (chainId: string) => {
   return useQuery({
     queryKey: USER_BALANCE_KEYS.chain(chainId),
     queryFn: async () => {
-      const response = await axiosInstance.get<ChainToken>(
-        `/user/balance/${chainId}`
-      );
+      const response = await api.balances.getByChain(chainId);
       return response.data;
     },
     enabled: !!chainId,
@@ -55,14 +46,12 @@ export const useChainBalance = (chainId: number) => {
 /**
  * Get available tokens for a specific chain
  */
-export const useChainTokens = (chainId: number) => {
+export const useChainTokens = (chainId: string) => {
   return useQuery({
     queryKey: USER_BALANCE_KEYS.tokens(chainId),
     queryFn: async () => {
-      const response = await axiosInstance.get<Token[]>(
-        `/user/balance/${chainId}/tokens`
-      );
-      return response.data;
+      const response = await api.balances.getChainTokens(chainId);
+      return response.data.tokens;
     },
     enabled: !!chainId,
   });
@@ -74,10 +63,7 @@ export const useChainTokens = (chainId: number) => {
 export const useDepositFunds = () => {
   return useMutation({
     mutationFn: async (depositData: DepositFundsDto) => {
-      const response = await axiosInstance.post(
-        "/user/balance/deposit",
-        depositData
-      );
+      const response = await api.balances.deposit(depositData);
       return response.data;
     },
   });
@@ -89,10 +75,7 @@ export const useDepositFunds = () => {
 export const useWithdrawFunds = () => {
   return useMutation({
     mutationFn: async (withdrawData: WithdrawFundsDto) => {
-      const response = await axiosInstance.post(
-        "/user/balance/withdraw",
-        withdrawData
-      );
+      const response = await api.balances.withdraw(withdrawData);
       return response.data;
     },
   });
@@ -104,10 +87,7 @@ export const useWithdrawFunds = () => {
 export const useAllocateFunds = () => {
   return useMutation({
     mutationFn: async (allocateData: AllocateFundsDto) => {
-      const response = await axiosInstance.post(
-        "/user/balance/allocate",
-        allocateData
-      );
+      const response = await api.balances.allocate(allocateData);
       return response.data;
     },
   });

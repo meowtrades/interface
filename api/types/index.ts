@@ -147,28 +147,27 @@ export type ChainToken = {
 
 export type DepositFundsDto = {
   chainId: string;
-  tokenAddress: string;
   amount: string;
   txHash: string;
+  tokenSymbol: string;
 };
 
 export type WithdrawFundsDto = {
   chainId: string;
-  tokenAddress: string;
   amount: string;
   destinationAddress: string;
+  tokenSymbol: string;
 };
 
 export type AllocateFundsDto = {
   strategyId: string;
-  chainId: number;
-  tokenAddress: string;
+  chainId: string;
   amount: string;
+  tokenSymbol: string;
 };
 
 // Smart DCA types
 export type FrequencyOption =
-  | "hourly"
   | "daily"
   | "weekly"
   | "monthly"
@@ -184,15 +183,14 @@ export type DcaPlanCustomSettings = {
 };
 
 export type CreateDcaPlanDto = {
-  userId: string;
   amount: number;
   userWalletAddress: string;
   frequency: FrequencyOption;
   chain: string;
-  recipientAddress: string; // Optional, for custom recipient
+  recipientAddress: string;
   tokenSymbol: string;
   strategyId: string;
-  slippage: number; // Optional, will be set based on risk level
+  slippage: number;
   riskLevel: string;
 };
 
@@ -206,6 +204,10 @@ export type DcaPlan = {
   isActive: boolean;
   lastExecutionTime: string | null;
   riskLevel: string;
+  recipientAddress: string;
+  tokenSymbol: string;
+  strategyId: string;
+  slippage: number;
   totalInvested: number;
   updatedAt: string;
   userId: string;

@@ -3,8 +3,6 @@
 "use client";
 
 import { useState } from "react";
-import AppLayout from "@/components/AppLayout";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,17 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -33,27 +23,43 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
 } from "recharts";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   api,
-  axiosInstance,
-  useCreateMockTrade,
-  useStopMockTrade,
+  useCreateDcaPlan,
+  useStopDcaPlan,
 } from "@/api";
 import { Frequency, RiskLevel } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AppLayout from "@/components/AppLayout";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { ActiveStrategyAnalytics } from "@/api/types";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
+import React from "react";
 
 // Mock data for performance chart
 const generateMockChartData = (timeframe: string) => {
@@ -119,20 +125,94 @@ const generateMockChartData = (timeframe: string) => {
 
 const MockTrades = () => {
   const [amount, setAmount] = useState("10");
-  const [selectedStrategy, setSelectedStrategy] = useState("SDCA");
-  const [selectedToken, setSelectedToken] = useState("INJ");
+  const [selectedStrategy, setSelectedStrategy] = useState("");
+  const [selectedToken, setSelectedToken] = useState("");
   const [riskLevel, setRiskLevel] = useState(2); // Default to moderate (2)
   const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
   const [chartTimeframe, setChartTimeframe] = useState("1m");
   const [chartData, setChartData] = useState(generateMockChartData("1m"));
 
-  const mockTradeMutation = useCreateMockTrade();
-
-  const stopMutation = useStopMockTrade();
+  // Use the actual DCA plan creation hook for mock trading
+  const createDcaPlanMutation = useCreateDcaPlan();
+  const stopDcaPlanMutation = useStopDcaPlan();
+  const queryClient = useQueryClient();
 
   const handleTimeframeChange = (timeframe: string) => {
     setChartTimeframe(timeframe);
     setChartData(generateMockChartData(timeframe));
+  };
+
+  // Actually create a mock strategy by setting chain to "mock"
+  const handleStartMockTrade = async () => {
+    try {
+      // Validation
+      if (!selectedStrategy) {
+        toast.error("Please select a strategy");
+        return;
+      }
+      if (!selectedToken) {
+        toast.error("Please select a token");
+        return;
+      }
+      if (!amount || Number(amount) <= 0) {
+        toast.error("Please enter a valid amount");
+        return;
+      }
+
+      const walletAddress = await getLeapWalletAddress();
+      
+      await createDcaPlanMutation.mutateAsync({
+        amount: Number(amount),
+        userWalletAddress: walletAddress,
+        frequency: frequency,
+        tokenSymbol: selectedToken,
+        strategyId: selectedStrategy,
+        recipientAddress: walletAddress,
+        chain: "mock", // This is the key - marks it as paper trading
+        riskLevel: riskLevel === 1 ? "no_risk" : riskLevel === 2 ? "medium_risk" : "high_risk",
+        slippage: 0.5, // Default slippage for paper trading
+      });
+
+      toast.success("🎉 Paper Trade Started!", {
+        description: `Successfully started ${selectedStrategy} strategy with $${amount} for ${selectedToken}`,
+        duration: 5000,
+      });
+      
+      // Invalidate all related queries for real-time updates
+      queryClient.invalidateQueries({ queryKey: ["activeStrategiesAnalytics", "mock"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "overview"] });
+      queryClient.invalidateQueries({ queryKey: ["recentActivities"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "activities"] });
+    } catch (error) {
+      console.error("Failed to start paper trade:", error);
+      toast.error("Failed to Start Paper Trade", {
+        description: "Please try again or contact support if the issue persists.",
+        duration: 5000,
+      });
+    }
+  };
+
+  // Stop a paper trade using the regular stop functionality
+  const handleStopMockTrade = async (tradeId: string) => {
+    try {
+      await stopDcaPlanMutation.mutateAsync(tradeId);
+      toast.success("📈 Paper Trade Stopped!", {
+        description: "Your paper trade has been stopped successfully. View the final results in your trade history.",
+        duration: 5000,
+      });
+      
+      // Invalidate all related queries for real-time updates
+      queryClient.invalidateQueries({ queryKey: ["activeStrategiesAnalytics", "mock"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "overview"] });
+      queryClient.invalidateQueries({ queryKey: ["recentActivities"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "activities"] });
+    } catch (error) {
+      console.error("Failed to stop paper trade:", error);
+      toast.error("Failed to Stop Paper Trade", {
+        description: "Please try again or contact support if the issue persists.",
+        duration: 5000,
+      });
+    }
   };
 
   const [
@@ -143,20 +223,44 @@ const MockTrades = () => {
       {
         queryKey: ["available", "tokens"],
         queryFn: async () => {
-          const { data } = await axiosInstance.get("/available/tokens");
-          return data.tokens;
+          // Use mock data instead of real API for now
+          const { fetchTokens } = await import("@/lib/api/strategies");
+          return await fetchTokens();
         },
       },
       {
         queryKey: ["available", "strategies"],
         queryFn: async () => {
-          const { data } = await axiosInstance.get("/available/strategies");
-          return data.strategies;
+          // Use mock data instead of real API for now  
+          const { fetchStrategies } = await import("@/lib/api/strategies");
+          return await fetchStrategies();
         },
       },
     ],
   });
 
+  // Set default selections when data loads
+  React.useEffect(() => {
+    if (strategies && strategies.length > 0 && !selectedStrategy) {
+      // Try to find "SDCA" or "S-DCA", otherwise use first strategy
+      const sdcaStrategy = strategies.find(s => 
+        s.id === "SDCA" || 
+        s.id === "S-DCA" || 
+        (s.name && s.name.toLowerCase().includes("dca"))
+      );
+      setSelectedStrategy(sdcaStrategy ? sdcaStrategy.id : strategies[0].id);
+    }
+  }, [strategies, selectedStrategy]);
+
+  React.useEffect(() => {
+    if (tokens && tokens.length > 0 && !selectedToken) {
+      // Try to find "INJ", otherwise use first token
+      const injToken = tokens.find(t => t.symbol === "INJ");
+      setSelectedToken(injToken ? injToken.symbol : tokens[0].symbol);
+    }
+  }, [tokens, selectedToken]);
+
+  // Get mock strategies by filtering for chain: "mock"
   const {
     data: activeMockStrategiesWithAnalytics,
     isLoading: isLoadingActiveMockStrategiesAnalytics,
@@ -170,21 +274,6 @@ const MockTrades = () => {
     },
     refetchOnWindowFocus: false,
   });
-
-  const handleStartMockTrade = () => {
-    mockTradeMutation.mutate({
-      strategyId: selectedStrategy,
-      tokenSymbol: selectedToken,
-      amount: Number(amount),
-      riskLevel:
-        riskLevel === 1
-          ? RiskLevel.NO_RISK
-          : riskLevel === 2
-          ? RiskLevel.MEDIUM_RISK
-          : RiskLevel.HIGH_RISK,
-      frequency,
-    });
-  };
 
   return (
     <AppLayout>
@@ -233,14 +322,15 @@ const MockTrades = () => {
               <Select
                 value={selectedStrategy}
                 onValueChange={setSelectedStrategy}
+                disabled={isStrategiesLoading}
               >
-                <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                  <SelectValue placeholder="Select a strategy" />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={isStrategiesLoading ? "Loading strategies..." : "Select strategy"} />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 shadow-lg">
-                  {strategies?.map((strategy: string) => (
-                    <SelectItem key={strategy} value={strategy} className="text-contrast-high font-medium">
-                      {strategy}
+                <SelectContent>
+                  {strategies?.map((strategy, index) => (
+                    <SelectItem key={`strategy-${strategy.id}-${index}`} value={strategy.id}>
+                      {strategy.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -251,14 +341,18 @@ const MockTrades = () => {
               <label className="text-sm font-semibold block mb-2 text-contrast-high">
                 Token
               </label>
-              <Select value={selectedToken} onValueChange={setSelectedToken}>
-                <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                  <SelectValue placeholder="Select a token" />
+              <Select
+                value={selectedToken}
+                onValueChange={setSelectedToken}
+                disabled={isTokensLoading}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={isTokensLoading ? "Loading tokens..." : "Select token"} />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 shadow-lg">
-                  {tokens?.map((token: string) => (
-                    <SelectItem key={token} value={token} className="text-contrast-high font-medium">
-                      {token}
+                <SelectContent>
+                  {tokens?.map((token, index) => (
+                    <SelectItem key={`token-${token.symbol}-${index}`} value={token.symbol}>
+                      {token.name} ({token.symbol})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -296,8 +390,8 @@ const MockTrades = () => {
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-2 shadow-lg">
-                  {Object.values(Frequency).map((freq) => (
-                    <SelectItem key={freq} value={freq} className="text-contrast-high font-medium">
+                  {Object.values(Frequency).map((freq, index) => (
+                    <SelectItem key={`freq-${freq}-${index}`} value={freq} className="text-contrast-high font-medium">
                       {formatFrequency(freq)}
                     </SelectItem>
                   ))}
@@ -317,9 +411,23 @@ const MockTrades = () => {
           <CardFooter className="px-6 pt-2 pb-6">
             <Button
               onClick={handleStartMockTrade}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 shadow-sm hover:shadow-md transition-all duration-200"
+              disabled={
+                createDcaPlanMutation.isPending || 
+                !selectedStrategy || 
+                !selectedToken || 
+                !amount || 
+                Number(amount) <= 0 ||
+                isStrategiesLoading ||
+                isTokensLoading
+              }
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
             >
-              Start Paper Trade
+              {createDcaPlanMutation.isPending 
+                ? "Starting Paper Trade..." 
+                : isStrategiesLoading || isTokensLoading
+                ? "Loading options..."
+                : "Start Paper Trade"
+              }
             </Button>
           </CardFooter>
         </Card>
@@ -576,7 +684,7 @@ const MockTrades = () => {
 
                       <Button
                         onClick={() =>
-                          stopMutation.mutate({ tradeId: trade._id })
+                          handleStopMockTrade(trade._id)
                         }
                         variant="destructive"
                         className="w-full"

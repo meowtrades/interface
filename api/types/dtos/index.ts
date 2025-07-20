@@ -1,12 +1,15 @@
 /** @format */
 
 export type CreateDcaPlanDto = {
-  userId: string;
   amount: number;
   userWalletAddress: string;
-  frequency: "hourly" | "daily" | "weekly" | "monthly" | "test_minute";
+  frequency: "daily" | "weekly" | "monthly" | "test_minute" | "test_10_seconds";
+  tokenSymbol: string;
+  strategyId: string;
+  recipientAddress: string;
   chain: string;
-  riskLevel: string;
+  riskLevel: "no_risk" | "low_risk" | "medium_risk" | "high_risk";
+  slippage: number;
 };
 
 export type DcaPlan = {
@@ -14,8 +17,12 @@ export type DcaPlan = {
   amount: number;
   frequency: string;
   userWalletAddress: string;
+  recipientAddress: string;
+  tokenSymbol: string;
+  strategyId: string;
   chain: string;
   riskLevel: string;
+  slippage: number;
   totalInvested: number;
   isActive: boolean;
   createdAt: string;
@@ -63,23 +70,23 @@ export type Transaction = {
 
 export type DepositFundsDto = {
   chainId: string;
-  tokenAddress: string;
   amount: string;
   txHash: string;
+  tokenSymbol: string;
 };
 
 export type WithdrawFundsDto = {
   chainId: string;
-  tokenAddress: string;
   amount: string;
   destinationAddress: string;
+  tokenSymbol: string;
 };
 
 export type AllocateFundsDto = {
   strategyId: string;
-  chainId: number;
-  tokenAddress: string;
+  chainId: string;
   amount: string;
+  tokenSymbol: string;
 };
 
 export type PerformanceHistory = {

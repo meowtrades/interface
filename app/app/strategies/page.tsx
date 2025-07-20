@@ -86,8 +86,8 @@ const StrategiesContent = () => {
   const { data: trendingStrategyId } = useQuery({
     queryKey: ["trendingStrategyId"],
     queryFn: async () => {
-      const { strategyId } = await api.strategies.getTrendingStrategy();
-      return strategyId;
+      const response = await api.available.getTrendingStrategy();
+      return response.data.strategy.id;
     },
     refetchOnWindowFocus: false,
   });

@@ -9,18 +9,11 @@ import {
 } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/api";
+import { useUserOverview } from "@/api/hooks/useUserAnalyticsHooks";
 import { cn, getProfitLossColor, formatCurrency, formatPercentage } from "@/lib/design-system";
 
 const PortfolioOverview = () => {
-  const { data: overview, isLoading } = useQuery({
-    queryKey: ["overview"],
-    queryFn: async () => {
-      const response = await axiosInstance.get("/user/analytics/overview");
-      return response.data.data;
-    },
-  });
+  const { data: overview, isLoading } = useUserOverview();
 
   if (isLoading) {
     return (

@@ -1,12 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "../interceptors/axiosInterceptor";
+import { api } from "../client";
 import {
-  GenericResponse,
   GranularityOption,
-  PerformanceHistory,
-  PlatformStatistics,
   TimeframeOption,
-  UserStatistics,
 } from "../types";
 
 // Query keys for cache management
@@ -40,89 +36,105 @@ export const USER_ANALYTICS_KEYS = {
     platform: () =>
       [...USER_ANALYTICS_KEYS.all, "statistics", "platform"] as const,
   },
+  overview: () => [...USER_ANALYTICS_KEYS.all, "overview"] as const,
+  activities: () => [...USER_ANALYTICS_KEYS.all, "activities"] as const,
 };
 
-// Commented out unused analytics hooks - uncomment if needed
 /**
  * Get user's performance history
  */
-// export const useUserPerformanceHistory = (
-//   timeframe: TimeframeOption = "30d",
-//   granularity: GranularityOption = "daily"
-// ) => {
-//   return useQuery({
-//     queryKey: USER_ANALYTICS_KEYS.performance.history(timeframe, granularity),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<PerformanceHistory>(
-//         `/user/analytics/performance/history`,
-//         {
-//           params: {
-//             timeframe,
-//             granularity,
-//           },
-//         }
-//       );
-//       return response.data;
-//     },
-//   });
-// };
+export const useUserPerformanceHistory = (
+  timeframe: TimeframeOption = "30d",
+  granularity: GranularityOption = "daily"
+) => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.performance.history(timeframe, granularity),
+    queryFn: async () => {
+      const response = await api.analytics.getUserPerformanceHistory({
+        timeframe,
+        granularity,
+      });
+      return response.data;
+    },
+  });
+};
 
 /**
  * Get performance history for a specific strategy
  */
-// export const useStrategyPerformanceHistory = (
-//   strategyId: string,
-//   timeframe: TimeframeOption = "30d",
-//   granularity: GranularityOption = "daily"
-// ) => {
-//   return useQuery({
-//     queryKey: USER_ANALYTICS_KEYS.performance.strategy(
-//       strategyId,
-//       timeframe,
-//       granularity
-//     ),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<PerformanceHistory>(
-//         `/user/analytics/performance/strategy/${strategyId}`,
-//         {
-//           params: {
-//             timeframe,
-//             granularity,
-//           },
-//         }
-//       );
-//       return response.data;
-//     },
-//     enabled: !!strategyId,
-//   });
-// };
+export const useStrategyPerformanceHistory = (
+  strategyId: string,
+  timeframe: TimeframeOption = "30d",
+  granularity: GranularityOption = "daily"
+) => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.performance.strategy(
+      strategyId,
+      timeframe,
+      granularity
+    ),
+    queryFn: async () => {
+      const response = await api.analytics.getStrategyPerformanceHistory(
+        strategyId,
+        {
+          timeframe,
+          granularity,
+        }
+      );
+      return response.data;
+    },
+    enabled: !!strategyId,
+  });
+};
 
 /**
  * Get user statistics
  */
-// export const useUserStatistics = () => {
-//   return useQuery({
-//     queryKey: USER_ANALYTICS_KEYS.statistics.user(),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<GenericResponse<UserStatistics>>(
-//         "/user/analytics/statistics/user"
-//       );
-//       return response.data.data;
-//     },
-//   });
-// };
+export const useUserStatistics = () => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.statistics.user(),
+    queryFn: async () => {
+      const response = await api.analytics.getUserStatistics();
+      return response.data;
+    },
+  });
+};
 
 /**
  * Get platform-wide statistics
  */
-// export const usePlatformStatistics = () => {
-//   return useQuery({
-//     queryKey: USER_ANALYTICS_KEYS.statistics.platform(),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<PlatformStatistics>(
-//         "/user/analytics/statistics/platform"
-//       );
-//       return response.data;
-//     },
-//   });
-// };
+export const usePlatformStatistics = () => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.statistics.platform(),
+    queryFn: async () => {
+      const response = await api.analytics.getPlatformStatistics();
+      return response.data;
+    },
+  });
+};
+
+/**
+ * Get user overview analytics
+ */
+export const useUserOverview = () => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.overview(),
+    queryFn: async () => {
+      const response = await api.analytics.getUserOverview();
+      return response.data;
+    },
+  });
+};
+
+/**
+ * Get user activities
+ */
+export const useUserActivities = () => {
+  return useQuery({
+    queryKey: USER_ANALYTICS_KEYS.activities(),
+    queryFn: async () => {
+      const response = await api.analytics.getUserActivities();
+      return response.data.activities;
+    },
+  });
+};
