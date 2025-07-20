@@ -21,7 +21,7 @@ export type DcaPlan = {
   tokenSymbol: string;
   strategyId: string;
   chain: string;
-  riskLevel: string;
+  riskLevel: "no_risk" | "low_risk" | "medium_risk" | "high_risk";
   slippage: number;
   totalInvested: number;
   isActive: boolean;

@@ -57,7 +57,7 @@ const WithdrawModal = ({ currentToken }: WithdrawModalProps) => {
     withdrawFunds(
       {
         chainId: currentToken.chainId,
-        tokenAddress: currentToken.tokenSymbol,
+        tokenSymbol: currentToken.tokenSymbol,
         amount: withdrawAmount,
         destinationAddress: withdrawAddress,
       },

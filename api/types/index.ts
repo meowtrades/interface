@@ -191,7 +191,7 @@ export type CreateDcaPlanDto = {
   tokenSymbol: string;
   strategyId: string;
   slippage: number;
-  riskLevel: string;
+  riskLevel: "no_risk" | "low_risk" | "medium_risk" | "high_risk";
 };
 
 export type DcaPlan = {
@@ -203,7 +203,7 @@ export type DcaPlan = {
   initialAmount: number;
   isActive: boolean;
   lastExecutionTime: string | null;
-  riskLevel: string;
+  riskLevel: "no_risk" | "low_risk" | "medium_risk" | "high_risk";
   recipientAddress: string;
   tokenSymbol: string;
   strategyId: string;

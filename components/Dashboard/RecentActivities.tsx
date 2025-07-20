@@ -14,7 +14,7 @@ const RecentActivities = () => {
     queryKey: ["recentActivities"],
     queryFn: async () => {
       // Simulate an API call
-      return (await api.analytics.getActivities()).data.data;
+      return (await api.analytics.getUserActivities()).data.activities;
     },
   });
 
@@ -75,18 +75,18 @@ const RecentActivities = () => {
             <div className="divide-y divide-border">
               {activities.map((activity) => {
                 // Format the date
-                activity.createdAt = Intl.DateTimeFormat("en-US", {
+                const formattedDate = Intl.DateTimeFormat("en-US", {
                   month: "short",
                   day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
-                }).format(new Date(activity.createdAt));
+                }).format(new Date(activity.timestamp));
 
-                const isBuy = activity.type === "swap";
+                const isBuy = activity.type === "swap" || activity.type === "buy";
 
                 return (
                   <div
-                    key={activity._id}
+                    key={activity.id}
                     className="flex items-center justify-between p-6 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
@@ -106,19 +106,23 @@ const RecentActivities = () => {
                       </div>
                       <div>
                         <div className="text-body font-medium text-foreground">
-                          Buy {activity.to.token}
+                          {activity.description}
                         </div>
                         <div className="text-caption text-muted-foreground">
-                          {activity.createdAt}
+                          {formattedDate}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-body font-medium text-foreground">
-                        {activity.from.token}
+                        {activity.type}
                       </div>
                       <div className="text-caption text-muted-foreground metric-display">
-                        {formatCurrency(activity.invested)}
+                        {/* Display metadata if available */}
+                        {activity.metadata && typeof activity.metadata === 'object' ? 
+                          JSON.stringify(activity.metadata).slice(0, 20) + '...' : 
+                          'No details'
+                        }
                       </div>
                     </div>
                   </div>

@@ -81,7 +81,6 @@ const StrategySimulationDialog = ({
     const walletAddress = await getLeapWalletAddress();
     
     await dcaMutation.mutateAsync({
-      userId: user.user.id,
       amount: amountPerDay,
       userWalletAddress: walletAddress,
       recipientAddress:
@@ -90,7 +89,7 @@ const StrategySimulationDialog = ({
           : walletAddress,
       frequency: data.frequency as FrequencyOption,
       chain: data.chain,
-      riskLevel: data.riskLevel ?? "medium",
+      riskLevel: data.riskLevel ?? "medium_risk",
       strategyId: data.strategyId,
       tokenSymbol: data.tokenId,
       slippage: data.slippage,

@@ -46,10 +46,10 @@ export const useLivePrices = (
 
       const pricePromises = tokenIds.map(async (tokenId) => {
         try {
-          const response = await api.price.getDetails(tokenId);
+          const response = await api.available.getTokenPrice(tokenId);
           return {
             symbol: tokenId,
-            price: response.data.price,
+            price: parseFloat(response.data.price),
             timestamp: Date.now(),
           };
         } catch (err) {
