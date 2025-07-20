@@ -1,8 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Strategy } from "@/lib/types";
+import { RiskLevel, Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp, Clock, DollarSign, ArrowRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import StartStrategyDialog from "./StartStrategyDialog";
+import { FrequencyOption, useCreateDcaPlan } from "@/api";
+import { authClient } from "@/lib/auth";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
 
 interface StrategySimulationDialogProps {
   strategy: Strategy;
@@ -26,12 +31,72 @@ const IconMap: Record<string, React.ReactNode> = {
   'TrendingUp': <TrendingUp size={20} />
 };
 
+// Button classes with proper hover states for each strategy type
+const getButtonClasses = (strategyType: string): string => {
+  switch (strategyType) {
+    case 'dca':
+      return 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors duration-200 font-semibold shadow-sm hover:shadow-md';
+    case 'grid':
+      return 'bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 transition-colors duration-200 font-semibold shadow-sm hover:shadow-md';
+    case 'momentum':
+      return 'bg-amber-600 text-white hover:bg-amber-700 active:bg-amber-800 transition-colors duration-200 font-semibold shadow-sm hover:shadow-md';
+    case 'custom':
+      return 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 transition-colors duration-200 font-semibold shadow-sm hover:shadow-md';
+    default:
+      return 'bg-slate-600 text-white hover:bg-slate-700 active:bg-slate-800 transition-colors duration-200 font-semibold shadow-sm hover:shadow-md';
+  }
+};
+
 const StrategySimulationDialog = ({ 
   strategy, 
   open, 
   onClose, 
   defaultToken = 'btc' 
 }: StrategySimulationDialogProps) => {
+  // State for strategy dialog
+  const [startDialogOpen, setStartDialogOpen] = useState(false);
+  
+  const dcaMutation = useCreateDcaPlan();
+  const { data: user } = authClient.useSession();
+  
+  // Handle starting a strategy
+  const handleStartStrategy = async (data: {
+    strategyId: string;
+    tokenId: string;
+    amount: number;
+    frequency: string;
+    slippage: number;
+    recipientAddress?: string;
+    riskLevel?: RiskLevel;
+    chain: string;
+  }) => {
+    if (!user?.user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const amountPerDay = data.amount;
+
+    console.log(data);
+
+    const walletAddress = await getLeapWalletAddress();
+    
+    await dcaMutation.mutateAsync({
+      userId: user.user.id,
+      amount: amountPerDay,
+      userWalletAddress: walletAddress,
+      recipientAddress:
+        data.strategyId === "SDCA" && data.recipientAddress
+          ? data.recipientAddress
+          : walletAddress,
+      frequency: data.frequency as FrequencyOption,
+      chain: data.chain,
+      riskLevel: data.riskLevel ?? "medium",
+      strategyId: data.strategyId,
+      tokenSymbol: data.tokenId,
+      slippage: data.slippage,
+    });
+  };
+  
   // Fixed values for the simulation
   const initialInvestment = 500;
   const currentValue = 560;
@@ -60,7 +125,8 @@ const StrategySimulationDialog = ({
   const isProfitable = profit > 0;
   
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
@@ -254,13 +320,26 @@ const StrategySimulationDialog = ({
         <DialogFooter className="mt-6">
           <Button variant="outline" onClick={onClose}>Close</Button>
           <Button 
-            className={`${colorScheme.bg} ${colorScheme.text} hover:opacity-90`}
+            className={`${getButtonClasses(strategy.type)}`}
+            onClick={() => setStartDialogOpen(true)}
           >
             Start This Strategy
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    
+    {/* Strategy Start Dialog */}
+    <StartStrategyDialog
+      supportedChains={strategy.supportedChains || ['injective']}
+      loading={dcaMutation.isPending}
+      strategy={strategy}
+      open={startDialogOpen}
+      onClose={() => setStartDialogOpen(false)}
+      defaultToken={defaultToken}
+      onStartStrategy={handleStartStrategy}
+    />
+    </>
   );
 };
 

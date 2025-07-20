@@ -21,7 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getLeapWalletAddress } from "@/lib/wallet";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,

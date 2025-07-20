@@ -35,8 +35,9 @@ import {
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
 import WalletPicker from "./WalletPicker";
+import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
-import { getLeapWalletAddress } from "@/lib/wallet";
+import { getLeapWalletAddress } from "@/lib/grants/wallet";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 
 // Color map for strategy types
@@ -62,6 +63,22 @@ const frequencyOptions = [
   { value: Frequency.TEST_MINUTE, label: "Test Minute" },
   { value: Frequency.TEST_10_SECONDS, label: "Test 10 Seconds" },
 ];
+
+// Get default investment amount based on strategy type
+const getDefaultAmount = (strategy: Strategy): string => {
+  switch (strategy.type) {
+    case 'dca':
+      return "10";
+    case 'grid':
+      return "100";
+    case 'momentum':
+      return "50";
+    case 'custom':
+      return "25";
+    default:
+      return "100";
+  }
+};
 
 interface StartStrategyDialogProps {
   loading: boolean;
@@ -91,7 +108,7 @@ const StartStrategyDialog = ({
   onStartStrategy,
 }: StartStrategyDialogProps) => {
   const [tokenId, setTokenId] = useState(defaultToken);
-  const [amount, setAmount] = useState("1000");
+  const [amount, setAmount] = useState(getDefaultAmount(strategy));
   const [frequency, setFrequency] = useState(Frequency.DAILY);
   const [recipientAddress, setRecipientAddress] = useState<string>();
   const [chain, setChain] = useState("injective"); // Default to TEST_MINUTE for simplicity
@@ -108,7 +125,7 @@ const StartStrategyDialog = ({
   useEffect(() => {
     if (strategy) {
       setTokenId(defaultToken);
-      setAmount("1000");
+      setAmount(getDefaultAmount(strategy));
       setFrequency(Frequency.DAILY);
       setRiskLevel(RiskLevel.MEDIUM_RISK);
       setShowSuccess(false);
@@ -228,7 +245,7 @@ const StartStrategyDialog = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50">
         {showSuccess ? ( // Success State
           <>
             {" "}
@@ -335,8 +352,8 @@ const StartStrategyDialog = ({
                 Configure your strategy settings to begin automated trading.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-5">
+            <div className="space-y-4 py-2">
+              <div className="space-y-4">
                 {" "}
                 <div>
                   <Label htmlFor="investment" className="text-sm font-semibold text-contrast-high">
@@ -349,7 +366,7 @@ const StartStrategyDialog = ({
                     onChange={(e) => setAmount(e.target.value)}
                     min="10"
                     step="10"
-                    className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   />
                   {strategy.minInvestment && (
                     <p className="text-xs text-contrast-medium mt-2">
@@ -367,58 +384,13 @@ const StartStrategyDialog = ({
                   </p>
                 </div>
 
-                {strategy.id === "SDCA" && (
-                  <div>
-                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
-                      Recipient Address
-                    </Label>
-                    <div className="flex space-x-2 mt-2">
-                      <Input
-                        id="recipient"
-                        type="text"
-                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
-                          isRecipientAddressValid
-                            ? "border-green-500 focus:ring-green-200"
-                            : "border-red-500 focus:ring-red-200"
-                        } focus:ring-2`}
-                        placeholder="Enter recipient address"
-                        value={recipientAddress}
-                        onChange={(e) => {
-                          setRecipientAddress(e.target.value);
-
-                          if (!validateInjecitveWalletAddress(e.target.value)) {
-                            setIsRecipientAddressValid(false);
-                            return;
-                          }
-
-                          setIsRecipientAddressValid(true);
-                        }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          getLeapWalletAddress().then((addr) => {
-                            setRecipientAddress(addr);
-
-                            if (validateInjecitveWalletAddress(addr)) {
-                              setIsRecipientAddressValid(true);
-                            }
-                          })
-                        }
-                        className="font-medium"
-                      >
-                        Use My Address
-                      </Button>
-                    </div>
-                  </div>
-                )}
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
                     <Label htmlFor="token" className="text-sm font-semibold text-contrast-high">
                       Token
                     </Label>
                     <Select value={tokenId} onValueChange={setTokenId}>
-                      <SelectTrigger id="token" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger id="token" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select token" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
@@ -441,7 +413,7 @@ const StartStrategyDialog = ({
                       value={chain}
                       onValueChange={(value: string) => setChain(value)}
                     >
-                      <SelectTrigger id="frequency" className="mt-2 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger id="frequency" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                         <SelectValue placeholder="Select frequency" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
@@ -463,6 +435,54 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 </div>
+
+                {strategy.id === "SDCA" && (
+                  <div>
+                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
+                      Recipient Address
+                    </Label>
+                    <div className="flex space-x-2 mt-1">
+                      <Input
+                        id="recipient"
+                        type="text"
+                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
+                          isRecipientAddressValid
+                            ? "border-green-500 focus:ring-green-200"
+                            : "border-red-500 focus:ring-red-200"
+                        } focus:ring-2`}
+                        placeholder="Enter recipient address"
+                        value={recipientAddress}
+                        onChange={(e) => {
+                          setRecipientAddress(e.target.value);
+
+                          if (!validateInjecitveWalletAddress(e.target.value)) {
+                            setIsRecipientAddressValid(false);
+                            return;
+                          }
+
+                          setIsRecipientAddressValid(true);
+                        }}
+                      />
+                      <WalletAddressPicker
+                        chain={chain}
+                        onAddressSelected={(addr) => {
+                          setRecipientAddress(addr);
+                          if (validateInjecitveWalletAddress(addr)) {
+                            setIsRecipientAddressValid(true);
+                          }
+                        }}
+                      >
+                        <Button
+                          variant="secondary"
+                          className="font-medium"
+                        >
+                          Use My Address
+                        </Button>
+                      </WalletAddressPicker>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Risk level slider for Smart DCA strategy */}
                 {
                   <div className="space-y-3">
@@ -483,7 +503,7 @@ const StartStrategyDialog = ({
                       onValueChange={(values: number[]) =>
                         setRiskLevel(sliderValueToRiskLevel(values[0]))
                       }
-                      className="py-4"
+                      className="py-2"
                     />
                     <div className="flex justify-between text-xs text-contrast-medium font-medium">
                       <span>Lower Risk</span>
@@ -507,7 +527,7 @@ const StartStrategyDialog = ({
                     step={1}
                     value={[slippage]}
                     onValueChange={(values: number[]) => setSlippage(values[0])}
-                    className="py-4"
+                    className="py-2"
                   />
                   <p className="text-xs text-contrast-medium mt-2 font-medium">
                     {slippage === -1 &&
@@ -515,11 +535,10 @@ const StartStrategyDialog = ({
                   </p>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg text-amber-800 text-sm border border-amber-200">
-                <p className="font-semibold mb-1">Important Note</p>
-                <p className="font-medium">
-                  Past performance does not guarantee future results. Your
-                  investment may lose value.
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg text-amber-800 text-sm border border-amber-200">
+                <p className="font-semibold mb-1">⚠️ Important Note</p>
+                <p className="font-medium text-xs">
+                  Past performance does not guarantee future results. Your investment may lose value.
                 </p>
               </div>
             </div>
@@ -531,6 +550,7 @@ const StartStrategyDialog = ({
                 disabled={!isRecipientAddressValid && strategy.id === "SDCA"}
                 callback={handleSubmit}
                 enteredBalance={parseFloat(amount)}
+                chain={chain}
               />
             </DialogFooter>
           </>

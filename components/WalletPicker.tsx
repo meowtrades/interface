@@ -1,6 +1,6 @@
 /** @format */
 
-import { availableWallets } from "@/lib/grants/available-wallets";
+import { availableWallets, getAvailableWalletsForChain } from "@/lib/grants/available-wallets";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
@@ -12,13 +12,18 @@ const WalletPicker = ({
   callback,
   disabled = false,
   enteredBalance,
+  chain = "injective", // Default to injective chain
 }: {
   callback: (data: unknown) => Promise<void>;
   disabled?: boolean;
   enteredBalance?: number;
+  chain?: string;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isWalletGrantPending, setisWalletGrantPending] = useState(false);
+
+  // Get wallets based on the selected chain
+  const walletsForChain = getAvailableWalletsForChain(chain);
 
   return (
     <Dialog open={isWalletGrantPending} onOpenChange={setisWalletGrantPending}>
@@ -34,7 +39,7 @@ const WalletPicker = ({
         <DialogHeader>
           <DialogTitle>Select a Wallet</DialogTitle>
         </DialogHeader>
-        {availableWallets
+        {walletsForChain
           .filter((wallet) => {
             return typeof window !== "undefined" && wallet.windowKey in window;
           })
@@ -42,7 +47,8 @@ const WalletPicker = ({
             return (
               <div key={wallet.name} className="wallet-option">
                 <Button
-                  className={`flex items-center gap-2 w-full justify-between h-16 rounded ${wallet.colorTheme}`}
+                  variant="ghost"
+                  className={`flex items-center gap-2 w-full justify-between h-16 rounded transition-all duration-200 ${wallet.colorTheme}`}
                   disabled={isLoading}
                   onClick={async () => {
                     try {

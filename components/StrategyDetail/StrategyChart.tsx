@@ -4,6 +4,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   XAxis,
   YAxis,
@@ -13,7 +14,7 @@ import {
   Area,
   Tooltip,
 } from "recharts";
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
 import { useParams } from "next/navigation";
@@ -154,18 +155,24 @@ export const StrategyChart = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-medium text-lg">Performance</h3>
         </div>
-        <div className="h-72 w-full flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <p className="text-gray-600">
+        <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+          <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+            <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+              <BarChart3 size={24} />
+            </div>
+            <h3 className="text-subtitle font-semibold text-foreground mb-3">
+              Processing Strategy Data
+            </h3>
+            <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
               We&apos;re currently processing your strategy data. This may take a few
               moments as we gather and analyze your transaction history.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-caption text-muted-foreground">
               You&apos;ll be able to see your performance metrics once the data is
               ready.
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

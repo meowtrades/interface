@@ -25,8 +25,8 @@ export const api = {
         axiosInstance.post<DcaPlan>(`/services/grid/create-plan`, data),
       stop: (id: string) =>
         axiosInstance.post(`/services/grid/stop-plan/${id}`),
-      stopAll: (userId: string) =>
-        axiosInstance.post(`/services/grid/stop-all-plans/${userId}`),
+      stopAll: () =>
+        axiosInstance.post(`/services/grid/stop-all-plans`),
       pause: (planId: string) =>
         axiosInstance.post<{
           success: boolean;
@@ -46,8 +46,8 @@ export const api = {
     create: (data: CreateDcaPlanDto) =>
       axiosInstance.post<DcaPlan>(`/services/s-dca/create-plan`, data),
     stop: (id: string) => axiosInstance.post(`/services/s-dca/stop-plan/${id}`),
-    stopAll: (userId: string) =>
-      axiosInstance.post(`/services/s-dca/stop-all-plans/${userId}`),
+    stopAll: () =>
+      axiosInstance.post(`/services/s-dca/stop-all-plans`),
     pause: (planId: string) =>
       axiosInstance.post<{
         success: boolean;
@@ -61,15 +61,17 @@ export const api = {
         plan: DcaPlan;
       }>(`/services/s-dca/resume-plan/${planId}`),
   },
-  transactions: {
-    get: (id: string) => axiosInstance.get<Transaction>(`/transactions/${id}`),
-    getAll: (planId: string) =>
-      axiosInstance.get<Transaction[]>(`/transactions?planId=${planId}`),
-    retry: (id: string) => axiosInstance.post(`/transactions/${id}/retry`),
-  },
   balances: {
-    get: (userId: string) =>
-      axiosInstance.get<Record<string, number>>(`/user/balance/${userId}`),
+    get: () =>
+      axiosInstance.get<{ balances: Record<string, Record<string, string>> }>(`/user/balance`),
+    getByChain: (chainId: string) =>
+      axiosInstance.get<{ chainId: string; tokens: Record<string, string> }>(`/user/balance/${chainId}`),
+    getTokenBalance: (chainId: string, tokenSymbol: string) =>
+      axiosInstance.get<{ chainId: string; tokenSymbol: string; balance: string }>(`/user/balance/${chainId}/token/${tokenSymbol}`),
+    getChainTokens: (chainId: string) =>
+      axiosInstance.get<{ chainId: string; tokens: { symbol: string; name: string; decimals: number; isNative?: boolean; isStablecoin?: boolean; address: string }[] }>(`/user/balance/${chainId}/tokens`),
+    getAllTokens: () =>
+      axiosInstance.get<Record<string, { symbol: string; name: string; decimals: number; isNative?: boolean; isStablecoin?: boolean; address: string }[]>>(`/user/balance/tokens`),
     deposit: (data: DepositFundsDto) =>
       axiosInstance.post(`/user/balance/deposit`, data),
     withdraw: (data: WithdrawFundsDto) =>
@@ -78,15 +80,14 @@ export const api = {
       axiosInstance.post(`/user/balance/allocate`, data),
   },
   analytics: {
-    getUserPerformance: (
-      userId: string,
+    getUserPerformanceHistory: (
       params: { timeframe: string; granularity: string }
     ) =>
       axiosInstance.get<PerformanceHistory>(
-        `/user/analytics/performance/${userId}`,
+        `/user/analytics/performance/history`,
         { params }
       ),
-    getStrategyPerformance: (
+    getStrategyPerformanceHistory: (
       strategyId: string,
       params: { timeframe: string; granularity: string }
     ) =>
@@ -94,10 +95,16 @@ export const api = {
         `/user/analytics/performance/strategy/${strategyId}`,
         { params }
       ),
+    getUserStatistics: () =>
+      axiosInstance.get(`/user/analytics/statistics/user`),
     getPlatformStatistics: () =>
       axiosInstance.get<PlatformStatistics>(
         `/user/analytics/statistics/platform`
       ),
+    getUserOverview: () =>
+      axiosInstance.get(`/user/analytics/overview`),
+    getUserActivities: () => 
+      axiosInstance.get<{ activities: { id: string; type: string; description: string; timestamp: string; metadata: Record<string, unknown> }[] }>(`/user/analytics/activities`),
     getActiveStrategiesAnalytics: () =>
       axiosInstance.get<{
         data: {
@@ -114,11 +121,6 @@ export const api = {
       return axiosInstance.get<{
         data: ActiveStrategyAnalytics[];
       }>(`/user/analytics/strategies/active/live`);
-    },
-    getActivities: () => {
-      return axiosInstance.get<{ data: Transaction[] }>(
-        `/user/analytics/activities`
-      );
     },
   },
   strategies: {
@@ -160,35 +162,62 @@ export const api = {
           `/user/analytics/strategies/active/analytics`
         )
       ).data.data,
-    getTrendingStrategy: async () =>
-      (
-        await axiosInstance.get<{
-          message: "Trending strategy";
-          strategyId: string;
-        }>(`/available/strategies/trending`)
-      ).data,
+  },
+  available: {
+    getStrategies: () =>
+      axiosInstance.get<{
+        message: string;
+        strategies: { id: string; name: string; description: string; riskLevels: string[]; supportedChains: string[] }[];
+      }>(`/available/strategies`),
+    getTokens: () =>
+      axiosInstance.get<{
+        message: string;
+        tokens: { symbol: string; name: string; coingeckoId: string; supportedChains: string[]; logo?: string }[];
+      }>(`/available/tokens`),
+    getTrendingStrategy: () =>
+      axiosInstance.get<{
+        strategy: { id: string; name: string; trendingScore: number; activeUsers: number; avgReturn: string };
+      }>(`/available/strategies/trending`),
+    getTokenPrice: (tokenId: string) =>
+      axiosInstance.get<{
+        tokenId: string;
+        price: string;
+        change24h: string;
+        timestamp: string;
+      }>(`/available/price/${tokenId}`),
   },
   admin: {
-    getActivePlans: () => axiosInstance.get<DcaPlan[]>(`/admin/active-plans`),
-    stopAllPlans: () => axiosInstance.post(`/admin/stop-all-plans`),
+    getActivePlans: () => 
+      axiosInstance.get<DcaPlan[]>(`/admin/active-plans`, {
+        headers: { 'X-Admin-Token': '14-E' }
+      }),
+    stopAllPlans: () => 
+      axiosInstance.post(`/admin/stop-all-plans`, {}, {
+        headers: { 'X-Admin-Token': '14-E' }
+      }),
     allocateCredits: (data: {
       email: string;
-      amount: string;
+      chainId: string;
+      amount: number;
       tokenSymbol: string;
-    }) => axiosInstance.post(`/user/balance/allocate/wallet/`, data),
+    }) => axiosInstance.post(`/user/balance/allocate/wallet`, data, {
+      headers: { 'X-Admin-Token': '14-E' }
+    }),
   },
   user: {
-    updateAddress: (newAddress: string) =>
-      axiosInstance.patch(`/user/address`, { newAddress }),
+    getCurrentUser: () =>
+      axiosInstance.get(`/user/me`),
+    updateAddress: (address: string) =>
+      axiosInstance.patch(`/user/address`, { address }),
+    getUserTransactions: () =>
+      axiosInstance.get(`/user/transactions`),
+    checkAdminStatus: () =>
+      axiosInstance.get<{ isAdmin: boolean }>(`/user/is-admin`),
   },
   xp: {
-    leaderboard: () => axiosInstance.get<LeaderboardUser[]>("/xp/leaderboard"),
-  },
-  price: {
-    getDetails: (tokenId: string) =>
-      axiosInstance.get<{
-        price: number;
-        message: string;
-      }>(`/available/price/${tokenId}`),
+    getUserXp: () =>
+      axiosInstance.get(`/xp`),
+    leaderboard: () => 
+      axiosInstance.get<LeaderboardUser[]>("/xp/leaderboard"),
   },
 };

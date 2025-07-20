@@ -1,7 +1,8 @@
 /** @format */
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Activity } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
 import { Transaction } from "@/api/types/dtos";
@@ -108,7 +109,19 @@ export const TransactionList = () => {
             </div>
           ) : error ? (
             error.status === 404 ? (
-              <div className="p-4">No transactions available.</div>
+              <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200 m-4">
+                <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                  <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                    <Activity size={24} />
+                  </div>
+                  <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                    No Transactions Found
+                  </h3>
+                  <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                    This strategy hasn&apos;t executed any transactions yet. Transactions will appear here once your strategy starts trading.
+                  </p>
+                </CardContent>
+              </Card>
             ) : (
               <div className="p-4">Error loading transactions</div>
             )
@@ -117,7 +130,19 @@ export const TransactionList = () => {
               data={transactionToTableValues(transactionsData.data)}
             />
           ) : (
-            <div className="p-4">No transactions available.</div>
+            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200 m-4">
+              <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
+                  <Activity size={24} />
+                </div>
+                <h3 className="text-subtitle font-semibold text-foreground mb-3">
+                  No Transactions Found
+                </h3>
+                <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
+                  This strategy hasn&apos;t executed any transactions yet. Transactions will appear here once your strategy starts trading.
+                </p>
+              </CardContent>
+            </Card>
           )}
         </div>
         <div className="flex justify-between items-center p-4">

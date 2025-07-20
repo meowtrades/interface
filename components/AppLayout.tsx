@@ -23,6 +23,7 @@ import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
 import { WalletProvider } from "@/lib/context/WalletContext";
 import { cn } from "@/lib/design-system";
+import { useCurrentUserXp } from "@/api/hooks/useUserHooks";
 
 type AppLayoutProps = {
     children: React.ReactNode;
@@ -39,6 +40,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     const { data, isPending } = authClient.useSession();
     const user = data?.user;
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { data: userXp, isLoading: isXpLoading } = useCurrentUserXp();
 
     const handleLogout = async () => {
         await authClient.signOut();
@@ -186,18 +188,20 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                                     <Link
                                         href="/paws-program"
                                         target="_blank"
-                                        className="text-blue-600 flex items-center gap-1"
-                                        title="How to earn PawScore"
+                                        className="text-blue-600 flex items-center gap-1 hover:text-blue-700 transition-colors"
+                                        title="Click to learn how to earn more PawScore"
                                     >
-                                        <span>Earn Paws</span>
-                                        <Info size={24} />
+                                        <Trophy size={20} />
+                                        <span className="font-semibold">
+                                            {isXpLoading ? "Loading..." : `${userXp?.toLocaleString() || 0} XP`}
+                                        </span>
+                                        {/* <Info size={16} className="opacity-70" /> */}
                                     </Link>
                                 </div>
-                                <button className="p-2.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground relative">
+                                {/* <button className="p-2.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground relative">
                                     <Bell size={20} />
-                                    {/* Optional notification dot */}
-                                    {/* <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-primary rounded-full"></span> */}
-                                </button>
+                                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-primary rounded-full"></span>
+                                </button> */}
 
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center">

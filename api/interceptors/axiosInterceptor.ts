@@ -22,7 +22,12 @@ axiosInstance.interceptors.response.use(
     if (statusCode === 401) {
       // Unauthorized - handle auth error
       console.error("Authentication error:", error);
-      // Could redirect to login or trigger auth refresh
+      
+      // Redirect to login only in browser environment
+      if (typeof window !== 'undefined') {
+        // Clear any stored auth state and redirect to login
+        window.location.href = '/login';
+      }
     } else if (statusCode === 403) {
       // Forbidden
       console.error("Permission denied:", error);

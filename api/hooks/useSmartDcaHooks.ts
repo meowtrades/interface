@@ -1,24 +1,19 @@
 /** @format */
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "../interceptors/axiosInterceptor";
+import { api } from "../client";
 import {
   CreateDcaPlanDto,
-  DcaPosition,
   DcaPlan,
-  TotalInvestment,
 } from "../types";
 import { toast } from "sonner";
-import { getKeplrGrant } from "@/lib/grants/auth-z";
 
 // Query keys for cache management
 export const SMART_DCA_KEYS = {
   all: ["services", "sdca"] as const,
   plans: () => [...SMART_DCA_KEYS.all, "plans"] as const,
-  totalInvestment: (userId: string) =>
-    [...SMART_DCA_KEYS.all, "total-investment", userId] as const,
-  currentPositions: (userId: string) =>
-    [...SMART_DCA_KEYS.all, "current-positions", userId] as const,
+  totalInvestment: () => [...SMART_DCA_KEYS.all, "total-investment"] as const,
+  currentPositions: () => [...SMART_DCA_KEYS.all, "current-positions"] as const,
 };
 
 /**
@@ -33,17 +28,11 @@ export const useCreateDcaPlan = () => {
 
       switch (planData.strategyId) {
         case "SDCA":
-          response = await axiosInstance.post<DcaPlan>(
-            "/services/s-dca/create-plan",
-            planData
-          );
+          response = await api.plans.create(planData);
           break;
 
         case "GRID":
-          response = await axiosInstance.post<DcaPlan>(
-            "/services/grid/create-plan",
-            planData
-          );
+          response = await api.plans.grid.create(planData);
           break;
           
         default:
@@ -56,7 +45,7 @@ export const useCreateDcaPlan = () => {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of DCA plans
+        queryKey: ["activeStrategiesAnalytics", "real"],
         exact: true,
       });
       await queryClient.resetQueries({
@@ -82,17 +71,13 @@ export const useStopDcaPlan = () => {
   return useMutation({
     mutationFn: async (planId: string) => {
       console.log("Stopping DCA plan with ID:", planId);
-
-      const response = await axiosInstance.post(
-        `/services/s-dca/stop-plan/${planId}`
-      );
-
+      const response = await api.plans.stop(planId);
       console.log(response);
       return response.data;
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics", "real"], // Invalidate the list of real trades
+        queryKey: ["activeStrategiesAnalytics", "real"],
         exact: true,
       });
 
@@ -111,10 +96,8 @@ export const useStopDcaPlan = () => {
  */
 export const useStopAllDcaPlans = () => {
   return useMutation({
-    mutationFn: async (userId: string) => {
-      const response = await axiosInstance.post(
-        `/services/s-dca/stop-all-plans/${userId}`
-      );
+    mutationFn: async () => {
+      const response = await api.plans.stopAll();
       return response.data;
     },
   });
@@ -127,43 +110,8 @@ export const useUserDcaPlans = () => {
   return useQuery({
     queryKey: SMART_DCA_KEYS.plans(),
     queryFn: async () => {
-      const response = await axiosInstance.get<DcaPlan[]>(
-        `/services/s-dca/plans`
-      );
+      const response = await api.plans.getAll();
       return response.data;
     },
   });
 };
-
-/**
- * Get user's total investment across all strategies
- */
-export const useUserTotalInvestment = (userId: string) => {
-  return useQuery({
-    queryKey: SMART_DCA_KEYS.totalInvestment(userId),
-    queryFn: async () => {
-      const response = await axiosInstance.get<TotalInvestment>(
-        `/services/s-dca/total-investment/${userId}`
-      );
-      return response.data;
-    },
-    enabled: !!userId,
-  });
-};
-
-// Commented out unused hooks - uncomment if needed
-// /**
-//  * Get user's current positions in native tokens
-//  */
-// export const useUserCurrentPositions = (userId: string) => {
-//   return useQuery({
-//     queryKey: SMART_DCA_KEYS.currentPositions(userId),
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<DcaPosition[]>(
-//         `/services/s-dca/current-positions/${userId}`
-//       );
-//       return response.data;
-//     },
-//     enabled: !!userId,
-//   });
-// };
