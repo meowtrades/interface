@@ -97,7 +97,6 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     const walletAddress = await getLeapWalletAddress();
     
     await dcaMutation.mutateAsync({
-      userId: user.user.id, // Adding userId to plan data as well
       amount: amountPerDay,
       userWalletAddress: walletAddress,
       recipientAddress:
@@ -106,7 +105,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
           : walletAddress,
       frequency: data.frequency as FrequencyOption,
       chain: data.chain,
-      riskLevel: data.riskLevel ?? "medium", // Default to medium risk if not provided
+      riskLevel: data.riskLevel ?? "medium_risk", // Default to medium risk if not provided
       strategyId: data.strategyId,
       tokenSymbol: data.tokenId,
       slippage: data.slippage, // Default to -1 for auto slippage

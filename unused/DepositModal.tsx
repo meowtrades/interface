@@ -38,7 +38,7 @@ const DepositModal = ({ currentToken }: DepositModalProps) => {
     depositFunds(
       {
         chainId: currentToken.chainId,
-        tokenAddress: currentToken.tokenSymbol,
+        tokenSymbol: currentToken.tokenSymbol,
         amount: depositAmount,
         txHash: "",
       },
