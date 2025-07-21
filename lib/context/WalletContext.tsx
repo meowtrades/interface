@@ -1,9 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Chain, Token, UserWallet } from '../types';
-import { fetchChains, fetchTokens } from '../api/strategies';
-import { fetchUserWallets, depositToWallet, withdrawFromWallet } from '../api/wallet';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { Chain, Token, UserWallet } from "../types";
+import { fetchChains, fetchTokens } from "../api/strategies";
+import {
+  fetchUserWallets,
+  depositToWallet,
+  withdrawFromWallet,
+} from "../api/wallet";
 
 type WalletContextType = {
   wallets: UserWallet[];
@@ -12,8 +22,17 @@ type WalletContextType = {
   selectedChain: string | null;
   setSelectedChain: (chainId: string) => void;
   getWalletsForChain: (chainId: string) => UserWallet[];
-  deposit: (chainId: string, tokenId: string, amount: number) => Promise<boolean>;
-  withdraw: (chainId: string, tokenId: string, address: string, amount: number) => Promise<boolean>;
+  deposit: (
+    chainId: string,
+    tokenId: string,
+    amount: number,
+  ) => Promise<boolean>;
+  withdraw: (
+    chainId: string,
+    tokenId: string,
+    address: string,
+    amount: number,
+  ) => Promise<boolean>;
   getTotalBalanceUsd: () => number;
   refreshWallets: () => Promise<void>;
   chains: Chain[];
@@ -23,7 +42,9 @@ type WalletContextType = {
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [wallets, setWallets] = useState<UserWallet[]>([]);
   const [chains, setChains] = useState<Chain[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
@@ -31,7 +52,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [error, setError] = useState<string | null>(null);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -41,39 +62,43 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchTokens(),
         fetchUserWallets(),
       ]);
-      
+
       setChains(chainsData);
       setTokens(tokensData);
       setWallets(walletsData);
-      
+
       // Set default selection if not already set
       if (!selectedChain && chainsData.length > 0) {
         setSelectedChain(chainsData[0].id);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedChain]);
 
   // Load data on mount
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData().then();
+  }, [loadData]);
 
   // Get wallets for a specific chain
   const getWalletsForChain = (chainId: string): UserWallet[] => {
-    return wallets.filter(wallet => wallet.chainId === chainId);
+    return wallets.filter((wallet) => wallet.chainId === chainId);
   };
 
   // Get tokens supported by a specific chain
   const getSupportedTokensForChain = (chainId: string): Token[] => {
-    return tokens.filter(token => token.chains.includes(chainId));
+    return tokens.filter((token) => token.chains.includes(chainId));
   };
 
   // Deposit funds to a wallet
-  const deposit = async (chainId: string, tokenId: string, amount: number): Promise<boolean> => {
+  const deposit = async (
+    chainId: string,
+    tokenId: string,
+    amount: number,
+  ): Promise<boolean> => {
     try {
       const result = await depositToWallet(chainId, tokenId, amount);
       if (result) {
@@ -82,7 +107,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
       return false;
     }
   };
@@ -92,17 +117,22 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     chainId: string,
     tokenId: string,
     address: string,
-    amount: number
+    amount: number,
   ): Promise<boolean> => {
     try {
-      const result = await withdrawFromWallet(chainId, tokenId, address, amount);
+      const result = await withdrawFromWallet(
+        chainId,
+        tokenId,
+        address,
+        amount,
+      );
       if (result) {
         // Refresh wallets after withdrawal
         await loadData();
       }
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
       return false;
     }
   };
@@ -142,7 +172,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export const useWallet = () => {
   const context = useContext(WalletContext);
   if (context === undefined) {
-    throw new Error('useWallet must be used within a WalletProvider');
+    throw new Error("useWallet must be used within a WalletProvider");
   }
   return context;
-}; 
+};

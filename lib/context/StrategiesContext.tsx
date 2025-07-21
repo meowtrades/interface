@@ -27,7 +27,7 @@ type StrategiesContextType = {
   getSupportedChainsForToken: (tokenId: string) => Chain[];
   getStrategiesForChainAndToken: (
     chainId: string,
-    tokenId: string
+    tokenId: string,
   ) => Strategy[];
   refreshData: () => Promise<void>;
 };
@@ -47,7 +47,7 @@ export type UserStrategyNew = {
 };
 
 const StrategiesContext = createContext<StrategiesContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -97,7 +97,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   // Load data on mount
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Get tokens supported by a specific chain
   const getSupportedTokensForChain = (chainId: string): Token[] => {
@@ -114,12 +114,12 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   // Get strategies available for a specific chain and token
   const getStrategiesForChainAndToken = (
     chainId: string,
-    tokenId: string
+    tokenId: string,
   ): Strategy[] => {
     return strategies.filter(
       (strategy) =>
         strategy.supportedChains.includes(chainId) &&
-        strategy.supportedTokens.includes(tokenId)
+        strategy.supportedTokens.includes(tokenId),
     );
   };
 
