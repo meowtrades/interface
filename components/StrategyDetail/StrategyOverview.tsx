@@ -153,7 +153,7 @@ export const StrategyOverview = () => {
     if (!range) {
       const searchParam = new URLSearchParams();
       searchParam.set("range", ranges[0].value);
-      router.push(`${pathname}?${searchParam.toString()}`);
+      router.replace(`${pathname}?${searchParam.toString()}`);
     }
   }, [range, router, userStrategy, pathname]);
 

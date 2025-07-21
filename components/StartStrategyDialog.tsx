@@ -67,13 +67,13 @@ const frequencyOptions = [
 // Get default investment amount based on strategy type
 const getDefaultAmount = (strategy: Strategy): string => {
   switch (strategy.type) {
-    case 'dca':
+    case "dca":
       return "10";
-    case 'grid':
+    case "grid":
       return "100";
-    case 'momentum':
+    case "momentum":
       return "50";
-    case 'custom':
+    case "custom":
       return "25";
     default:
       return "100";
@@ -356,7 +356,10 @@ const StartStrategyDialog = ({
               <div className="space-y-4">
                 {" "}
                 <div>
-                  <Label htmlFor="investment" className="text-sm font-semibold text-contrast-high">
+                  <Label
+                    htmlFor="investment"
+                    className="text-sm font-semibold text-contrast-high"
+                  >
                     Investment Amount (USD)
                   </Label>
                   <Input
@@ -383,21 +386,32 @@ const StartStrategyDialog = ({
                     (includes {(MANAGEMENT_FEE * 100).toFixed(1)}% platform fee)
                   </p>
                 </div>
-
                 <div className={"flex gap-4"}>
                   <div className={"w-1/3"}>
-                    <Label htmlFor="token" className="text-sm font-semibold text-contrast-high">
+                    <Label
+                      htmlFor="token"
+                      className="text-sm font-semibold text-contrast-high"
+                    >
                       Token
                     </Label>
                     <Select value={tokenId} onValueChange={setTokenId}>
-                      <SelectTrigger id="token" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger
+                        id="token"
+                        className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      >
                         <SelectValue placeholder="Select token" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
                         <SelectGroup>
-                          <SelectLabel className="text-contrast-medium font-semibold">Tokens</SelectLabel>
+                          <SelectLabel className="text-contrast-medium font-semibold">
+                            Tokens
+                          </SelectLabel>
                           {strategy.supportedTokens.map((token) => (
-                            <SelectItem key={token} value={token} className="text-contrast-high font-medium">
+                            <SelectItem
+                              key={token}
+                              value={token}
+                              className="text-contrast-high font-medium"
+                            >
                               {token.toUpperCase()}
                             </SelectItem>
                           ))}
@@ -406,21 +420,33 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                   <div className={"w-2/3"}>
-                    <Label htmlFor="chain" className="text-sm font-semibold text-contrast-high">
+                    <Label
+                      htmlFor="chain"
+                      className="text-sm font-semibold text-contrast-high"
+                    >
                       Chain
                     </Label>
                     <Select
                       value={chain}
                       onValueChange={(value: string) => setChain(value)}
                     >
-                      <SelectTrigger id="frequency" className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                      <SelectTrigger
+                        id="frequency"
+                        className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      >
                         <SelectValue placeholder="Select frequency" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
                         <SelectGroup>
-                          <SelectLabel className="text-contrast-medium font-semibold">Chains</SelectLabel>
+                          <SelectLabel className="text-contrast-medium font-semibold">
+                            Chains
+                          </SelectLabel>
                           {supportedChains.map((option) => (
-                            <SelectItem key={option} value={option} className="text-contrast-high font-medium">
+                            <SelectItem
+                              key={option}
+                              value={option}
+                              className="text-contrast-high font-medium"
+                            >
                               {option
                                 .split("-")
                                 .map(
@@ -435,10 +461,12 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 </div>
-
                 {strategy.id === "SDCA" && (
                   <div>
-                    <Label htmlFor="recipient" className="text-sm font-semibold text-contrast-high">
+                    <Label
+                      htmlFor="recipient"
+                      className="text-sm font-semibold text-contrast-high"
+                    >
                       Recipient Address
                     </Label>
                     <div className="flex space-x-2 mt-1">
@@ -472,22 +500,21 @@ const StartStrategyDialog = ({
                           }
                         }}
                       >
-                        <Button
-                          variant="secondary"
-                          className="font-medium"
-                        >
+                        <Button variant="secondary" className="font-medium">
                           Use My Address
                         </Button>
                       </WalletAddressPicker>
                     </div>
                   </div>
                 )}
-                
                 {/* Risk level slider for Smart DCA strategy */}
                 {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="risk-level" className="text-sm font-semibold text-contrast-high">
+                      <Label
+                        htmlFor="risk-level"
+                        className="text-sm font-semibold text-contrast-high"
+                      >
                         Risk Level
                       </Label>
                       <span className="text-sm font-semibold text-contrast-medium">
@@ -513,7 +540,10 @@ const StartStrategyDialog = ({
                 }
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <Label htmlFor="slippage" className="text-sm font-semibold text-contrast-high">
+                    <Label
+                      htmlFor="slippage"
+                      className="text-sm font-semibold text-contrast-high"
+                    >
                       Slippage Tolerance (%)
                     </Label>
                     <span className="text-sm font-semibold text-contrast-medium">
@@ -538,12 +568,18 @@ const StartStrategyDialog = ({
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg text-amber-800 text-sm border border-amber-200">
                 <p className="font-semibold mb-1">⚠️ Important Note</p>
                 <p className="font-medium text-xs">
-                  Past performance does not guarantee future results. Your investment may lose value.
+                  Past performance does not guarantee future results. Your
+                  investment may lose value.
                 </p>
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose} className="font-medium">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="font-medium"
+              >
                 Cancel
               </Button>
               <WalletPicker

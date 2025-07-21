@@ -56,7 +56,7 @@ export const StrategyChart = () => {
       if (!range) {
         const searchParam = new URLSearchParams();
         searchParam.set("range", ranges[0].value);
-        router.push(`${pathname}?${searchParam.toString()}`);
+        router.replace(`${pathname}?${searchParam.toString()}`);
       }
     }
   }, [userStrategy, range, router, pathname]);
@@ -194,7 +194,7 @@ export const StrategyChart = () => {
               onClick={() => {
                 const searchParam = new URLSearchParams();
                 searchParam.set("range", rangeOption.value);
-                router.push(`${pathname}?${searchParam.toString()}`);
+                router.replace(`${pathname}?${searchParam.toString()}`);
               }}
             >
               {rangeOption.label}
