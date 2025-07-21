@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -34,8 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
@@ -44,20 +41,14 @@ import {
   Tooltip,
 } from "recharts";
 import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  api,
-  useCreateDcaPlan,
-  useStopDcaPlan,
-} from "@/api";
-import { Frequency, RiskLevel } from "@/lib/types";
+import { api, useCreateInvestmentPlan, useStopDcaPlan } from "@/api";
+import { Frequency } from "@/lib/types";
 import { formatFrequency } from "@/lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { ActiveStrategyAnalytics } from "@/api/types";
 import { getLeapWalletAddress } from "@/lib/grants/wallet";
 import React from "react";
 
@@ -133,7 +124,7 @@ const MockTrades = () => {
   const [chartData, setChartData] = useState(generateMockChartData("1m"));
 
   // Use the actual DCA plan creation hook for mock trading
-  const createDcaPlanMutation = useCreateDcaPlan();
+  const createDcaPlanMutation = useCreateInvestmentPlan();
   const stopDcaPlanMutation = useStopDcaPlan();
   const queryClient = useQueryClient();
 
@@ -160,7 +151,7 @@ const MockTrades = () => {
       }
 
       const walletAddress = await getLeapWalletAddress();
-      
+
       await createDcaPlanMutation.mutateAsync({
         amount: Number(amount),
         userWalletAddress: walletAddress,
@@ -169,7 +160,12 @@ const MockTrades = () => {
         strategyId: selectedStrategy,
         recipientAddress: walletAddress,
         chain: "mock", // This is the key - marks it as paper trading
-        riskLevel: riskLevel === 1 ? "no_risk" : riskLevel === 2 ? "medium_risk" : "high_risk",
+        riskLevel:
+          riskLevel === 1
+            ? "no_risk"
+            : riskLevel === 2
+            ? "medium_risk"
+            : "high_risk",
         slippage: 0.5, // Default slippage for paper trading
       });
 
@@ -177,16 +173,23 @@ const MockTrades = () => {
         description: `Successfully started ${selectedStrategy} strategy with $${amount} for ${selectedToken}`,
         duration: 5000,
       });
-      
+
       // Invalidate all related queries for real-time updates
-      queryClient.invalidateQueries({ queryKey: ["activeStrategiesAnalytics", "mock"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "overview"] });
+      queryClient.invalidateQueries({
+        queryKey: ["activeStrategiesAnalytics", "mock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "overview"],
+      });
       queryClient.invalidateQueries({ queryKey: ["recentActivities"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "activities"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "activities"],
+      });
     } catch (error) {
       console.error("Failed to start paper trade:", error);
       toast.error("Failed to Start Paper Trade", {
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         duration: 5000,
       });
     }
@@ -197,19 +200,27 @@ const MockTrades = () => {
     try {
       await stopDcaPlanMutation.mutateAsync(tradeId);
       toast.success("Paper Trade Stopped!", {
-        description: "Your paper trade has been stopped successfully. View the final results in your trade history.",
+        description:
+          "Your paper trade has been stopped successfully. View the final results in your trade history.",
         duration: 5000,
       });
-      
+
       // Invalidate all related queries for real-time updates
-      queryClient.invalidateQueries({ queryKey: ["activeStrategiesAnalytics", "mock"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "overview"] });
+      queryClient.invalidateQueries({
+        queryKey: ["activeStrategiesAnalytics", "mock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "overview"],
+      });
       queryClient.invalidateQueries({ queryKey: ["recentActivities"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "analytics", "activities"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "activities"],
+      });
     } catch (error) {
       console.error("Failed to stop paper trade:", error);
       toast.error("Failed to Stop Paper Trade", {
-        description: "Please try again or contact support if the issue persists.",
+        description:
+          "Please try again or contact support if the issue persists.",
         duration: 5000,
       });
     }
@@ -231,7 +242,7 @@ const MockTrades = () => {
       {
         queryKey: ["available", "strategies"],
         queryFn: async () => {
-          // Use mock data instead of real API for now  
+          // Use mock data instead of real API for now
           const { fetchStrategies } = await import("@/lib/api/strategies");
           return await fetchStrategies();
         },
@@ -243,10 +254,11 @@ const MockTrades = () => {
   React.useEffect(() => {
     if (strategies && strategies.length > 0 && !selectedStrategy) {
       // Try to find "SDCA" or "S-DCA", otherwise use first strategy
-      const sdcaStrategy = strategies.find(s => 
-        s.id === "SDCA" || 
-        s.id === "S-DCA" || 
-        (s.name && s.name.toLowerCase().includes("dca"))
+      const sdcaStrategy = strategies.find(
+        (s) =>
+          s.id === "SDCA" ||
+          s.id === "S-DCA" ||
+          (s.name && s.name.toLowerCase().includes("dca"))
       );
       setSelectedStrategy(sdcaStrategy ? sdcaStrategy.id : strategies[0].id);
     }
@@ -255,7 +267,7 @@ const MockTrades = () => {
   React.useEffect(() => {
     if (tokens && tokens.length > 0 && !selectedToken) {
       // Try to find "INJ", otherwise use first token
-      const injToken = tokens.find(t => t.symbol === "INJ");
+      const injToken = tokens.find((t) => t.symbol === "INJ");
       setSelectedToken(injToken ? injToken.symbol : tokens[0].symbol);
     }
   }, [tokens, selectedToken]);
@@ -286,7 +298,10 @@ const MockTrades = () => {
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 mb-8" data-start-trade-section>
+      <div
+        className="flex flex-col lg:flex-row gap-8 mb-8"
+        data-start-trade-section
+      >
         <Card className="w-full lg:w-1/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
           <CardHeader className="pb-4 pt-6 px-6">
             <CardTitle className="text-xl font-bold text-contrast-high">
@@ -325,11 +340,20 @@ const MockTrades = () => {
                 disabled={isStrategiesLoading}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={isStrategiesLoading ? "Loading strategies..." : "Select strategy"} />
+                  <SelectValue
+                    placeholder={
+                      isStrategiesLoading
+                        ? "Loading strategies..."
+                        : "Select strategy"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {strategies?.map((strategy, index) => (
-                    <SelectItem key={`strategy-${strategy.id}-${index}`} value={strategy.id}>
+                    <SelectItem
+                      key={`strategy-${strategy.id}-${index}`}
+                      value={strategy.id}
+                    >
                       {strategy.name}
                     </SelectItem>
                   ))}
@@ -347,11 +371,18 @@ const MockTrades = () => {
                 disabled={isTokensLoading}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={isTokensLoading ? "Loading tokens..." : "Select token"} />
+                  <SelectValue
+                    placeholder={
+                      isTokensLoading ? "Loading tokens..." : "Select token"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {tokens?.map((token, index) => (
-                    <SelectItem key={`token-${token.symbol}-${index}`} value={token.symbol}>
+                    <SelectItem
+                      key={`token-${token.symbol}-${index}`}
+                      value={token.symbol}
+                    >
                       {token.name} ({token.symbol})
                     </SelectItem>
                   ))}
@@ -384,14 +415,20 @@ const MockTrades = () => {
               </label>
               <Select
                 value={frequency}
-                onValueChange={(value: string) => setFrequency(value as Frequency)}
+                onValueChange={(value: string) =>
+                  setFrequency(value as Frequency)
+                }
               >
                 <SelectTrigger className="border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-2 shadow-lg">
                   {Object.values(Frequency).map((freq, index) => (
-                    <SelectItem key={`freq-${freq}-${index}`} value={freq} className="text-contrast-high font-medium">
+                    <SelectItem
+                      key={`freq-${freq}-${index}`}
+                      value={freq}
+                      className="text-contrast-high font-medium"
+                    >
                       {formatFrequency(freq)}
                     </SelectItem>
                   ))}
@@ -412,22 +449,21 @@ const MockTrades = () => {
             <Button
               onClick={handleStartMockTrade}
               disabled={
-                createDcaPlanMutation.isPending || 
-                !selectedStrategy || 
-                !selectedToken || 
-                !amount || 
+                createDcaPlanMutation.isPending ||
+                !selectedStrategy ||
+                !selectedToken ||
+                !amount ||
                 Number(amount) <= 0 ||
                 isStrategiesLoading ||
                 isTokensLoading
               }
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
             >
-              {createDcaPlanMutation.isPending 
-                ? "Starting Paper Trade..." 
+              {createDcaPlanMutation.isPending
+                ? "Starting Paper Trade..."
                 : isStrategiesLoading || isTokensLoading
                 ? "Loading options..."
-                : "Start Paper Trade"
-              }
+                : "Start Paper Trade"}
             </Button>
           </CardFooter>
         </Card>
@@ -562,7 +598,9 @@ const MockTrades = () => {
 
       <Tabs defaultValue="active" className="mb-2">
         <TabsContent value="active" className="pt-6">
-          {!isLoadingActiveMockStrategiesAnalytics && (!activeMockStrategiesWithAnalytics || activeMockStrategiesWithAnalytics.length === 0) ? (
+          {!isLoadingActiveMockStrategiesAnalytics &&
+          (!activeMockStrategiesWithAnalytics ||
+            activeMockStrategiesWithAnalytics.length === 0) ? (
             <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
               <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
                 <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
@@ -572,14 +610,18 @@ const MockTrades = () => {
                   No Active Paper Trades
                 </h3>
                 <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
-                  You don&apos;t have any active paper trades yet. Start your first simulation to test strategies with virtual funds before investing real money.
+                  You don&apos;t have any active paper trades yet. Start your
+                  first simulation to test strategies with virtual funds before
+                  investing real money.
                 </p>
-                <Button 
+                <Button
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
                   onClick={() => {
-                    const startTradeSection = document.querySelector('[data-start-trade-section]');
+                    const startTradeSection = document.querySelector(
+                      "[data-start-trade-section]"
+                    );
                     if (startTradeSection) {
-                      startTradeSection.scrollIntoView({ behavior: 'smooth' });
+                      startTradeSection.scrollIntoView({ behavior: "smooth" });
                     }
                   }}
                 >
@@ -596,106 +638,106 @@ const MockTrades = () => {
                 </>
               ) : (
                 activeMockStrategiesWithAnalytics?.map((trade) => {
-                const startedAt = Intl.DateTimeFormat("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                }).format(new Date(trade.createdAt));
+                  const startedAt = Intl.DateTimeFormat("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }).format(new Date(trade.createdAt));
 
-                return (
-                  <Card key={trade._id}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-10 h-10 rounded-full ${
-                              // eslint-disable-next-line no-constant-condition
-                              true
-                                ? "bg-blue-100 text-crypto-blue"
-                                : "bg-purple-100 text-crypto-purple"
-                            } flex items-center justify-center`}
-                          >
-                            {
-                              // eslint-disable-next-line no-constant-condition
-                              true ? (
-                                <TrendingUp size={20} />
-                              ) : (
-                                <TrendingDown size={20} />
-                              )
-                            }
+                  return (
+                    <Card key={trade._id}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-10 h-10 rounded-full ${
+                                // eslint-disable-next-line no-constant-condition
+                                true
+                                  ? "bg-blue-100 text-crypto-blue"
+                                  : "bg-purple-100 text-crypto-purple"
+                              } flex items-center justify-center`}
+                            >
+                              {
+                                // eslint-disable-next-line no-constant-condition
+                                true ? (
+                                  <TrendingUp size={20} />
+                                ) : (
+                                  <TrendingDown size={20} />
+                                )
+                              }
+                            </div>
+                            <div>
+                              <CardTitle className="text-md">
+                                Smart DCA
+                              </CardTitle>
+                              <CardDescription>
+                                {trade.token.symbol} • Started {startedAt}
+                              </CardDescription>
+                            </div>
                           </div>
-                          <div>
-                            <CardTitle className="text-md">Smart DCA</CardTitle>
-                            <CardDescription>
-                              {trade.token.symbol} • Started {startedAt}
-                            </CardDescription>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 text-sm">
+                              Initial Amount
+                            </span>
+                            <span className="font-medium">
+                              ${trade.totalInvested.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 text-sm">
+                              Current Value
+                            </span>
+                            <span className="font-medium">
+                              ${trade.currentValue.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 text-sm">
+                              Profit/Loss
+                            </span>
+                            <span
+                              className={`font-medium ${
+                                trade.profit >= 0
+                                  ? "text-crypto-green"
+                                  : "text-crypto-red"
+                              }`}
+                            >
+                              {trade.profit >= 0 ? "+" : ""}$
+                              {trade.profit.toFixed(2)} (
+                              {trade.profit >= 0 ? "+" : ""}
+                              {trade.profitPercentage.toFixed(2)}%)
+                            </span>
                           </div>
                         </div>
-                      </div>
-                    </CardHeader>
+                      </CardContent>
 
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 text-sm">
-                            Initial Amount
-                          </span>
-                          <span className="font-medium">
-                            ${trade.totalInvested.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 text-sm">
-                            Current Value
-                          </span>
-                          <span className="font-medium">
-                            ${trade.currentValue.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 text-sm">
-                            Profit/Loss
-                          </span>
-                          <span
-                            className={`font-medium ${
-                              trade.profit >= 0
-                                ? "text-crypto-green"
-                                : "text-crypto-red"
-                            }`}
-                          >
-                            {trade.profit >= 0 ? "+" : ""}$
-                            {trade.profit.toFixed(2)} (
-                            {trade.profit >= 0 ? "+" : ""}
-                            {trade.profitPercentage.toFixed(2)}%)
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
+                      <CardFooter className="flex gap-2">
+                        <Link
+                          href={`/app/strategies/${trade._id}`}
+                          className="w-full"
+                        >
+                          <Button variant="outline" className="w-full">
+                            View Details
+                          </Button>
+                        </Link>
 
-                    <CardFooter className="flex gap-2">
-                      <Link
-                        href={`/app/strategies/${trade._id}`}
-                        className="w-full"
-                      >
-                        <Button variant="outline" className="w-full">
-                          View Details
+                        <Button
+                          onClick={() => handleStopMockTrade(trade._id)}
+                          variant="destructive"
+                          className="w-full"
+                        >
+                          Stop
                         </Button>
-                      </Link>
-
-                      <Button
-                        onClick={() =>
-                          handleStopMockTrade(trade._id)
-                        }
-                        variant="destructive"
-                        className="w-full"
-                      >
-                        Stop
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })
-            )}
+                      </CardFooter>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           )}
         </TabsContent>

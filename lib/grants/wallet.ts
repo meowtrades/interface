@@ -6,7 +6,7 @@ import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
 
 export const getKeplrAddress = async () => {
-  if (typeof window !== 'undefined' && window.keplr) {
+  if (typeof window !== "undefined" && window.keplr) {
     console.log("Keplr is installed");
   }
 
@@ -22,7 +22,7 @@ export const getKeplrAddress = async () => {
 };
 
 export const getLeapWalletAddress = async () => {
-  if (typeof window !== 'undefined' && window.leap) {
+  if (typeof window !== "undefined" && window.leap) {
     console.log("Leap is installed");
   }
 
@@ -40,7 +40,7 @@ export const getLeapWalletAddress = async () => {
 };
 
 export const getMetaMaskWalletAddress = async () => {
-  if (typeof window !== 'undefined' && window.ethereum) {
+  if (typeof window !== "undefined" && window.ethereum) {
     console.log("MetaMask is installed");
   }
 

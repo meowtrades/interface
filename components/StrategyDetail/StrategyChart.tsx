@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 /** @format */
@@ -17,22 +19,23 @@ import {
 import { AlertCircle, RefreshCw, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
 export const StrategyChart = () => {
-  const { strategyId } = useParams();
+  const { id: strategyId } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [validRanges, setValidRanges] = useState<
     { label: string; value: string }[]
   >([]);
   const range = searchParams.get("range");
+  const pathname = usePathname();
 
   const { data: userStrategy, isLoading: isStrategyLoading } = useQuery({
     queryKey: ["userStrategy", strategyId],
@@ -51,13 +54,12 @@ export const StrategyChart = () => {
 
       // Set the default range in the search params if not already set
       if (!range) {
-        router.replace({
-          pathname: router.pathname,
-          query: { ...router.query, range: ranges[0].value },
-        });
+        const searchParam = new URLSearchParams();
+        searchParam.set("range", ranges[0].value);
+        router.push(`${pathname}?${searchParam.toString()}`);
       }
     }
-  }, [userStrategy, range, router]);
+  }, [userStrategy, range, router, pathname]);
 
   const {
     data: chartData,
@@ -164,12 +166,12 @@ export const StrategyChart = () => {
               Processing Strategy Data
             </h3>
             <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
-              We&apos;re currently processing your strategy data. This may take a few
-              moments as we gather and analyze your transaction history.
+              We&apos;re currently processing your strategy data. This may take
+              a few moments as we gather and analyze your transaction history.
             </p>
             <p className="text-caption text-muted-foreground">
-              You&apos;ll be able to see your performance metrics once the data is
-              ready.
+              You&apos;ll be able to see your performance metrics once the data
+              is ready.
             </p>
           </CardContent>
         </Card>
@@ -189,12 +191,11 @@ export const StrategyChart = () => {
               variant={range === rangeOption.value ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-7 px-2"
-              onClick={() =>
-                router.replace({
-                  pathname: router.pathname,
-                  query: { ...router.query, range: rangeOption.value },
-                })
-              }
+              onClick={() => {
+                const searchParam = new URLSearchParams();
+                searchParam.set("range", rangeOption.value);
+                router.push(`${pathname}?${searchParam.toString()}`);
+              }}
             >
               {rangeOption.label}
             </Button>

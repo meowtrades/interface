@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { FrequencyOption, useCreateDcaPlan } from "@/api";
+import { FrequencyOption, useCreateInvestmentPlan } from "@/api";
 import { authClient } from "@/lib/auth";
 import {
   Tooltip,
@@ -71,7 +71,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
   // State for strategy dialog
   const [startDialogOpen, setStartDialogOpen] = useState(false);
 
-  const dcaMutation = useCreateDcaPlan();
+  const dcaMutation = useCreateInvestmentPlan();
 
   const { data: user } = authClient.useSession();
 
@@ -95,7 +95,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     console.log(data);
 
     const walletAddress = await getLeapWalletAddress();
-    
+
     await dcaMutation.mutateAsync({
       amount: amountPerDay,
       userWalletAddress: walletAddress,

@@ -54,10 +54,12 @@ const getToolTipValue = <TData,>(cell: Cell<TData, unknown>) => {
 };
 
 export const TransactionList = () => {
-  const { strategyId } = useParams();
+  const { id: strategyId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
-  
-  const strategyIdString = Array.isArray(strategyId) ? strategyId[0] : strategyId;
+
+  const strategyIdString = Array.isArray(strategyId)
+    ? strategyId[0]
+    : strategyId;
 
   const {
     data: transactionsData,
@@ -118,7 +120,9 @@ export const TransactionList = () => {
                     No Transactions Found
                   </h3>
                   <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
-                    This strategy hasn&apos;t executed any transactions yet. Transactions will appear here once your strategy starts trading.
+                    This strategy hasn&apos;t executed any transactions yet.
+                    Transactions will appear here once your strategy starts
+                    trading.
                   </p>
                 </CardContent>
               </Card>
@@ -139,7 +143,9 @@ export const TransactionList = () => {
                   No Transactions Found
                 </h3>
                 <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
-                  This strategy hasn&apos;t executed any transactions yet. Transactions will appear here once your strategy starts trading.
+                  This strategy hasn&apos;t executed any transactions yet.
+                  Transactions will appear here once your strategy starts
+                  trading.
                 </p>
               </CardContent>
             </Card>

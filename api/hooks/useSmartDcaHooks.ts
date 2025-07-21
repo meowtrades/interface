@@ -2,10 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../client";
-import {
-  CreateDcaPlanDto,
-  DcaPlan,
-} from "../types";
+import { CreateDcaPlanDto, DcaPlan } from "../types";
 import { toast } from "sonner";
 
 // Query keys for cache management
@@ -19,7 +16,7 @@ export const SMART_DCA_KEYS = {
 /**
  * Create a new DCA plan
  */
-export const useCreateDcaPlan = () => {
+export const useCreateInvestmentPlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -34,7 +31,7 @@ export const useCreateDcaPlan = () => {
         case "GRID":
           response = await api.plans.grid.create(planData);
           break;
-          
+
         default:
           throw new Error(`Unsupported strategy type: ${planData.strategyId}`);
       }
