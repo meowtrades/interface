@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Strategy } from "@/lib/types";
 import { RefreshCw, Grid, TrendingUp } from "lucide-react";
@@ -50,7 +50,7 @@ const StrategyWhatIfDialog = ({ strategy, open, onClose, defaultToken = 'btc' }:
   // Calculate projected returns based on timeframe and investment
   const getProjectedReturn = (): number => {
     const amount = parseFloat(investment) || 0;
-    let returnPercentage = 0;
+    let returnPercentage: number;
     
     switch (timeframe) {
       case "1week":

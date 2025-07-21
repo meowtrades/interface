@@ -1,6 +1,6 @@
 /** @format */
 
-import { availableWallets, getAvailableWalletsForChain } from "@/lib/grants/available-wallets";
+import { getAvailableWalletsForChain } from "@/lib/grants/available-wallets";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";

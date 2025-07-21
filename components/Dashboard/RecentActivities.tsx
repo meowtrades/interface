@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
-import { cn, formatCurrency } from "@/lib/design-system";
+import { cn } from "@/lib/design-system";
 
 const RecentActivities = () => {
   const { data: activities } = useQuery({

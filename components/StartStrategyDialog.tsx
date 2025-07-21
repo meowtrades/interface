@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Dialog,
@@ -37,7 +37,6 @@ import { FrequencyOption } from "@/api";
 import WalletPicker from "./WalletPicker";
 import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
-import { getLeapWalletAddress } from "@/lib/grants/wallet";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 
 // Color map for strategy types

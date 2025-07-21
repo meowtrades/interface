@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth";
 
-import { API_URL } from "@/configs/env";
-
 type AuthProps = {
   onSuccess?: () => void;
 };

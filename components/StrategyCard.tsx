@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
+import { RefreshCw, Grid, TrendingUp } from "lucide-react";
 import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
 import { FrequencyOption, useCreateInvestmentPlan } from "@/api";

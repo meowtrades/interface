@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
 import { walletConfigs, getWalletsForChain, BaseWalletConfig } from "@/lib/grants/wallet-config";

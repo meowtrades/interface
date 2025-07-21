@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { GridVisualizationData } from "@/api/hooks/useGridVisualization";
 import { useLivePrices, PriceUpdate } from "@/hooks/useLivePrices";
 import { CanvasGridChart, PricePoint } from "./CanvasGridChart";

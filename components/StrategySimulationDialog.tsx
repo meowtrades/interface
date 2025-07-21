@@ -26,7 +26,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import React, { useState } from "react";
 import StartStrategyDialog from "./StartStrategyDialog";
 import { FrequencyOption, useCreateInvestmentPlan } from "@/api";
 import { authClient } from "@/lib/auth";

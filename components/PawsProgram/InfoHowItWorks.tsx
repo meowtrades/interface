@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { MousePointerClick, TrendingUp, Calendar, Award } from "lucide-react";
+import { MousePointerClick, TrendingUp, Calendar } from "lucide-react";
 
 const steps = [
   {

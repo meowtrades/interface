@@ -3,7 +3,7 @@
 /** @format */
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Chain, Strategy, Token, UserStrategy } from "../types";
+import { Chain, Strategy, Token } from "../types";
 import {
   fetchStrategies,
   fetchChains,

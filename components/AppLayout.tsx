@@ -2,7 +2,7 @@
 
 /** @format */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,10 @@ import {
     LogOut,
     Menu,
     X,
-    Bell,
     User,
     Grid,
     Trophy,
-    Info,
+
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
@@ -28,12 +27,6 @@ import { useCurrentUserXp } from "@/api/hooks/useUserHooks";
 type AppLayoutProps = {
     children: React.ReactNode;
 };
-
-type UserData = {
-    authenticated: boolean;
-    name?: string;
-};
-
 const AppLayout = ({ children }: AppLayoutProps) => {
     const pathname = usePathname();
     const router = useRouter();

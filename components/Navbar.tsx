@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Menu, X, Cat } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
 const Navbar = () => {

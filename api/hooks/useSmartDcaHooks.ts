@@ -1,8 +1,8 @@
 /** @format */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../client";
-import { CreateDcaPlanDto, DcaPlan } from "../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/api";
+import { CreateDcaPlanDto } from "@/api";
 import { toast } from "sonner";
 
 // Query keys for cache management
@@ -88,27 +88,6 @@ export const useStopDcaPlan = () => {
   });
 };
 
-/**
- * Stop all DCA plans for a user
- */
-export const useStopAllDcaPlans = () => {
-  return useMutation({
-    mutationFn: async () => {
-      const response = await api.plans.stopAll();
-      return response.data;
-    },
-  });
-};
 
-/**
- * Get all DCA plans for a user
- */
-export const useUserDcaPlans = () => {
-  return useQuery({
-    queryKey: SMART_DCA_KEYS.plans(),
-    queryFn: async () => {
-      const response = await api.plans.getAll();
-      return response.data;
-    },
-  });
-};
+
+
