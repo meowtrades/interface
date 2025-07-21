@@ -15,9 +15,6 @@ import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { checkMinimumUSDTBalance } from "../utils";
 import { MANAGEMENT_FEE } from "../constants";
-import { Buffer } from "buffer";
-
-window.Buffer = Buffer;
 
 declare global {
   interface Window {
@@ -36,7 +33,7 @@ declare global {
         chainId: string,
         address: string,
         txs: unknown[],
-        options: { amount: { denom: string; amount: string }[]; gas: string }
+        options: { amount: { denom: string; amount: string }[]; gas: string },
       ) => Promise<{ transactionHash: string }>;
     };
   }
@@ -71,7 +68,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
     granter: granter,
     grantee: grantee,
     authorization: getGenericAuthorizationFromMessageType(
-      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
+      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder",
     ),
     expiration: nowInSeconds + expirationInSeconds,
   });
@@ -143,7 +140,7 @@ export const getLeapGrant = async (enteredBalance: number) => {
     granter: granter,
     grantee: grantee,
     authorization: getGenericAuthorizationFromMessageType(
-      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
+      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder",
     ),
     expiration: nowInSeconds + expirationInSeconds,
   });
@@ -223,7 +220,7 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
     granter: injectiveAddress,
     grantee: grantee,
     authorization: getGenericAuthorizationFromMessageType(
-      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder"
+      "/injective.exchange.v1beta1.MsgCreateSpotMarketOrder",
     ),
     expiration: nowInSeconds + expirationInSeconds,
   });

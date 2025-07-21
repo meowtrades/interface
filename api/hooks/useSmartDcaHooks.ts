@@ -73,7 +73,7 @@ export const useStopDcaPlan = () => {
       return response.data;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "real"],
         exact: true,
       });
@@ -87,7 +87,3 @@ export const useStopDcaPlan = () => {
     },
   });
 };
-
-
-
-
