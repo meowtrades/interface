@@ -1,8 +1,16 @@
+/** @format */
+
 "use client";
 
 /** @format */
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Chain, Strategy, Token } from "../types";
 import {
   fetchStrategies,
@@ -27,7 +35,7 @@ type StrategiesContextType = {
   getSupportedChainsForToken: (tokenId: string) => Chain[];
   getStrategiesForChainAndToken: (
     chainId: string,
-    tokenId: string,
+    tokenId: string
   ) => Strategy[];
   refreshData: () => Promise<void>;
 };
@@ -47,7 +55,7 @@ export type UserStrategyNew = {
 };
 
 const StrategiesContext = createContext<StrategiesContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -62,7 +70,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -92,7 +100,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedChain, selectedToken]);
 
   // Load data on mount
   useEffect(() => {
@@ -114,12 +122,12 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   // Get strategies available for a specific chain and token
   const getStrategiesForChainAndToken = (
     chainId: string,
-    tokenId: string,
+    tokenId: string
   ): Strategy[] => {
     return strategies.filter(
       (strategy) =>
         strategy.supportedChains.includes(chainId) &&
-        strategy.supportedTokens.includes(tokenId),
+        strategy.supportedTokens.includes(tokenId)
     );
   };
 
