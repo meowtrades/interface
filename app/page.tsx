@@ -21,11 +21,6 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MockTradingChart from "@/components/charts/MockTradingChart";
-import { Buffer } from "buffer";
-
-if (typeof window !== "undefined") {
-  window.Buffer = Buffer;
-}
 
 const Index = () => {
   const heroRef = useRef(null);

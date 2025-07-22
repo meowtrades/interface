@@ -1,12 +1,27 @@
 /** @format */
 
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogHeader,
+} from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
-import { walletConfigs, getWalletsForChain, BaseWalletConfig } from "@/lib/grants/wallet-config";
+import {
+  getKeplrAddress,
+  getLeapWalletAddress,
+  getMetaMaskWalletAddress,
+} from "@/lib/grants/wallet";
+import {
+  walletConfigs,
+  getWalletsForChain,
+  BaseWalletConfig,
+} from "@/lib/grants/wallet-config";
+import Image from "next/image";
 
 interface WalletAddressPickerProps {
   onAddressSelected: (address: string) => void;
@@ -14,7 +29,11 @@ interface WalletAddressPickerProps {
   chain?: string; // Add chain prop
 }
 
-const WalletAddressPicker = ({ onAddressSelected, children, chain = "injective" }: WalletAddressPickerProps) => {
+const WalletAddressPicker = ({
+  onAddressSelected,
+  children,
+  chain = "injective",
+}: WalletAddressPickerProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingWallet, setLoadingWallet] = useState<string | null>(null);
@@ -24,41 +43,43 @@ const WalletAddressPicker = ({ onAddressSelected, children, chain = "injective" 
     getAddress: () => Promise<string>;
   };
 
-  const allWalletOptions: WalletAddressOption[] = walletConfigs.map(config => {
-    let getAddress: () => Promise<string>;
-    
-    switch (config.name) {
-      case "Keplr":
-        getAddress = getKeplrAddress;
-        break;
-      case "Leap":
-        getAddress = getLeapWalletAddress;
-        break;
-      case "MetaMask":
-        getAddress = getMetaMaskWalletAddress;
-        break;
-      default:
-        throw new Error(`Unknown wallet: ${config.name}`);
+  const allWalletOptions: WalletAddressOption[] = walletConfigs.map(
+    (config) => {
+      let getAddress: () => Promise<string>;
+
+      switch (config.name) {
+        case "Keplr":
+          getAddress = getKeplrAddress;
+          break;
+        case "Leap":
+          getAddress = getLeapWalletAddress;
+          break;
+        case "MetaMask":
+          getAddress = getMetaMaskWalletAddress;
+          break;
+        default:
+          throw new Error(`Unknown wallet: ${config.name}`);
+      }
+
+      return { ...config, getAddress };
     }
-    
-    return { ...config, getAddress };
-  });
+  );
 
   // Filter wallet options based on chain
   const getWalletOptionsForChain = () => {
     const availableWallets = getWalletsForChain(chain);
-    return allWalletOptions.filter(wallet => 
-      availableWallets.some(available => available.name === wallet.name)
+    return allWalletOptions.filter((wallet) =>
+      availableWallets.some((available) => available.name === wallet.name)
     );
   };
 
   const walletOptions = getWalletOptionsForChain();
 
-  const handleWalletSelect = async (wallet: typeof walletOptions[0]) => {
+  const handleWalletSelect = async (wallet: (typeof walletOptions)[0]) => {
     try {
       setIsLoading(true);
       setLoadingWallet(wallet.name);
-      
+
       const address = await wallet.getAddress();
       onAddressSelected(address);
       setIsDialogOpen(false);
@@ -78,9 +99,7 @@ const WalletAddressPicker = ({ onAddressSelected, children, chain = "injective" 
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Select Your Wallet</DialogTitle>
@@ -95,20 +114,27 @@ const WalletAddressPicker = ({ onAddressSelected, children, chain = "injective" 
                 onClick={() => handleWalletSelect(wallet)}
               >
                 <div className="flex items-center gap-3 text-lg">
-                  <img src={wallet.icon} alt={`${wallet.name} icon`} className="w-8 h-8" />
+                  <Image
+                    width={32}
+                    height={32}
+                    src={wallet.icon}
+                    alt={`${wallet.name} icon`}
+                    className="w-8 h-8"
+                  />
                   <span>{wallet.name}</span>
                 </div>
-                {loadingWallet === wallet.name ? <Loader2 className="animate-spin" /> : null}
+                {loadingWallet === wallet.name ? (
+                  <Loader2 className="animate-spin" />
+                ) : null}
               </Button>
             ))
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-500">No compatible wallets found.</p>
               <p className="text-sm text-gray-400 mt-1">
-                {chain.toLowerCase().includes('evm') 
+                {chain.toLowerCase().includes("evm")
                   ? "Please install MetaMask wallet extension."
-                  : "Please install Keplr or Leap wallet extension."
-                }
+                  : "Please install Keplr or Leap wallet extension."}
               </p>
             </div>
           )}
@@ -118,4 +144,4 @@ const WalletAddressPicker = ({ onAddressSelected, children, chain = "injective" 
   );
 };
 
-export default WalletAddressPicker; 
+export default WalletAddressPicker;
