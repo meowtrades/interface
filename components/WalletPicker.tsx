@@ -1,12 +1,19 @@
 /** @format */
 
-import { availableWallets, getAvailableWalletsForChain } from "@/lib/grants/available-wallets";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from "@/components/ui/dialog";
+import { getAvailableWalletsForChain } from "@/lib/grants/available-wallets";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogHeader,
+} from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { MANAGEMENT_FEE } from "@/lib/constants";
+import Image from "next/image";
 
 const WalletPicker = ({
   callback,
@@ -85,7 +92,12 @@ const WalletPicker = ({
                   }}
                 >
                   <div className="flex items-center gap-3 text-lg">
-                    <img src={wallet.icon} alt={`${wallet.name} icon`} />
+                    <Image
+                      width={32}
+                      height={32}
+                      src={wallet.icon}
+                      alt={`${wallet.name} icon`}
+                    />
                     <span>{wallet.name}</span>
                   </div>
                   {isLoading ? <Loader2 className="animate-spin" /> : null}

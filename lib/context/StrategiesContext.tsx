@@ -1,9 +1,17 @@
+/** @format */
+
 "use client";
 
 /** @format */
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Chain, Strategy, Token, UserStrategy } from "../types";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { Chain, Strategy, Token } from "../types";
 import {
   fetchStrategies,
   fetchChains,
@@ -62,7 +70,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -92,12 +100,12 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedChain, selectedToken]);
 
   // Load data on mount
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Get tokens supported by a specific chain
   const getSupportedTokensForChain = (chainId: string): Token[] => {

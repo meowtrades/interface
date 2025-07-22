@@ -1,4 +1,6 @@
-"use client"
+/** @format */
+
+"use client";
 
 import { api } from "@/api";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
@@ -13,6 +15,10 @@ import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { checkMinimumUSDTBalance } from "../utils";
 import { MANAGEMENT_FEE } from "../constants";
+
+if (typeof window !== "undefined") {
+  window.Buffer = Buffer;
+}
 
 declare global {
   interface Window {
@@ -40,7 +46,7 @@ declare global {
 const grantee = "inj1g8lwgz26ej7crwt906wp6wsnwjteh2qk0h4n2n";
 
 export const getKeplrGrant = async (enteredBalance: number) => {
-  if (typeof window !== 'undefined' && window.keplr) {
+  if (typeof window !== "undefined" && window.keplr) {
     console.log("Keplr is installed");
   }
 
@@ -54,7 +60,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
 
   const [granter] = await walletStrategy.getAddresses();
 
-  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE; // Default to 0.01 if not provided
+  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE;
 
   await checkMinimumUSDTBalance(granter, requiredBalance);
 
@@ -82,6 +88,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
     walletStrategy,
     simulateTx: true,
     network: Network.Testnet,
+    chainId: ChainId.Testnet,
     // ethereumChainId: EthereumChainId.TestnetEvm,
     endpoints: getNetworkEndpoints(Network.Testnet),
   });
@@ -111,7 +118,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
 };
 
 export const getLeapGrant = async (enteredBalance: number) => {
-  if (typeof window !== 'undefined' && window.leap) {
+  if (typeof window !== "undefined" && window.leap) {
     console.log("Leap is installed");
   }
 
@@ -182,7 +189,7 @@ export const getLeapGrant = async (enteredBalance: number) => {
 };
 
 export const getMetaMaskGrant = async (enteredBalance: number) => {
-  if (typeof window !== 'undefined' && window.ethereum) {
+  if (typeof window !== "undefined" && window.ethereum) {
     console.log("MetaMask is installed");
   }
 

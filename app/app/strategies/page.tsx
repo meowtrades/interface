@@ -23,7 +23,14 @@ import StrategySimulationDialog from "@/components/StrategySimulationDialog";
 import StrategyCard from "@/components/StrategyCard";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { Strategy } from "@/lib/types";
-import { RefreshCw, Grid, TrendingUp, Activity, Search, BarChart3 } from "lucide-react";
+import {
+  RefreshCw,
+  Grid,
+  TrendingUp,
+  Activity,
+  Search,
+  BarChart3,
+} from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -46,7 +53,7 @@ const StrategiesContent = () => {
   const tab = searchParams.get("tab") || "available";
   const [simulationDialogOpen, setSimulationDialogOpen] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
-    null
+    null,
   );
 
   const stopDcaPlanMutation = useStopDcaPlan();
@@ -129,7 +136,7 @@ const StrategiesContent = () => {
     setSimulationDialogOpen(false);
   };
 
-  // Switch to available strategies tab
+  // Switch to the available strategies tab
   const switchToAvailableTab = () => {
     router.push("/app/strategies?tab=available");
   };
@@ -204,25 +211,19 @@ const StrategiesContent = () => {
         <div className="max-w-full">
           <TabsList className="text-xs">
             <TabsTrigger
-              onClick={() =>
-                router.push("/app/strategies?tab=available")
-              }
+              onClick={() => router.push("/app/strategies?tab=available")}
               value="available"
             >
               Available
             </TabsTrigger>
             <TabsTrigger
-              onClick={() =>
-                router.push("/app/strategies?tab=active")
-              }
+              onClick={() => router.push("/app/strategies?tab=active")}
               value="active"
             >
               Live ({activeRealStrategiesAnalytics?.length ?? 0})
             </TabsTrigger>
             <TabsTrigger
-              onClick={() =>
-                router.push("/app/strategies?tab=paper")
-              }
+              onClick={() => router.push("/app/strategies?tab=paper")}
               value="paper"
             >
               Paper ({activeMockStrategiesAnalytics?.length ?? 0})
@@ -370,10 +371,10 @@ const StrategiesContent = () => {
                   No Live Strategies
                 </h3>
                 <p className="text-body text-muted-foreground mb-6 max-w-sm leading-relaxed">
-                  You haven&apos;t started any live strategies yet. Go to the Available
-                  Strategies tab to get started.
+                  You haven&apos;t started any live strategies yet. Go to the
+                  Available Strategies tab to get started.
                 </p>
-                <Button 
+                <Button
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
                   onClick={switchToAvailableTab}
                 >
@@ -459,7 +460,6 @@ const StrategiesContent = () => {
                       </Button>
                       <Link
                         href={`/app/strategies/${userStrategy._id}`}
-                        // state={{ planId: userStrategy._id }}
                         className="flex-1"
                       >
                         <Button className="w-full" variant="outline">

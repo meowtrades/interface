@@ -20,9 +20,9 @@ import { StrategyChart } from "./StrategyChart";
 import { UserStrategy } from "./types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, Transaction } from "@/api";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Frequency } from "@/lib/types";
 import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -30,9 +30,12 @@ import { AxiosError } from "axios";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 export const StrategyOverview = () => {
-  const { strategyId: rawStrategyId } = useParams();
-  const strategyId = Array.isArray(rawStrategyId) ? rawStrategyId[0] : rawStrategyId;
+  const { id: rawStrategyId } = useParams();
+  const strategyId = Array.isArray(rawStrategyId)
+    ? rawStrategyId[0]
+    : rawStrategyId;
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
   const [_validRanges, setValidRanges] = useState<
     { label: string; value: string }[]
@@ -148,12 +151,11 @@ export const StrategyOverview = () => {
 
     // Set the default range in the search params if not already set
     if (!range) {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, range: ranges[0].value },
-      });
+      const searchParam = new URLSearchParams();
+      searchParam.set("range", ranges[0].value);
+      router.replace(`${pathname}?${searchParam.toString()}`);
     }
-  }, [userStrategy?.frequency, range, router]);
+  }, [range, router, userStrategy, pathname]);
 
   if (!strategyId || !userStrategy) {
     return <div>Loading...</div>;

@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, Suspense } from "react";
-import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -14,13 +14,13 @@ import { StrategyDetails } from "@/components/StrategyDetail/StrategyDetails";
 import { TransactionList } from "@/components/StrategyDetail/TransactionList";
 
 const StrategyDetailContent = () => {
-  const { strategyId } = useParams();
+  const { id: strategyId } = useParams();
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   // Check if we're viewing a user strategy or a general strategy template
-  const isUserStrategy = !!searchParams.get("planId") || searchParams.get("source") === "dashboard";
+  const isUserStrategy =
+    !!searchParams.get("planId") || searchParams.get("source") === "dashboard";
 
   const {
     data: userStrategy,
@@ -29,8 +29,8 @@ const StrategyDetailContent = () => {
   } = useQuery({
     queryKey: ["userStrategy", strategyId],
     queryFn: async () => {
-      if (!strategyId) throw new Error("Strategy ID is required");
       // const url = `/user/analytics/strategies/${strategyId}`;
+
       const {
         data: { data },
       } = await api.strategies.getDetails(strategyId as string);
@@ -45,12 +45,22 @@ const StrategyDetailContent = () => {
     }
   }, [isLoading, router, strategyId, userStrategy]);
 
-  if (isLoading || !userStrategy) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="space-y-4">
           <Skeleton className="h-8 w-64" />
           <Skeleton className="h-96 w-full" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!userStrategy) {
+    return (
+      <AppLayout>
+        <div className="p-4 bg-red-50 text-red-600 rounded-md">
+          Strategy not found
         </div>
       </AppLayout>
     );
@@ -83,14 +93,16 @@ const StrategyDetailContent = () => {
 
 const StrategyDetail = () => {
   return (
-    <Suspense fallback={
-      <AppLayout>
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-96 w-full" />
-        </div>
-      </AppLayout>
-    }>
+    <Suspense
+      fallback={
+        <AppLayout>
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </AppLayout>
+      }
+    >
       <StrategyDetailContent />
     </Suspense>
   );

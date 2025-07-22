@@ -9,9 +9,11 @@ import { useParams } from "next/navigation";
 import { api } from "@/api";
 
 export const StrategyDetails = () => {
-  const { strategyId: rawStrategyId } = useParams();
-  const strategyId = Array.isArray(rawStrategyId) ? rawStrategyId[0] : rawStrategyId;
-  
+  const { id: rawStrategyId } = useParams();
+  const strategyId = Array.isArray(rawStrategyId)
+    ? rawStrategyId[0]
+    : rawStrategyId;
+
   const { data: userStrategy } = useQuery<UserStrategy>({
     queryKey: ["userStrategy", strategyId],
     queryFn: async () => {

@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "../client";
+import { api } from "@/api";
 import {
   GranularityOption,
   TimeframeOption,
-} from "../types";
+} from "@/api";
 
 // Query keys for cache management
 export const USER_ANALYTICS_KEYS = {
@@ -40,78 +40,13 @@ export const USER_ANALYTICS_KEYS = {
   activities: () => [...USER_ANALYTICS_KEYS.all, "activities"] as const,
 };
 
-/**
- * Get user's performance history
- */
-export const useUserPerformanceHistory = (
-  timeframe: TimeframeOption = "30d",
-  granularity: GranularityOption = "daily"
-) => {
-  return useQuery({
-    queryKey: USER_ANALYTICS_KEYS.performance.history(timeframe, granularity),
-    queryFn: async () => {
-      const response = await api.analytics.getUserPerformanceHistory({
-        timeframe,
-        granularity,
-      });
-      return response.data;
-    },
-  });
-};
 
-/**
- * Get performance history for a specific strategy
- */
-export const useStrategyPerformanceHistory = (
-  strategyId: string,
-  timeframe: TimeframeOption = "30d",
-  granularity: GranularityOption = "daily"
-) => {
-  return useQuery({
-    queryKey: USER_ANALYTICS_KEYS.performance.strategy(
-      strategyId,
-      timeframe,
-      granularity
-    ),
-    queryFn: async () => {
-      const response = await api.analytics.getStrategyPerformanceHistory(
-        strategyId,
-        {
-          timeframe,
-          granularity,
-        }
-      );
-      return response.data;
-    },
-    enabled: !!strategyId,
-  });
-};
 
-/**
- * Get user statistics
- */
-export const useUserStatistics = () => {
-  return useQuery({
-    queryKey: USER_ANALYTICS_KEYS.statistics.user(),
-    queryFn: async () => {
-      const response = await api.analytics.getUserStatistics();
-      return response.data;
-    },
-  });
-};
 
-/**
- * Get platform-wide statistics
- */
-export const usePlatformStatistics = () => {
-  return useQuery({
-    queryKey: USER_ANALYTICS_KEYS.statistics.platform(),
-    queryFn: async () => {
-      const response = await api.analytics.getPlatformStatistics();
-      return response.data;
-    },
-  });
-};
+
+
+
+
 
 /**
  * Get user overview analytics
@@ -126,15 +61,4 @@ export const useUserOverview = () => {
   });
 };
 
-/**
- * Get user activities
- */
-export const useUserActivities = () => {
-  return useQuery({
-    queryKey: USER_ANALYTICS_KEYS.activities(),
-    queryFn: async () => {
-      const response = await api.analytics.getUserActivities();
-      return response.data.activities;
-    },
-  });
-};
+

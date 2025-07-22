@@ -77,21 +77,7 @@ export const gridVisualizationApi = {
 };
 
 // React Query Hooks
-export const useGridVisualization = (
-  planId: string,
-  options?: { enabled?: boolean; refetchInterval?: number }
-): UseQueryResult<GridVisualizationData, Error> => {
-  return useQuery({
-    queryKey: ["gridVisualization", planId],
-    queryFn: async () => {
-      const response = await gridVisualizationApi.getVisualization(planId);
-      return response.data.data;
-    },
-    enabled: options?.enabled !== false,
-    refetchInterval: options?.refetchInterval || 10000, // Refresh every 10 seconds
-    staleTime: 5000, // Consider data stale after 5 seconds
-  });
-};
+
 
 export const useAllGridVisualizations = (options?: {
   enabled?: boolean;

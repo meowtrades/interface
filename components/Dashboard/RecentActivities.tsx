@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api";
-import { cn, formatCurrency } from "@/lib/design-system";
+import { cn } from "@/lib/design-system";
 
 const RecentActivities = () => {
   const { data: activities } = useQuery({
     queryKey: ["recentActivities"],
     queryFn: async () => {
       // Simulate an API call
-      return (await api.analytics.getUserActivities()).data.activities;
+      return (await api.analytics.getUserActivities()).data.data;
     },
   });
 
@@ -80,21 +80,22 @@ const RecentActivities = () => {
                   day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
-                }).format(new Date(activity.timestamp));
+                }).format(new Date(activity.createdAt));
 
-                const isBuy = activity.type === "swap" || activity.type === "buy";
+                const isBuy =
+                  activity.type === "swap" || activity.type === "buy";
 
                 return (
                   <div
-                    key={activity.id}
+                    key={activity._id}
                     className="flex items-center justify-between p-6 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div
                         className={cn(
                           "w-12 h-12 rounded-full flex items-center justify-center",
-                          isBuy 
-                            ? "bg-success/10 text-success" 
+                          isBuy
+                            ? "bg-success/10 text-success"
                             : "bg-warning/10 text-warning"
                         )}
                       >
@@ -106,7 +107,7 @@ const RecentActivities = () => {
                       </div>
                       <div>
                         <div className="text-body font-medium text-foreground">
-                          {activity.description}
+                          {/* {activity.} */}
                         </div>
                         <div className="text-caption text-muted-foreground">
                           {formattedDate}
@@ -119,10 +120,13 @@ const RecentActivities = () => {
                       </div>
                       <div className="text-caption text-muted-foreground metric-display">
                         {/* Display metadata if available */}
-                        {activity.metadata && typeof activity.metadata === 'object' ? 
-                          JSON.stringify(activity.metadata).slice(0, 20) + '...' : 
-                          'No details'
-                        }
+                        {activity.from.amount.toFixed(4) +
+                          " " +
+                          activity.from.token}{" "}
+                        for{" "}
+                        {activity.to.amount.toFixed(4) +
+                          " " +
+                          activity.to.token}
                       </div>
                     </div>
                   </div>

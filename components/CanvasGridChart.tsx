@@ -8,7 +8,6 @@ import React, {
   useMemo,
 } from "react";
 import {
-  GridLineVisualization,
   GridVisualizationData,
 } from "@/api/hooks/useGridVisualization";
 

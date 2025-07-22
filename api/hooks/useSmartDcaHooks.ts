@@ -1,11 +1,8 @@
 /** @format */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../client";
-import {
-  CreateDcaPlanDto,
-  DcaPlan,
-} from "../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/api";
+import { CreateDcaPlanDto } from "@/api";
 import { toast } from "sonner";
 
 // Query keys for cache management
@@ -19,7 +16,7 @@ export const SMART_DCA_KEYS = {
 /**
  * Create a new DCA plan
  */
-export const useCreateDcaPlan = () => {
+export const useCreateInvestmentPlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -34,7 +31,7 @@ export const useCreateDcaPlan = () => {
         case "GRID":
           response = await api.plans.grid.create(planData);
           break;
-          
+
         default:
           throw new Error(`Unsupported strategy type: ${planData.strategyId}`);
       }
@@ -76,7 +73,7 @@ export const useStopDcaPlan = () => {
       return response.data;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "real"],
         exact: true,
       });
@@ -87,31 +84,6 @@ export const useStopDcaPlan = () => {
       });
 
       toast.success("Plan stopped successfully");
-    },
-  });
-};
-
-/**
- * Stop all DCA plans for a user
- */
-export const useStopAllDcaPlans = () => {
-  return useMutation({
-    mutationFn: async () => {
-      const response = await api.plans.stopAll();
-      return response.data;
-    },
-  });
-};
-
-/**
- * Get all DCA plans for a user
- */
-export const useUserDcaPlans = () => {
-  return useQuery({
-    queryKey: SMART_DCA_KEYS.plans(),
-    queryFn: async () => {
-      const response = await api.plans.getAll();
-      return response.data;
     },
   });
 };

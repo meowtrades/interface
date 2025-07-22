@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Info, RefreshCw, Grid, TrendingUp } from "lucide-react";
+import { RefreshCw, Grid, TrendingUp, ArrowRight } from "lucide-react";
 import { RiskLevel, Strategy, StrategyPerformance } from "@/lib/types";
 import StartStrategyDialog from "./StartStrategyDialog";
-import { FrequencyOption, useCreateDcaPlan } from "@/api";
+import { FrequencyOption, useCreateInvestmentPlan } from "@/api";
 import { authClient } from "@/lib/auth";
 import {
   Tooltip,
@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getLeapWalletAddress } from "@/lib/grants/wallet";
+import Link from "next/link";
 
 const IconMap: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw size={20} />,
@@ -71,7 +72,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
   // State for strategy dialog
   const [startDialogOpen, setStartDialogOpen] = useState(false);
 
-  const dcaMutation = useCreateDcaPlan();
+  const dcaMutation = useCreateInvestmentPlan();
 
   const { data: user } = authClient.useSession();
 
@@ -95,7 +96,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     console.log(data);
 
     const walletAddress = await getLeapWalletAddress();
-    
+
     await dcaMutation.mutateAsync({
       amount: amountPerDay,
       userWalletAddress: walletAddress,
@@ -217,13 +218,43 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
         >
           One Click Start
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           className="w-full"
           onClick={() => onViewDetails(strategy.id)}
         >
           View Details
-        </Button>
+        </Button> */}
+
+        {strategy.id === "SDCA" ? (
+          <a
+            href="https://github.com/meowtrades/strategies-core/tree/main/Smart%20DCA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full"
+          >
+            <Button variant="outline" className="w-full">
+              Learn how this works <ArrowRight size={14} />
+            </Button>
+          </a>
+        ) : strategy.id === "GRID" ? (
+          <a
+            href="https://github.com/meowtrades/strategies-core/tree/main/Automated%20Grid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full"
+          >
+            <Button variant="outline" className="w-full">
+              Learn how this works <ArrowRight size={14} />
+            </Button>
+          </a>
+        ) : (
+          <Link href="https://github.com/meowtrades/strategies-core/tree/main" target="_blank" rel="noopener noreferrer" className="w-full">
+            <Button variant="outline" className="w-full">
+              Learn how this works <ArrowRight size={14} />
+            </Button>
+          </Link>
+        )}
       </CardFooter>
 
       {/* Strategy Start Dialog */}
