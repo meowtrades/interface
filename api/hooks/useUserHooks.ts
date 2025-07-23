@@ -1,3 +1,5 @@
+/** @format */
+
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../client";
 
@@ -25,19 +27,10 @@ export const useCurrentUserXp = () => {
   return useQuery({
     queryKey: USER_KEYS.xp(),
     queryFn: async () => {
-      if (!currentUser?.address) return 0;
-      
-      const response = await api.xp.leaderboard();
-      const leaderboard = response.data;
-      
-      // Find current user in leaderboard by address
-      const currentUserEntry = leaderboard.find(
-        (entry) => entry.address === currentUser.address
-      );
-      
-      return currentUserEntry?.xp || 0;
+      const response = await api.xp.getUserXp();
+      return response.data.xp.xp;
     },
-    enabled: !!currentUser?.address,
+    enabled: !!currentUser,
     refetchOnWindowFocus: false,
   });
 };
