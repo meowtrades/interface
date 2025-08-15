@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api";
 import { CreateDcaPlanDto } from "@/api";
 import { toast } from "sonner";
+import { normalizeChainId } from "@/lib/utils";
 
 // Query keys for cache management
 export const SMART_DCA_KEYS = {
@@ -21,19 +22,25 @@ export const useCreateInvestmentPlan = () => {
 
   return useMutation({
     mutationFn: async (planData: CreateDcaPlanDto) => {
+      // Normalize chain ID for backend compatibility
+      const normalizedPlanData = {
+        ...planData,
+        chain: normalizeChainId(planData.chain),
+      };
+
       let response;
 
-      switch (planData.strategyId) {
+      switch (normalizedPlanData.strategyId) {
         case "SDCA":
-          response = await api.plans.create(planData);
+          response = await api.plans.create(normalizedPlanData);
           break;
 
         case "GRID":
-          response = await api.plans.grid.create(planData);
+          response = await api.plans.grid.create(normalizedPlanData);
           break;
 
         default:
-          throw new Error(`Unsupported strategy type: ${planData.strategyId}`);
+          throw new Error(`Unsupported strategy type: ${normalizedPlanData.strategyId}`);
       }
 
       if (!response.data) {
