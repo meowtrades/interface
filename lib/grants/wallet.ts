@@ -49,7 +49,7 @@ export const getMetaMaskWalletAddress = async () => {
     wallet: Wallet.Metamask,
     strategies: {},
     ethereumOptions: {
-      ethereumChainId: EthereumChainId.Injective,
+      ethereumChainId: EthereumChainId.TestnetEvm,
     },
   });
 
