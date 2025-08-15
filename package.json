@@ -78,18 +78,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-<<<<<<< Updated upstream
-    "eslint-config-next": "15.4.1",
-    "prettier": "^3.6.2",
-    "tailwindcss": "^4.1.11",
-||||||| Stash base
-    "eslint-config-next": "15.4.1",
-    "tailwindcss": "^4.1.11",
-=======
     "eslint-config-next": "15.4.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.12",
->>>>>>> Stashed changes
     "typescript": "^5"
   },
   "overrides": {
