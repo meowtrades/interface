@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Strategy, Frequency, RiskLevel } from "@/lib/types";
 import {
   RefreshCw,
@@ -38,6 +39,7 @@ import WalletPicker from "./WalletPicker";
 import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
+import { formatFrequency } from "@/lib/utils";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -115,6 +117,7 @@ const StartStrategyDialog = ({
   const [slippage, setSlippage] = useState(-1); // Default to -1 for auto slippage
   const [showSuccess, setShowSuccess] = useState(false);
   const [isRecipientAddressValid, setIsRecipientAddressValid] = useState(false);
+  const [useMyAddress, setUseMyAddress] = useState(true); // Default checked
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -128,6 +131,9 @@ const StartStrategyDialog = ({
       setFrequency(Frequency.DAILY);
       setRiskLevel(RiskLevel.MEDIUM_RISK);
       setShowSuccess(false);
+      setUseMyAddress(true); // Reset to default checked
+      setRecipientAddress("");
+      setIsRecipientAddressValid(false);
     }
   }, [strategy, defaultToken]);
 
@@ -137,6 +143,15 @@ const StartStrategyDialog = ({
       setShowSuccess(false);
     }
   }, [open]);
+
+  // Handle wallet address when using "my address"
+  useEffect(() => {
+    if (useMyAddress && chain) {
+    } else if (!useMyAddress) {
+      setRecipientAddress("");
+      setIsRecipientAddressValid(false);
+    }
+  }, [useMyAddress, chain]);
 
   // Get color scheme based on strategy type
   const colorScheme = ColorMap[strategy.type] || {
@@ -190,6 +205,17 @@ const StartStrategyDialog = ({
       toast.error("Please enter a valid amount");
       return;
     }
+
+    // Validate recipient address for SDCA strategy
+    if (strategy.id === "SDCA") {
+      // Only validate if not using "my address" - when using "my address",
+      // the wallet connection will provide the address
+      if (!useMyAddress && (!recipientAddress || !isRecipientAddressValid)) {
+        toast.error("Please enter a valid recipient address");
+        return;
+      }
+    }
+
     try {
       // Start the strategy
       await onStartStrategy({
@@ -272,8 +298,7 @@ const StartStrategyDialog = ({
                     </h3>
                     <p className="text-sm text-green-600">
                       {getRiskLevelDisplayName(riskLevel)} risk •{" "}
-                      {frequency.charAt(0).toUpperCase() + frequency.slice(1)}{" "}
-                      frequency
+                      {formatFrequency(frequency)} frequency
                     </p>
                   </div>
                 </div>
@@ -430,10 +455,10 @@ const StartStrategyDialog = ({
                       onValueChange={(value: string) => setChain(value)}
                     >
                       <SelectTrigger
-                        id="frequency"
+                        id="chain"
                         className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                       >
-                        <SelectValue placeholder="Select frequency" />
+                        <SelectValue placeholder="Select chain" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-2 shadow-lg">
                         <SelectGroup>
@@ -460,6 +485,43 @@ const StartStrategyDialog = ({
                     </Select>
                   </div>
                 </div>
+                <div>
+                  <Label
+                    htmlFor="frequency"
+                    className="text-sm font-semibold text-contrast-high"
+                  >
+                    Frequency
+                  </Label>
+                  <Select
+                    value={frequency}
+                    onValueChange={(value: string) =>
+                      setFrequency(value as Frequency)
+                    }
+                  >
+                    <SelectTrigger
+                      id="frequency"
+                      className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    >
+                      <SelectValue placeholder="Select frequency" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-2 shadow-lg">
+                      <SelectGroup>
+                        <SelectLabel className="text-contrast-medium font-semibold">
+                          Frequency
+                        </SelectLabel>
+                        {frequencyOptions.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            className="text-contrast-high font-medium"
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {strategy.id === "SDCA" && (
                   <div>
                     <Label
@@ -468,41 +530,75 @@ const StartStrategyDialog = ({
                     >
                       Recipient Address
                     </Label>
-                    <div className="flex space-x-2 mt-1">
-                      <Input
-                        id="recipient"
-                        type="text"
-                        className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
-                          isRecipientAddressValid
-                            ? "border-green-500 focus:ring-green-200"
-                            : "border-red-500 focus:ring-red-200"
-                        } focus:ring-2`}
-                        placeholder="Enter recipient address"
-                        value={recipientAddress}
-                        onChange={(e) => {
-                          setRecipientAddress(e.target.value);
-
-                          if (!validateInjecitveWalletAddress(e.target.value)) {
-                            setIsRecipientAddressValid(false);
-                            return;
+                    <div className="space-y-3 mt-1">
+                      {/* Checkbox for "Use my address" */}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="use-my-address"
+                          checked={useMyAddress}
+                          onCheckedChange={(checked) =>
+                            setUseMyAddress(checked as boolean)
                           }
+                          className="border-2"
+                        />
+                        <Label
+                          htmlFor="use-my-address"
+                          className="text-sm font-medium text-contrast-high cursor-pointer"
+                        >
+                          Use my wallet address
+                        </Label>
+                      </div>
 
-                          setIsRecipientAddressValid(true);
-                        }}
-                      />
-                      <WalletAddressPicker
-                        chain={chain}
-                        onAddressSelected={(addr) => {
-                          setRecipientAddress(addr);
-                          if (validateInjecitveWalletAddress(addr)) {
-                            setIsRecipientAddressValid(true);
-                          }
-                        }}
-                      >
-                        <Button variant="secondary" className="font-medium">
-                          Use My Address
-                        </Button>
-                      </WalletAddressPicker>
+                      {/* Input field shown only when checkbox is unchecked */}
+                      {!useMyAddress && (
+                        <div className="flex space-x-2">
+                          <Input
+                            id="recipient"
+                            type="text"
+                            className={`flex-1 border-2 bg-white text-contrast-high font-medium ${
+                              isRecipientAddressValid
+                                ? "border-green-500 focus:ring-green-200"
+                                : "border-red-500 focus:ring-red-200"
+                            } focus:ring-2`}
+                            placeholder="Enter recipient address"
+                            value={recipientAddress || ""}
+                            onChange={(e) => {
+                              setRecipientAddress(e.target.value);
+
+                              if (
+                                !validateInjecitveWalletAddress(e.target.value)
+                              ) {
+                                setIsRecipientAddressValid(false);
+                                return;
+                              }
+
+                              setIsRecipientAddressValid(true);
+                            }}
+                          />
+                          <WalletAddressPicker
+                            chain={chain}
+                            onAddressSelected={(addr) => {
+                              setRecipientAddress(addr);
+                              if (validateInjecitveWalletAddress(addr)) {
+                                setIsRecipientAddressValid(true);
+                              }
+                            }}
+                          >
+                            <Button variant="secondary" className="font-medium">
+                              Pick Address
+                            </Button>
+                          </WalletAddressPicker>
+                        </div>
+                      )}
+
+                      {/* Show wallet address when using my address */}
+                      {useMyAddress && recipientAddress && (
+                        <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                          <p className="text-sm text-green-700 font-medium">
+                            Using wallet address: {recipientAddress}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -582,10 +678,23 @@ const StartStrategyDialog = ({
                 Cancel
               </Button>
               <WalletPicker
-                disabled={!isRecipientAddressValid && strategy.id === "SDCA"}
+                disabled={
+                  strategy.id === "SDCA" &&
+                  !useMyAddress &&
+                  !isRecipientAddressValid
+                }
                 callback={handleSubmit}
                 enteredBalance={parseFloat(amount)}
                 chain={chain}
+                useMyAddress={strategy.id === "SDCA" ? useMyAddress : false}
+                onWalletAddressReceived={(address) => {
+                  if (strategy.id === "SDCA" && useMyAddress) {
+                    setRecipientAddress(address);
+                    setIsRecipientAddressValid(
+                      validateInjecitveWalletAddress(address)
+                    );
+                  }
+                }}
               />
             </DialogFooter>
           </>

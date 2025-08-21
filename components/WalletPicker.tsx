@@ -14,23 +14,71 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { MANAGEMENT_FEE } from "@/lib/constants";
 import Image from "next/image";
+import { WalletStrategy } from "@injectivelabs/wallet-strategy";
+import { Wallet } from "@injectivelabs/wallet-base";
+import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
+import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
 
 const WalletPicker = ({
   callback,
   disabled = false,
   enteredBalance,
   chain = "injective", // Default to injective chain
+  useMyAddress = false,
+  onWalletAddressReceived,
 }: {
   callback: (data: unknown) => Promise<void>;
   disabled?: boolean;
   enteredBalance?: number;
   chain?: string;
+  useMyAddress?: boolean;
+  onWalletAddressReceived?: (address: string) => void;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isWalletGrantPending, setisWalletGrantPending] = useState(false);
 
   // Get wallets based on the selected chain
   const walletsForChain = getAvailableWalletsForChain(chain);
+
+  // Function to get wallet address for "use my address" functionality
+  const getWalletAddress = async (walletName: string): Promise<string> => {
+    let walletType: Wallet;
+
+    switch (walletName) {
+      case "Keplr":
+        walletType = Wallet.Keplr;
+        break;
+      case "Leap":
+        walletType = Wallet.Leap;
+        break;
+      case "MetaMask":
+        walletType = Wallet.Metamask;
+        break;
+      default:
+        throw new Error(`Unknown wallet: ${walletName}`);
+    }
+
+    const walletStrategy = new WalletStrategy({
+      chainId: ChainId.Testnet,
+      wallet: walletType,
+      strategies: {},
+      ...(walletType === Wallet.Metamask && {
+        ethereumOptions: {
+          ethereumChainId: EthereumChainId.Injective,
+        },
+      }),
+    });
+
+    await walletStrategy.enable();
+    const [address] = await walletStrategy.getAddresses();
+
+    // For MetaMask, convert to Injective address
+    if (walletType === Wallet.Metamask) {
+      return getInjectiveAddress(address);
+    }
+
+    return address;
+  };
 
   return (
     <Dialog open={isWalletGrantPending} onOpenChange={setisWalletGrantPending}>
@@ -61,6 +109,15 @@ const WalletPicker = ({
                     try {
                       setIsLoading(true);
                       setisWalletGrantPending(true);
+
+                      // If useMyAddress is true, first get the wallet address
+                      if (useMyAddress && onWalletAddressReceived) {
+                        const walletAddress = await getWalletAddress(
+                          wallet.name
+                        );
+                        onWalletAddressReceived(walletAddress);
+                      }
+
                       await wallet.action(enteredBalance || 0);
                       setisWalletGrantPending(false);
                       toast.success(`Permission granted for ${wallet.name}`);

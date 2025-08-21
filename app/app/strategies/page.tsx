@@ -53,7 +53,7 @@ const StrategiesContent = () => {
   const tab = searchParams.get("tab") || "available";
   const [simulationDialogOpen, setSimulationDialogOpen] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
-    null,
+    null
   );
 
   const stopDcaPlanMutation = useStopDcaPlan();
@@ -88,7 +88,7 @@ const StrategiesContent = () => {
     refetchOnWindowFocus: false,
   });
 
-  // console.log("activeStrategiesAnalytics", activeMockStrategiesAnalytics);
+  // console.log("activeStrategiesAnalytics", activeRealStrategiesAnalytics);
 
   const { data: trendingStrategyId } = useQuery({
     queryKey: ["trendingStrategyId"],
