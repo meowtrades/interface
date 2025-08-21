@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Zap, TrendingUp, PawPrint } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
 const Navbar = () => {
@@ -21,52 +21,94 @@ const Navbar = () => {
 
   const getAppText = () => {
     if (isPending) return "Loading...";
-    return user ? "Go to Dashboard" : "Launch App";
+    return user ? "Dashboard" : "Launch App";
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-3 bg-white shadow-sm border-b border-slate-100">
-      <div className="container mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Meowtrades Logo" className="w-[200px]" />
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      {/* Glassmorphism Background */}
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg"></div>
+
+      <div className="container mx-auto flex items-center justify-between relative z-10">
+        <Link
+          href="/"
+          className="flex items-center gap-2 hover-lift transition-all duration-300"
+        >
+          <img
+            src="/logo.png"
+            alt="Meowtrades Logo"
+            className="w-[180px] h-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          <div className="flex gap-3">
-            <Link href={getAppLink()}>
-              <Button
-                size="lg"
-                className="text-md bg-gradient-to-r from-meow-paw to-meow-tabby hover:opacity-90 text-white rounded-lg"
-                disabled={isPending}
-              >
-                {getAppText()}
-              </Button>
-            </Link>
-          </div>
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/app/paper-trades">
+            <Button
+              variant="outline"
+              size="sm"
+              className="group border-2 border-blue-100 bg-blue-50/50 hover:bg-blue-100/80 text-blue-600 hover:text-blue-700 rounded-xl px-4 py-2 transition-all duration-300 hover-lift shadow-sm hover:shadow-md"
+            >
+              <TrendingUp className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+              Try Demo
+            </Button>
+          </Link>
+
+          <Link href={getAppLink()}>
+            <Button
+              size="sm"
+              className="group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl px-5 py-2 shadow-lg hover:shadow-xl transition-all duration-300 hover-lift font-medium"
+              disabled={isPending}
+            >
+              {isPending ? (
+                "Loading..."
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+                  {getAppText()}
+                </>
+              )}
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden p-2 rounded-md text-slate-600"
+          className="md:hidden p-2 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 text-gray-700 hover:bg-white/80 transition-all duration-200 hover-lift shadow-sm"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 p-4 bg-white shadow-lg border-t border-slate-100 animate-fade-in">
-          <div className="flex flex-col gap-4">
-            <Link
-              href={getAppLink()}
-              className={`px-4 py-2 bg-gradient-to-r from-meow-paw to-meow-tabby text-white rounded-md text-center font-medium ${
-                isPending ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              {getAppText()}
+        <div className="md:hidden absolute top-full left-0 right-0 mt-2 mx-6 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-white/20 animate-fade-in overflow-hidden">
+          <div className="p-6 space-y-3">
+            <Link href="/app/paper-trades" onClick={() => setIsOpen(false)}>
+              <Button
+                variant="outline"
+                className="w-full group border-2 border-blue-100 bg-blue-50/50 hover:bg-blue-100/80 text-blue-600 hover:text-blue-700 rounded-xl py-3 transition-all duration-300"
+              >
+                <TrendingUp className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+                Try Demo
+              </Button>
+            </Link>
+
+            <Link href={getAppLink()} onClick={() => setIsOpen(false)}>
+              <Button
+                className="w-full group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl py-3 shadow-lg transition-all duration-300 font-medium"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  "Loading..."
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+                    {getAppText()}
+                  </>
+                )}
+              </Button>
             </Link>
           </div>
         </div>
