@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Menu, X, Zap, TrendingUp, PawPrint } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { authClient } from "@/lib/auth";
 
 const Navbar = () => {
@@ -42,32 +42,14 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
-          <Link href="/app/paper-trades">
-            <Button
-              variant="outline"
-              size="sm"
-              className="group border-2 border-blue-100 bg-blue-50/50 hover:bg-blue-100/80 text-blue-600 hover:text-blue-700 rounded-xl px-4 py-2 transition-all duration-300 hover-lift shadow-sm hover:shadow-md"
-            >
-              <TrendingUp className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
-              Try Demo
-            </Button>
-          </Link>
-
+        <div className="hidden md:flex items-center">
           <Link href={getAppLink()}>
             <Button
               size="sm"
               className="group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl px-5 py-2 shadow-lg hover:shadow-xl transition-all duration-300 hover-lift font-medium"
               disabled={isPending}
             >
-              {isPending ? (
-                "Loading..."
-              ) : (
-                <>
-                  <Zap className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
-                  {getAppText()}
-                </>
-              )}
+              {isPending ? "Loading..." : getAppText()}
             </Button>
           </Link>
         </div>
@@ -84,30 +66,13 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 mx-6 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-white/20 animate-fade-in overflow-hidden">
-          <div className="p-6 space-y-3">
-            <Link href="/app/paper-trades" onClick={() => setIsOpen(false)}>
-              <Button
-                variant="outline"
-                className="w-full group border-2 border-blue-100 bg-blue-50/50 hover:bg-blue-100/80 text-blue-600 hover:text-blue-700 rounded-xl py-3 transition-all duration-300"
-              >
-                <TrendingUp className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
-                Try Demo
-              </Button>
-            </Link>
-
+          <div className="p-6">
             <Link href={getAppLink()} onClick={() => setIsOpen(false)}>
               <Button
                 className="w-full group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl py-3 shadow-lg transition-all duration-300 font-medium"
                 disabled={isPending}
               >
-                {isPending ? (
-                  "Loading..."
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
-                    {getAppText()}
-                  </>
-                )}
+                {isPending ? "Loading..." : getAppText()}
               </Button>
             </Link>
           </div>
