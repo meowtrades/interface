@@ -65,7 +65,8 @@ const PaperTradeInputForm = () => {
             : riskLevel === 2
               ? "medium_risk"
               : "high_risk",
-        slippage: 0.5, // Default slippage for paper trading
+        slippage: 0.5, // Default slippage for paper trading,
+        env: "paper",
       });
 
       toast.success("Paper Trade Started!", {
@@ -128,7 +129,7 @@ const PaperTradeInputForm = () => {
         (s) =>
           s.id === "SDCA" ||
           s.id === "S-DCA" ||
-          (s.name && s.name.toLowerCase().includes("dca")),
+          (s.name && s.name.toLowerCase().includes("dca"))
       );
       setSelectedStrategy(sdcaStrategy ? sdcaStrategy.id : strategies[0].id);
     }
