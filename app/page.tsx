@@ -91,7 +91,7 @@ const Index = () => {
     },
     {
       icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
-      title: "Risk-Free Mock Trading",
+      title: "Risk-Free Paper Trading",
       description:
         "Practice with virtual funds before risking real money. Perfect your strategy in a safe environment.",
     },
