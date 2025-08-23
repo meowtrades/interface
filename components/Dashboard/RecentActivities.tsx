@@ -42,12 +42,12 @@ const RecentActivities = () => {
             Your latest trading activities and transactions
           </p>
         </div>
-        <Link
+        {/* <Link
           href="/app/history"
           className="text-primary hover:text-primary/80 text-caption font-medium flex items-center gap-1 transition-colors"
         >
           View all <ArrowRight size={16} />
-        </Link>
+        </Link> */}
       </div>
 
       {activities.length === 0 ? (
