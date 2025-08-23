@@ -654,6 +654,7 @@ const StartStrategyDialog = ({
                     onValueChange={(values: number[]) => setSlippage(values[0])}
                     className="py-2"
                   />
+                  <span className="text-xs text-contrast-medium mt-2 font-medium">(max: 10%)</span>
                   <p className="text-xs text-contrast-medium mt-2 font-medium">
                     {slippage === -1 &&
                       "Auto slippage will be applied based on risk level."}
