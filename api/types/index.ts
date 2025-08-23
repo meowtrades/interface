@@ -192,6 +192,7 @@ export type CreateDcaPlanDto = {
   strategyId: string;
   slippage: number;
   riskLevel: "no_risk" | "low_risk" | "medium_risk" | "high_risk";
+  env?: "paper" | "live";
 };
 
 export type DcaPlan = {

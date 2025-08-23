@@ -47,7 +47,7 @@ const strategies: Strategy[] = [
       "Buy more when prices dip, less when they rise",
     ],
     supportedChains: ["injective", "injective-evm"],
-    supportedTokens: ["inj", "usdt"],
+    supportedTokens: ["inj"],
     performance: {
       inj: {
         sixMonths: 18.3,

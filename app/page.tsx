@@ -91,7 +91,7 @@ const Index = () => {
     },
     {
       icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
-      title: "Risk-Free Mock Trading",
+      title: "Risk-Free Paper Trading",
       description:
         "Practice with virtual funds before risking real money. Perfect your strategy in a safe environment.",
     },
@@ -464,7 +464,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/app/paper-trades">
                 <Button className="group bg-white text-blue-600 hover:bg-white/95 px-6 py-4 text-base rounded-xl shadow-3d hover:shadow-3d-hover hover-lift">
-                  Try Mock Trading
+                  Try Paper Trading
                   <TrendingUp className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
