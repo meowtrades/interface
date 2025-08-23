@@ -74,17 +74,33 @@ const PaperTradeInputForm = () => {
         duration: 5000,
       });
 
-      // Invalidate all related queries for real-time updates
+      // Reset form fields after successful creation
+      setAmount("10");
+      setSelectedToken("");
+      setSelectedStrategy("");
+      setRiskLevel(2);
+      setFrequency(Frequency.DAILY);
+
+      // Immediately invalidate and refetch queries for instant UI update
       await Promise.all([
+        // Primary query for active paper trades - force refetch
         queryClient.invalidateQueries({
           queryKey: ["activeStrategiesAnalytics", "mock"],
         }),
+        queryClient.refetchQueries({
+          queryKey: ["activeStrategiesAnalytics", "mock"],
+        }),
+        // Additional related queries
         queryClient.invalidateQueries({
           queryKey: ["user", "analytics", "overview"],
         }),
         queryClient.invalidateQueries({ queryKey: ["recentActivities"] }),
         queryClient.invalidateQueries({
           queryKey: ["user", "analytics", "activities"],
+        }),
+        // Invalidate all strategy-related queries
+        queryClient.invalidateQueries({
+          queryKey: ["activeStrategiesAnalytics"],
         }),
       ]);
     } catch (error) {

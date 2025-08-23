@@ -74,6 +74,7 @@ const ActivePaperTrades = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    staleTime: 0, // Always consider data stale for fresh updates
   });
 
   return (
@@ -99,7 +100,7 @@ const ActivePaperTrades = () => {
                 className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-card transition-all duration-200 hover:shadow-card-hover"
                 onClick={() => {
                   const startTradeSection = document.querySelector(
-                    "[data-start-trade-section]",
+                    "[data-start-trade-section]"
                   );
                   if (startTradeSection) {
                     startTradeSection.scrollIntoView({ behavior: "smooth" });
