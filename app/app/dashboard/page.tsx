@@ -20,7 +20,7 @@ const DashboardContent = () => {
   const error = strategiesError || walletsError;
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const shouldShowPopup =
         localStorage.getItem("showStrategyPopup") === "true";
       if (shouldShowPopup) {
@@ -37,7 +37,9 @@ const DashboardContent = () => {
   if (error) {
     return (
       <div className="p-6 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
-        <h3 className="text-subtitle font-semibold mb-2">Error loading dashboard data</h3>
+        <h3 className="text-subtitle font-semibold mb-2">
+          Error loading dashboard data
+        </h3>
         <p className="text-body">{error}</p>
       </div>
     );
@@ -46,11 +48,11 @@ const DashboardContent = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">
           Dashboard
         </h1>
-      </div>
+      </div> */}
 
       <StrategyPopup
         open={showStrategyPopup}

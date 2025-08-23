@@ -144,14 +144,14 @@ const PaperTradeInputForm = () => {
   }, [tokens, selectedToken]);
 
   return (
-    <Card className="w-full lg:w-1/3 shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
+    <Card className="w-full lg:w-full shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
       <CardHeader className="pb-4 pt-6 px-6">
         <CardTitle className="text-xl font-bold text-contrast-high">
-          Start a Paper Trade
+          Enter Details
         </CardTitle>
-        <CardDescription className="text-contrast-medium">
+        {/* <CardDescription className="text-contrast-medium">
           Simulate how a strategy would perform with virtual funds
-        </CardDescription>
+        </CardDescription> */}
       </CardHeader>
       <CardContent className="space-y-6 px-6">
         <div>
@@ -167,9 +167,9 @@ const PaperTradeInputForm = () => {
             className="focus:border-blue-500 focus:ring-2 focus:ring-blue-200 border-2 bg-white text-contrast-high font-medium"
             placeholder="Enter amount"
           />
-          <p className="text-xs text-contrast-medium mt-2">
-            Default mock amount is $10
-          </p>
+          {/* <p className="text-xs text-contrast-medium mt-2">
+              Default mock amount is $10
+            </p> */}
         </div>
 
         <div>
@@ -276,13 +276,13 @@ const PaperTradeInputForm = () => {
           </Select>
         </div>
 
-        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 text-contrast-high">
+        {/* <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 text-contrast-high">
           <AlertCircle size={20} className="text-blue-600 flex-shrink-0" />
           <p className="text-sm font-medium">
             This is a simulation using historical data. Past performance does
             not guarantee future results.
           </p>
-        </div>
+        </div> */}
       </CardContent>
 
       <CardFooter className="px-6 pt-2 pb-6">
@@ -297,7 +297,7 @@ const PaperTradeInputForm = () => {
             isStrategiesLoading ||
             isTokensLoading
           }
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
+          className="w-full  disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
         >
           {createDcaPlanMutation.isPending
             ? "Starting Paper Trade..."

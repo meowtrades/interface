@@ -25,7 +25,7 @@ const MockTrades = () => {
         data-start-trade-section
       >
         <PaperTradeInputForm />
-        <SampleChart />
+        {/* <SampleChart /> */}
       </div>
 
       <h2 className="text-xl font-semibold">Your Paper Trades</h2>
