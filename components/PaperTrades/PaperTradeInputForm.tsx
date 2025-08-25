@@ -54,13 +54,14 @@ const PaperTradeInputForm = () => {
       await createDcaPlanMutation.mutateAsync({
         amount: Number(amount),
         userWalletAddress: walletAddress,
-        frequency: frequency,
+        frequency: isGridStrategy ? Frequency.WEEKLY : frequency,
         tokenSymbol: selectedToken,
         strategyId: selectedStrategy,
         recipientAddress: walletAddress,
         chain: "mock", // This is the key - marks it as paper trading
-        riskLevel:
-          riskLevel === 1
+        riskLevel: isGridStrategy
+          ? "medium_risk"
+          :riskLevel === 1
             ? "no_risk"
             : riskLevel === 2
               ? "medium_risk"
@@ -136,6 +137,13 @@ const PaperTradeInputForm = () => {
       },
     ],
   });
+
+  //Check for Grid Strategy
+  const isGridStrategy = strategies?.find(
+    (s) => s.id === selectedStrategy
+  )?.name
+    ?.toLowerCase()
+    .includes("grid");
 
   // Set default selections when data loads
   useEffect(() => {
@@ -247,7 +255,8 @@ const PaperTradeInputForm = () => {
             </SelectContent>
           </Select>
         </div>
-
+        {/* ✅ Show these fields ONLY if not grid */}
+        {!isGridStrategy && (      
         <div>
           <label className="text-sm font-semibold block mb-2 text-contrast-high">
             Risk Level
@@ -266,7 +275,9 @@ const PaperTradeInputForm = () => {
             <span>Aggressive</span>
           </div>
         </div>
-
+        )}
+        {/* ✅ Show these fields ONLY if not grid */}
+        {!isGridStrategy && (
         <div>
           <label className="text-sm font-semibold block mb-2 text-contrast-high">
             Frequency
@@ -291,6 +302,7 @@ const PaperTradeInputForm = () => {
             </SelectContent>
           </Select>
         </div>
+        )}
 
         {/* <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 text-contrast-high">
           <AlertCircle size={20} className="text-blue-600 flex-shrink-0" />
