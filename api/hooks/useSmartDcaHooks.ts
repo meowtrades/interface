@@ -1,5 +1,4 @@
 /** @format */
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api";
 import { CreateDcaPlanDto } from "@/api";
@@ -34,11 +33,9 @@ export const useCreateInvestmentPlan = () => {
         case "SDCA":
           response = await api.plans.create(normalizedPlanData);
           break;
-
         case "GRID":
           response = await api.plans.grid.create(normalizedPlanData);
           break;
-
         default:
           throw new Error(`Unsupported strategy type: ${normalizedPlanData.strategyId}`);
       }
@@ -46,16 +43,21 @@ export const useCreateInvestmentPlan = () => {
       if (!response.data) {
         throw new Error("Failed to create DCA plan");
       }
+
+      // ✅ return created plan
+      return response.data;
     },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: ["activeStrategiesAnalytics", "real"],
-        exact: true,
-      });
-      await queryClient.resetQueries({
-        queryKey: ["activeStrategiesAnalytics", "real"],
-        exact: true,
-      });
+    onSuccess: async (_data, variables) => {
+      // If it's paper trade → refresh mock queries
+      if (variables.env === "paper") {
+        await queryClient.invalidateQueries({
+          queryKey: ["activeStrategiesAnalytics", "mock"],
+        });
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: ["activeStrategiesAnalytics", "real"],
+        });
+      }
 
       toast.success("DCA plan created successfully");
     },
@@ -79,15 +81,13 @@ export const useStopDcaPlan = () => {
       console.log(response);
       return response.data;
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, planId) => {
+      // refresh both caches (mock or real depending on plan)
       await queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "real"],
-        exact: true,
       });
-
-      await queryClient.refetchQueries({
-        queryKey: ["activeStrategiesAnalytics", "real"],
-        exact: true,
+      await queryClient.invalidateQueries({
+        queryKey: ["activeStrategiesAnalytics", "mock"],
       });
 
       toast.success("Plan stopped successfully");
