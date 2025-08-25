@@ -218,16 +218,17 @@ const StartStrategyDialog = ({
 
     try {
       // Start the strategy
-      await onStartStrategy({
-        strategyId: strategy.id,
-        tokenId,
-        chain,
-        amount: amountNum,
-        frequency,
-        recipientAddress,
-        slippage, // Default to -1 for auto slippage
-        riskLevel,
-      }); // Show success toast
+       onStartStrategy:( data:{
+        strategyId: string;
+        tokenId: string;
+        chain: string;
+        amount: number;
+        frequency: FrequencyOption;
+        recipientAddress?: string;
+        slippage: number;  // Default to -1 for auto slippage
+        riskLevel?: RiskLevel;
+        walletName:string
+      })=> Promise<void>; // Show success toast
       toast.success("🎉 Strategy successfully activated!", {
         description: `Your ${strategy.name} strategy is now running with $${amountNum} investment.`,
         duration: 4000,
