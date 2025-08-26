@@ -28,6 +28,8 @@ import { getValidRanges } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { useStopDcaPlan } from "@/api";
+import { toast } from "sonner";
 
 export const StrategyOverview = () => {
   const { id: rawStrategyId } = useParams();
@@ -41,6 +43,7 @@ export const StrategyOverview = () => {
     { label: string; value: string }[]
   >([]);
   const range = searchParams.get("range");
+  const stopPlanMutation = useStopDcaPlan();
 
   const {
     data: userStrategy,
@@ -189,6 +192,23 @@ export const StrategyOverview = () => {
 
   const colorScheme = getColorScheme();
 
+  const handleAction = async (action: "stop" | "close") => {
+    try {
+      await stopPlanMutation.mutateAsync(strategyId);
+      toast.success(
+        action === "stop"
+          ? "Plan stopped successfully"
+          : "Position closed successfully"
+      );
+      if (action === "close") {
+        router.back(); // 👈 go back after close
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to perform action");
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg p-5 shadow-sm lg:col-span-2">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5">
@@ -242,8 +262,14 @@ export const StrategyOverview = () => {
             variant="outline"
             size="sm"
             className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() => handleAction("close")}
+            disabled={stopPlanMutation.isPending}
           >
-            Close Position
+            {stopPlanMutation.isPending ? (
+          <Loader2 size={14} className="animate-spin" />
+        ) : (
+          "Close Position"
+        )}
           </Button>
         </div>
       </div>
