@@ -26,7 +26,7 @@ import { formatFrequency } from "@/lib/utils";
 
 const PaperTradeInputForm = () => {
   const [amount, setAmount] = useState("10");
-  const [selectedToken, setSelectedToken] = useState("");
+  const [selectedBuyToken, setSelectedBuyToken] = useState("");
   const [selectedStrategy, setSelectedStrategy] = useState("");
   const [riskLevel, setRiskLevel] = useState(2); // Default moderate
   const [frequency, setFrequency] = useState(Frequency.DAILY); // Default frequency
@@ -67,8 +67,8 @@ const PaperTradeInputForm = () => {
         toast.error("Please select a strategy");
         return;
       }
-      if (!selectedToken) {
-        toast.error("Please select a token");
+      if (!selectedBuyToken) {
+        toast.error("Please select a buy token");
         return;
       }
       if (!amount || Number(amount) <= 0) {
@@ -78,15 +78,14 @@ const PaperTradeInputForm = () => {
 
       const walletAddress = await getLeapWalletAddress();
 
-      // ✅ mutation now returns the created plan
       const newPlan = await createDcaPlanMutation.mutateAsync({
         amount: Number(amount),
         userWalletAddress: walletAddress,
         frequency: isGridStrategy ? Frequency.WEEKLY : frequency,
-        tokenSymbol: selectedToken,
+        tokenSymbol: selectedBuyToken,
         strategyId: selectedStrategy,
         recipientAddress: walletAddress,
-        chain: "mock", // paper trade marker
+        chain: "mock",
         riskLevel: isGridStrategy
           ? "medium_risk"
           : riskLevel === 1
@@ -99,17 +98,16 @@ const PaperTradeInputForm = () => {
       });
 
       toast.success("Paper Trade Started!", {
-        description: `Started ${selectedStrategy} with $${amount} in ${selectedToken}`,
+        description: `Started ${selectedStrategy} with $${amount} from USDT → ${selectedBuyToken}`,
       });
 
       // Reset form
       setAmount("10");
-      setSelectedToken("");
+      setSelectedBuyToken("");
       setSelectedStrategy("");
       setRiskLevel(2);
       setFrequency(Frequency.DAILY);
 
-      // ✅ Optimistic cache update (instant UI update)
       queryClient.setQueryData(
         ["activeStrategiesAnalytics", "mock"],
         (oldData: any) => {
@@ -118,7 +116,6 @@ const PaperTradeInputForm = () => {
         }
       );
 
-      // ✅ Refetch analytics + activities to stay consistent
       await queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "mock"],
       });
@@ -151,13 +148,13 @@ const PaperTradeInputForm = () => {
     }
   }, [strategies, selectedStrategy]);
 
-  // Default token
+  // Default buy token
   useEffect(() => {
-    if (tokens && tokens.length > 0 && !selectedToken) {
+    if (tokens && tokens.length > 0 && !selectedBuyToken) {
       const injToken = tokens.find((t) => t.symbol === "INJ");
-      setSelectedToken(injToken ? injToken.symbol : tokens[0].symbol);
+      setSelectedBuyToken(injToken ? injToken.symbol : tokens[0].symbol);
     }
-  }, [tokens, selectedToken]);
+  }, [tokens, selectedBuyToken]);
 
   return (
     <Card className="w-full lg:w-full shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
@@ -212,31 +209,47 @@ const PaperTradeInputForm = () => {
           </Select>
         </div>
 
-        {/* Token */}
-        <div>
-          <label className="text-sm font-semibold block mb-2 text-contrast-high">
-            Token
-          </label>
-          <Select
-            value={selectedToken}
-            onValueChange={setSelectedToken}
-            disabled={isTokensLoading}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={
-                  isTokensLoading ? "Loading tokens..." : "Select token"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {tokens?.map((token) => (
-                <SelectItem key={token.symbol} value={token.symbol}>
-                  {token.name} ({token.symbol})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Sell + Buy Token Row */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Sell Token (always USDT) */}
+          <div>
+            <label className="text-sm font-semibold block mb-2 text-contrast-high">
+              Sell Token
+            </label>
+            <Select value="USDT" disabled>
+              <SelectTrigger className="w-full">
+                <SelectValue>USDT</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USDT">USDT</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Buy Token */}
+          <div>
+            <label className="text-sm font-semibold block mb-2 text-contrast-high">
+              Buy Token
+            </label>
+            <Select
+              value={selectedBuyToken}
+              onValueChange={setSelectedBuyToken}
+              disabled={isTokensLoading}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    isTokensLoading ? "Loading tokens..." : "Select token"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="INJ">
+                    INJ
+                  </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Risk + Frequency → only for non-grid */}
@@ -293,7 +306,7 @@ const PaperTradeInputForm = () => {
           disabled={
             createDcaPlanMutation.isPending ||
             !selectedStrategy ||
-            !selectedToken ||
+            !selectedBuyToken ||
             !amount ||
             Number(amount) <= 0 ||
             isStrategiesLoading ||
