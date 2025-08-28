@@ -97,6 +97,7 @@ interface StartStrategyDialogProps {
     chain: string;
     recipientAddress?: string;
     riskLevel?: RiskLevel;
+    selectedWallet?: string;
   }) => Promise<void>;
 }
 
@@ -198,7 +199,7 @@ const StartStrategyDialog = ({
         return "Moderate";
     }
   };
-  const handleSubmit = async () => {
+  const handleSubmit = async (selectedWallet?: string) => {
     // Validate amount
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
@@ -227,6 +228,7 @@ const StartStrategyDialog = ({
         recipientAddress,
         slippage, // Default to -1 for auto slippage
         riskLevel,
+        selectedWallet,
       }); // Show success toast
       toast.success("🎉 Strategy successfully activated!", {
         description: `Your ${strategy.name} strategy is now running with $${amountNum} investment.`,
@@ -684,7 +686,7 @@ const StartStrategyDialog = ({
                   !useMyAddress &&
                   !isRecipientAddressValid
                 }
-                callback={handleSubmit}
+                callback={(walletName) => handleSubmit((walletName as string) || undefined)}
                 enteredBalance={parseFloat(amount)}
                 chain={chain}
                 useMyAddress={strategy.id === "SDCA" ? useMyAddress : false}

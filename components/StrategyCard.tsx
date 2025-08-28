@@ -21,7 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getLeapWalletAddress } from "@/lib/grants/wallet";
+import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
 import Link from "next/link";
 
 const IconMap: Record<string, React.ReactNode> = {
@@ -57,8 +57,6 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     text: "text-gray-600",
   };
 
-  console.log(trending);
-
   // Get performance data for selected token or first available
   const performance = strategy.performance?.[selectedToken] ||
     (Object.values(strategy.performance || {})[0] as StrategyPerformance) || {
@@ -86,6 +84,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     recipientAddress?: string;
     riskLevel?: RiskLevel;
     chain: string;
+    selectedWallet?: string; // wallet chosen in WalletPicker
   }) => {
     if (!user?.user?.id) {
       throw new Error("User not authenticated");
@@ -93,9 +92,18 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
 
     const amountPerDay = data.amount;
 
-    console.log(data);
-
-    const walletAddress = await getLeapWalletAddress();
+    // resolve wallet address based on selected wallet
+    let walletAddress: string;
+    if (data.selectedWallet === "Keplr") {
+      walletAddress = await getKeplrAddress();
+    } else if (data.selectedWallet === "MetaMask") {
+      walletAddress = await getMetaMaskWalletAddress();
+    } else if (data.selectedWallet === "Leap" || !data.selectedWallet) {
+      // default/back-compat: Leap
+      walletAddress = await getLeapWalletAddress();
+    } else {
+      walletAddress = await getLeapWalletAddress();
+    }
 
     await dcaMutation.mutateAsync({
       amount: amountPerDay,
@@ -182,33 +190,6 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
         </div>
 
         <Separator className="my-4" />
-
-        {/* <div>
-          <div className="text-sm font-medium text-slate-700 mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <span>Historical Performance</span>
-              <Info size={14} className="text-slate-400" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-5 gap-3">
-            {[
-              { label: "1 Year", data: performance.year || 0 },
-              { label: "6 Months", data: performance.sixMonths || 0 },
-              { label: "3 Months", data: performance.threeMonths || 0 },
-              { label: "1 Month", data: performance.month || 0 },
-              { label: "7 Days", data: performance.week || 0 },
-            ].map((period, index) => (
-              <div
-                key={index}
-                className="bg-slate-50 p-3 rounded-lg text-center"
-              >
-                <div className="text-crypto-green font-medium text-lg">{`+${period.data}%`}</div>
-                <div className="text-xs text-slate-500">{period.label}</div>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 sm:flex-row">
