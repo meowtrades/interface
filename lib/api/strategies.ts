@@ -24,14 +24,6 @@ const tokens: Token[] = [
     chains: ["injective"],
     decimals: 18,
   },
-  {
-    id: "usdt",
-    symbol: "USDT",
-    name: "Tether USD",
-    icon: "/icons/usdt.svg",
-    chains: ["injective"],
-    decimals: 6,
-  },
 ];
 
 const strategies: Strategy[] = [

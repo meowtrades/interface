@@ -156,6 +156,8 @@ const PaperTradeInputForm = () => {
     }
   }, [tokens, selectedBuyToken]);
 
+  console.log('tokens:', tokens);
+
   return (
     <Card className="w-full lg:w-full shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
       <CardHeader className="pb-4 pt-6 px-6">
@@ -244,9 +246,11 @@ const PaperTradeInputForm = () => {
                 />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="INJ">
-                    INJ
+                {tokens?.map((token) => (
+                  <SelectItem key={token.symbol} value={token.symbol}>
+                    {token.symbol}
                   </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
