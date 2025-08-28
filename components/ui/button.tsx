@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -39,20 +40,53 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  loading?: boolean;
+  spinnerPosition?: "inline" | "right";
+  reserveSpinnerSpace?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading,
+      spinnerPosition = "inline",
+      reserveSpinnerSpace = false,
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
+    const isLoading = !!loading;
+    const isRight = spinnerPosition === "right";
+
     return (
       <Comp
         className={cn(
           buttonVariants({ variant, size, className }),
-          "cursor-pointer"
+          isRight ? "cursor-pointer relative" : "cursor-pointer"
         )}
         ref={ref}
+        aria-busy={isLoading || undefined}
+        disabled={disabled || isLoading}
         {...props}
-      />
+      >
+        {!isRight && isLoading ? <Loader2 className="animate-spin" /> : null}
+        {children}
+        {isRight && reserveSpinnerSpace ? (
+          <span className="ml-auto w-4 h-4 opacity-0" aria-hidden="true" />
+        ) : null}
+        {isRight && isLoading ? (
+          <span className="absolute right-2 inset-y-0 flex items-center pointer-events-none">
+            <Loader2 className="animate-spin" />
+          </span>
+        ) : null}
+      </Comp>
     );
   }
 );
