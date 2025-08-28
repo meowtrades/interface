@@ -8,6 +8,7 @@ import AppLayout from "@/components/AppLayout";
 import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
+import { api } from "@/api";
 import PortfolioOverview from "@/components/Dashboard/PortfolioOverview";
 import ActivePlans from "@/components/Dashboard/ActivePlans";
 import MockPlans from "@/components/Dashboard/MockPlans";

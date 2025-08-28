@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth";
+import { api } from "@/api";
 
 export default function AppPage() {
   const router = useRouter();

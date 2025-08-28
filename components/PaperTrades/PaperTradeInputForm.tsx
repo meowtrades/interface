@@ -108,11 +108,11 @@ const PaperTradeInputForm = () => {
       setRiskLevel(2);
       setFrequency(Frequency.DAILY);
 
-      queryClient.setQueryData(
+      queryClient.setQueryData<unknown[]>(
         ["activeStrategiesAnalytics", "mock"],
-        (oldData: any) => {
-          if (!oldData) return [newPlan];
-          return [...oldData, newPlan];
+        (oldData) => {
+          const existing = Array.isArray(oldData) ? oldData : [];
+          return [...existing, newPlan];
         }
       );
 
