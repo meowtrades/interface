@@ -3,16 +3,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import AppLayout from "@/components/AppLayout";
 import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { useWallet } from "@/lib/context/WalletContext";
+import { api } from "@/api";
 import PortfolioOverview from "@/components/Dashboard/PortfolioOverview";
 import ActivePlans from "@/components/Dashboard/ActivePlans";
 import MockPlans from "@/components/Dashboard/MockPlans";
 import RecentActivities from "@/components/Dashboard/RecentActivities";
 
 const DashboardContent = () => {
+  const queryClient = useQueryClient();
   const { error: strategiesError } = useStrategies();
   const { error: walletsError } = useWallet();
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
@@ -29,6 +32,60 @@ const DashboardContent = () => {
       }
     }
   }, []);
+
+  // Prefetch data for Live Strategies, Paper Trades, and Leaderboard to avoid repeated loading spinners on navigation
+  useEffect(() => {
+    const prefetch = async () => {
+      try {
+        await Promise.all([
+          // Active strategies analytics - mock (Paper Trades)
+          queryClient.prefetchQuery({
+            queryKey: ["activeStrategiesAnalytics", "mock"],
+            queryFn: async () => {
+              const {
+                data: { data },
+              } = await api.analytics.getActiveMockStrategies();
+              return data;
+            },
+            staleTime: 5 * 60 * 1000,
+          }),
+          // Active strategies analytics - real (Live)
+          queryClient.prefetchQuery({
+            queryKey: ["activeStrategiesAnalytics", "real"],
+            queryFn: async () => {
+              const {
+                data: { data },
+              } = await api.analytics.getActiveLiveStrategies();
+              return data;
+            },
+            staleTime: 5 * 60 * 1000,
+          }),
+          // Trending strategy id used on strategies page
+          queryClient.prefetchQuery({
+            queryKey: ["trendingStrategyId"],
+            queryFn: async () => {
+              const response = await api.available.getTrendingStrategy();
+              return response.data.strategy.id;
+            },
+            staleTime: 5 * 60 * 1000,
+          }),
+          // Leaderboard page data
+          queryClient.prefetchQuery({
+            queryKey: ["leaderboard"],
+            queryFn: async () => {
+              const response = await api.xp.leaderboard();
+              return response.data;
+            },
+            staleTime: 5 * 60 * 1000,
+          }),
+        ]);
+      } catch (e) {
+        // Silent failure; dashboard UI already handles error states
+      }
+    };
+
+    prefetch();
+  }, [queryClient]);
 
   const handleStrategyStart = () => {
     // In a real app, this would call the API to start a strategy

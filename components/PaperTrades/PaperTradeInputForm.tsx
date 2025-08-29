@@ -108,11 +108,11 @@ const PaperTradeInputForm = () => {
       setRiskLevel(2);
       setFrequency(Frequency.DAILY);
 
-      queryClient.setQueryData(
+      queryClient.setQueryData<unknown[]>(
         ["activeStrategiesAnalytics", "mock"],
-        (oldData: any) => {
-          if (!oldData) return [newPlan];
-          return [...oldData, newPlan];
+        (oldData) => {
+          const existing = Array.isArray(oldData) ? oldData : [];
+          return [...existing, newPlan];
         }
       );
 
@@ -155,6 +155,8 @@ const PaperTradeInputForm = () => {
       setSelectedBuyToken(injToken ? injToken.symbol : tokens[0].symbol);
     }
   }, [tokens, selectedBuyToken]);
+
+  console.log('tokens:', tokens);
 
   return (
     <Card className="w-full lg:w-full shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
@@ -244,9 +246,11 @@ const PaperTradeInputForm = () => {
                 />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="INJ">
-                    INJ
+                {tokens?.map((token) => (
+                  <SelectItem key={token.symbol} value={token.symbol}>
+                    {token.symbol}
                   </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

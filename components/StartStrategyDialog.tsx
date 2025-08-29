@@ -243,23 +243,32 @@ const StartStrategyDialog = ({
       // Handle error - success state won't show
       console.error("Strategy creation failed:", error);
 
-      // Check if it's an insufficient balance error
-      if (
-        error instanceof Error &&
-        error.message.includes("Insufficient USDT balance")
-      ) {
-        const totalRequired = amountNum * (1 + MANAGEMENT_FEE);
-        toast.error("Insufficient Balance", {
-          description: `You need $${totalRequired.toFixed(
-            2
-          )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
-            1
-          )}% management fee) to start this strategy. Please add funds to your wallet.`,
-          duration: 6000,
-        });
-      } else {
-        toast.error("Failed to activate strategy. Please try again.");
+      if (error instanceof Error) {
+        if (error.message.includes("USDT balance not found")) {
+          toast.error("USDT not found", {
+            description:
+              "We couldn't find USDT in your wallet. Please deposit USDT and try again.",
+            duration: 6000,
+          });
+          return;
+        }
+
+        // Check if it's an insufficient balance error
+        if (error.message.includes("Insufficient USDT balance")) {
+          const totalRequired = amountNum * (1 + MANAGEMENT_FEE);
+          toast.error("Insufficient Balance", {
+            description: `You need $${totalRequired.toFixed(
+              2
+            )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
+              1
+            )}% management fee) to start this strategy. Please add funds to your wallet.`,
+            duration: 6000,
+          });
+          return;
+        }
       }
+
+      toast.error("Failed to activate strategy. Please try again.");
     }
   };
 
