@@ -1,22 +1,32 @@
 /** @format */
 
+import {
+  INJECTIVE_EVM_TESTNET_CHAIN_ID,
+  INJECTIVE_EVM_TESTNET_CHAIN_NAME,
+  INJECTIVE_EVM_TESTNET_RPC_URLS,
+  INJECTIVE_EVM_TESTNET_EXPLORERS,
+  INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL,
+  INJECTIVE_EVM_TESTNET_CURRENCY_NAME,
+  INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS,
+} from "@/configs/env";
+
 // Helper to ensure MetaMask is on Injective EVM Testnet. If not present, it will attempt to add it.
 export const ensureMetaMaskInjectiveTestnet = async () => {
   if (typeof window === "undefined" || !window.ethereum) return;
 
-  const chainIdHex = process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_CHAIN_ID as string; // e.g. '0x...'
-  const chainName = process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_CHAIN_NAME as string; // e.g. 'Injective EVM Testnet'
-  const rpcUrls = (process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_RPC_URLS || "")
+  const chainIdHex = INJECTIVE_EVM_TESTNET_CHAIN_ID as string; // e.g. '0x...'
+  const chainName = INJECTIVE_EVM_TESTNET_CHAIN_NAME as string; // e.g. 'Injective EVM Testnet'
+  const rpcUrls = (INJECTIVE_EVM_TESTNET_RPC_URLS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const blockExplorerUrls = (process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_EXPLORERS || "")
+  const blockExplorerUrls = (INJECTIVE_EVM_TESTNET_EXPLORERS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const nativeCurrencySymbol = process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL || "INJ";
-  const nativeCurrencyName = process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_CURRENCY_NAME || "Injective";
-  const nativeCurrencyDecimals = Number(process.env.NEXT_PUBLIC_INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS || 18);
+  const nativeCurrencySymbol = INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL || "INJ";
+  const nativeCurrencyName = INJECTIVE_EVM_TESTNET_CURRENCY_NAME || "Injective";
+  const nativeCurrencyDecimals = Number(INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS || 18);
 
   if (!chainIdHex || !rpcUrls.length) {
     console.warn("Injective EVM Testnet env not set. Skipping network switch.");
@@ -67,5 +77,3 @@ declare global {
     };
   }
 }
-
-
