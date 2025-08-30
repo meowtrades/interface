@@ -4,6 +4,7 @@ import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { Wallet } from "@injectivelabs/wallet-base";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
+import { ensureMetaMaskInjectiveTestnet } from "./evm";
 
 export const getKeplrAddress = async () => {
   if (typeof window !== "undefined" && window.keplr) {
@@ -43,6 +44,9 @@ export const getMetaMaskWalletAddress = async () => {
   if (typeof window !== "undefined" && window.ethereum) {
     console.log("MetaMask is installed");
   }
+
+  // Ensure the user is on Injective EVM Testnet (add if missing, then switch)
+  await ensureMetaMaskInjectiveTestnet();
 
   const walletStrategy = new WalletStrategy({
     chainId: ChainId.Testnet,
