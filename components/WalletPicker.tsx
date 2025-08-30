@@ -17,6 +17,7 @@ import { Wallet } from "@injectivelabs/wallet-base";
 import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
 import { Loader2 } from "lucide-react";
+import { ensureMetaMaskInjectiveTestnet } from "@/lib/grants/evm";
 
 const WalletPicker = ({
   callback,
@@ -69,6 +70,10 @@ const WalletPicker = ({
         },
       }),
     });
+
+    if (walletType === Wallet.Metamask) {
+      await ensureMetaMaskInjectiveTestnet();
+    }
 
     await walletStrategy.enable();
     const [address] = await walletStrategy.getAddresses();
