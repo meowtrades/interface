@@ -22,6 +22,7 @@ import { StrategiesProvider } from "@/lib/context/StrategiesContext";
 import { WalletProvider } from "@/lib/context/WalletContext";
 import { cn } from "@/lib/design-system";
 import { useCurrentUserXp } from "@/api/hooks/useUserHooks";
+import ConnectWalletButton from "@/components/ConnectWalletButton";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -168,6 +169,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
               {/* Right Side Actions */}
               <div className="flex items-center gap-4">
+                <ConnectWalletButton />
                 <div className="flex items-center gap-4">
                   <Link
                     href="/paws-program"
@@ -239,6 +241,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                       </li>
                     ))}
                   </ul>
+
+                  <ConnectWalletButton variant="outline" className="w-full justify-start py-4 px-4 h-auto" />
 
                   <div className="mt-8 pt-6 border-t border-border">
                     <Button

@@ -13,6 +13,11 @@ const chains: Chain[] = [
     name: "Injective",
     icon: "/icons/injective.svg",
   },
+  {
+    id: "injective-evm",
+    name: "Injective EVM",
+    icon: "/icons/injective.svg",
+  },
 ];
 
 const tokens: Token[] = [
@@ -21,7 +26,7 @@ const tokens: Token[] = [
     symbol: "INJ",
     name: "Injective",
     icon: "/icons/injective.svg",
-    chains: ["injective"],
+    chains: ["injective", "injective-evm"],
     decimals: 18,
   },
 ];
@@ -70,7 +75,7 @@ const strategies: Strategy[] = [
       "Works well in ranging (sideways) markets",
       "Captures small price movements repeatedly",
     ],
-    supportedChains: ["injective"],
+    supportedChains: ["injective", "injective-evm"],
     supportedTokens: ["inj"],
     performance: {
       inj: {
@@ -82,6 +87,7 @@ const strategies: Strategy[] = [
     },
     minInvestment: {
       injective: 20,
+      "injective-evm": 20,
     },
     riskLevel: "medium",
   },
@@ -140,7 +146,7 @@ const userStrategiesNew: UserStrategyNew[] = [
     totalInvested: 300,
     strategyId: "GRID",
     chainId: "injective",
-    tokenId: "usdt",
+    tokenId: "inj",
     invested: 275,
     initialAmount: 50,
     frequency: "weekly",

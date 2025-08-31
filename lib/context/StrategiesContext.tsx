@@ -90,7 +90,14 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Set default selections if not already set
       if (!selectedChain && chainsData.length > 0) {
-        setSelectedChain(chainsData[0].id);
+        // Check if there's a wallet connection in localStorage
+        const savedWallet = typeof window !== "undefined" ? localStorage.getItem("connectedWallet") : null;
+        if (savedWallet) {
+          const walletData = JSON.parse(savedWallet);
+          setSelectedChain(walletData.chain);
+        } else {
+          setSelectedChain(chainsData[0].id);
+        }
       }
       if (!selectedToken && tokensData.length > 0) {
         setSelectedToken(tokensData[0].id);
@@ -107,7 +114,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
     loadData();
   }, [loadData]);
 
-  // Get tokens supported by a specific chain
+  // Only keep getSupportedTokensForChain as:
   const getSupportedTokensForChain = (chainId: string): Token[] => {
     return tokens.filter((token) => token.chains.includes(chainId));
   };

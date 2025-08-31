@@ -27,6 +27,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Strategy, Frequency, RiskLevel } from "@/lib/types";
+import type { Token } from "@/lib/types";
 import {
   RefreshCw,
   Grid,
@@ -40,6 +41,7 @@ import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 import { formatFrequency } from "@/lib/utils";
+import { useStrategies } from "@/lib/context/StrategiesContext";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -123,6 +125,7 @@ const StartStrategyDialog = ({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { selectedChain, getSupportedTokensForChain } = useStrategies();
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -153,6 +156,18 @@ const StartStrategyDialog = ({
       setIsRecipientAddressValid(false);
     }
   }, [useMyAddress, chain]);
+
+  // On dialog open, set chain to wallet chain if connected (from localStorage or context).
+  // Chain selector should be locked to wallet's chain if connected.
+  // Token selector should show tokens for the current chain.
+  useEffect(() => {
+    const connectedChain = localStorage.getItem("connectedChain");
+    if (connectedChain) {
+      setChain(connectedChain);
+    } else if (selectedChain) {
+      setChain(selectedChain);
+    }
+  }, [selectedChain]);
 
   // Get color scheme based on strategy type
   const colorScheme = ColorMap[strategy.type] || {
@@ -279,6 +294,25 @@ const StartStrategyDialog = ({
     params.set("tab", "active");
     router.push(`${pathname}?${params.toString()}`);
   };
+  const supportedTokens = getSupportedTokensForChain(chain);
+
+  // Filter: when on injective-evm, only show tokens that support injective-evm; when on injective, only show tokens that support injective
+  let filteredTokens = supportedTokens;
+  if (chain === "injective-evm") {
+    filteredTokens = supportedTokens.filter((token: Token) => token.chains.includes("injective-evm"));
+  } else if (chain === "injective") {
+    filteredTokens = supportedTokens.filter((token: Token) => token.chains.includes("injective"));
+  }
+
+  // Get wallet chain from localStorage or context
+  let walletChain: string | null = null;
+  if (typeof window !== "undefined") {
+    const savedWallet = localStorage.getItem("connectedWallet");
+    if (savedWallet) {
+      walletChain = JSON.parse(savedWallet).chain;
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50">
@@ -441,13 +475,13 @@ const StartStrategyDialog = ({
                           <SelectLabel className="text-contrast-medium font-semibold">
                             Tokens
                           </SelectLabel>
-                          {strategy.supportedTokens.map((token) => (
+                          {filteredTokens.map((token: Token) => (
                             <SelectItem
-                              key={token}
-                              value={token}
+                              key={token.id}
+                              value={token.id}
                               className="text-contrast-high font-medium"
                             >
-                              {token.toUpperCase()}
+                              {token.symbol}
                             </SelectItem>
                           ))}
                         </SelectGroup>
@@ -462,8 +496,9 @@ const StartStrategyDialog = ({
                       Chain
                     </Label>
                     <Select
-                      value={chain}
+                      value={walletChain || chain}
                       onValueChange={(value: string) => setChain(value)}
+                      disabled={!!walletChain}
                     >
                       <SelectTrigger
                         id="chain"
