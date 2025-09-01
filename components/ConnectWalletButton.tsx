@@ -17,6 +17,8 @@ import { walletConfigs } from "@/lib/grants/wallet-config";
 import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
 import { useWallet } from "@/lib/context/WalletContext";
 import { useStrategies } from "@/lib/context/StrategiesContext";
+import { api } from "@/api/client";
+import { fetchWalletBalances } from "@/lib/utils";
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "secondary" | "outline";
@@ -36,6 +38,10 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     address: string;
     chain: string;
   } | null>(null);
+  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
+  const [injBalance, setInjBalance] = useState<number | null>(null);
+  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
+  const [isFetchingBalances, setIsFetchingBalances] = useState(false);
   const { setSelectedChain: setWalletChain } = useWallet();
   const { setSelectedChain: setStrategyChain } = useStrategies();
 
@@ -73,6 +79,41 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
         localStorage.removeItem("connectedWallet");
       }
     }
+  }, [connectedWallet]);
+
+  // Fetch balances when wallet is connected/changes
+  useEffect(() => {
+    const fetchBalances = async () => {
+      if (!connectedWallet) {
+        setInjBalance(null);
+        setUsdtBalance(null);
+        return;
+      }
+      try {
+        setIsFetchingBalances(true);
+        
+        // Update user address in backend (optional, continue even if this fails)
+        try {
+          await api.user.updateAddress(connectedWallet.address);
+        } catch (err) {
+          console.warn("Failed to update user address in backend:", err);
+        }
+        
+        // Fetch real balances from Injective blockchain
+        const balances = await fetchWalletBalances(connectedWallet.address);
+        setInjBalance(balances.inj);
+        setUsdtBalance(balances.usdt);
+        
+      } catch (err) {
+        console.error("Failed to fetch balances", err);
+        // Set zero balances on error
+        setInjBalance(0);
+        setUsdtBalance(0);
+      } finally {
+        setIsFetchingBalances(false);
+      }
+    };
+    fetchBalances();
   }, [connectedWallet]);
 
   const handleWalletConnect = async (walletName: string) => {
@@ -136,27 +177,59 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   });
 
   if (connectedWallet) {
+    const handleCopyAddress = async () => {
+      try {
+        await navigator.clipboard.writeText(connectedWallet.address);
+        toast.success("Address copied to clipboard");
+      } catch {
+        toast.error("Failed to copy address");
+      }
+    };
     return (
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size={size}
-          className={`flex items-center gap-2 ${className}`}
-          onClick={handleDisconnect}
-        >
-          <Wallet size={16} />
-          {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleDisconnect}
-          className="px-2"
-          title="Disconnect wallet"
-        >
-          <LogOut size={14} />
-        </Button>
-      </div>
+      <>
+        <div className="flex items-center gap-2">
+          {/* Balances */}
+          <div className="flex items-center gap-2">
+            {injBalance !== null && (
+              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                {isFetchingBalances ? "INJ: ..." : `${injBalance.toFixed(3)} INJ`}
+              </span>
+            )}
+            {usdtBalance !== null && (
+              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                {isFetchingBalances ? "USDT: ..." : `${usdtBalance.toFixed(2)} USDT`}
+              </span>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size={size}
+            className={`flex items-center gap-2 ${className}`}
+            onClick={() => setIsAddressDialogOpen(true)}
+          >
+            <Wallet size={16} />
+            {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
+          </Button>
+        </div>
+        <Dialog open={isAddressDialogOpen} onOpenChange={setIsAddressDialogOpen}>
+          <DialogContent className="w-80">
+            <DialogHeader>
+              <DialogTitle>Wallet Actions</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 items-center">
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-mono text-sm break-all text-center">{connectedWallet.address}</span>
+                <Button variant="ghost" size="sm" onClick={handleCopyAddress}>
+                  Copy Address
+                </Button>
+              </div>
+              <Button variant="destructive" onClick={() => { setIsAddressDialogOpen(false); handleDisconnect(); }}>
+                <LogOut size={16} className="mr-2" /> Disconnect
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
