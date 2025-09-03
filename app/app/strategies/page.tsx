@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
@@ -30,8 +30,6 @@ import {
   Activity,
   Search,
   BarChart3,
-  Coins,
-  ArrowLeftRight,
 } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
@@ -57,6 +55,49 @@ const StrategiesContent = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
     null
   );
+  const [injBalance, setInjBalance] = useState<number | null>(null);
+  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+
+  // Get connected wallet from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("connectedWallet");
+      if (saved) {
+        const walletData = JSON.parse(saved);
+        setWalletAddress(walletData.address);
+        setConnectedWallet(walletData.name);
+        
+        // Auto-select chain based on wallet type
+        if (walletData.name === "MetaMask") {
+          setSelectedChain("injective-evm");
+        } else if (walletData.name === "Keplr" || walletData.name === "Leap") {
+          setSelectedChain("injective");
+        }
+      } else {
+        setWalletAddress(null);
+        setConnectedWallet(null);
+      }
+    }
+  }, []);
+
+  // Fetch balances when wallet or chain changes
+  useEffect(() => {
+    if (!walletAddress || !selectedChain) {
+      setInjBalance(null);
+      setUsdtBalance(null);
+      return;
+    }
+    // INJ
+    api.balances.getTokenBalance(selectedChain, "inj").then((res) => {
+      setInjBalance(Number(res.data.balance));
+    }).catch(() => setInjBalance(0));
+    // USDT
+    api.balances.getTokenBalance(selectedChain, "usdt").then((res) => {
+      setUsdtBalance(Number(res.data.balance));
+    }).catch(() => setUsdtBalance(0));
+  }, [walletAddress, selectedChain]);
 
 
   const stopDcaPlanMutation = useStopDcaPlan();
@@ -135,6 +176,13 @@ const StrategiesContent = () => {
     router.push("/app/strategies?tab=available");
   };
 
+  // Helper to check if balance is zero or missing
+  const isZero = (bal: number | string | null | undefined) => {
+    if (bal === null || bal === undefined) return true;
+    const num = typeof bal === "string" ? parseFloat(bal) : bal;
+    return isNaN(num) || num <= 0.00001;
+  };
+
   if (error) {
     return (
       <div className="p-4 bg-red-50 text-red-600 rounded-md">
@@ -142,6 +190,8 @@ const StrategiesContent = () => {
       </div>
     );
   }
+
+  console.log('INJ Balance:', injBalance, 'USDT Balance:', usdtBalance);
 
   return (
     <div>
@@ -154,68 +204,50 @@ const StrategiesContent = () => {
           </p>
         </div>
 
-
-
-        {/* Fund Buttons */}
-        <div className="mb-6 flex flex-wrap gap-4">
-          <Link href="https://faucet.injective.network/" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100">
-              <Coins size={16} className="mr-2" />
-              Fund INJ
-            </Button>
-          </Link>
-          <Link href="/fund-usdt">
-            <Button variant="outline" className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100">
-              <ArrowLeftRight size={16} className="mr-2" />
-              Fund USDT
-            </Button>
-          </Link>
-        </div>
-
-      
-
                 {/* Filters */}
         <div className="mb-6 flex flex-wrap gap-3 items-center">
+          <div className="flex flex-col gap-2">
+            <Select
+              onValueChange={handleChainChange}
+              value={selectedChain || undefined}
+              disabled={true} // Always disabled - chain is locked based on wallet
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Select chain" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Blockchains</SelectLabel>
+                  {chains.map((chain) => (
+                    <SelectItem key={chain.id} value={chain.id}>
+                      {chain.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Select
-            onValueChange={handleChainChange}
-            value={selectedChain || undefined}
+            onValueChange={handleTokenChange}
+            value={selectedToken || undefined}
             disabled={isLoading}
           >
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Select chain" />
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select token" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Blockchains</SelectLabel>
-                {chains.map((chain) => (
-                  <SelectItem key={chain.id} value={chain.id}>
-                    {chain.name}
+                <SelectLabel>Tokens</SelectLabel>
+                {supportedTokens.map((token) => (
+                  <SelectItem key={token.id} value={token.id}>
+                    {token.symbol}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
-
-        <Select
-          onValueChange={handleTokenChange}
-          value={selectedToken || undefined}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Select token" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Tokens</SelectLabel>
-              {supportedTokens.map((token) => (
-                <SelectItem key={token.id} value={token.id}>
-                  {token.symbol}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+        </div>
 
       <Tabs value={tab} className="mb-8 w-full">
         <div className="max-w-full">

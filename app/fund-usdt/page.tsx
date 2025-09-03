@@ -76,7 +76,7 @@ const FundUsdtPage = () => {
                                         Visit Helix DEX to swap your INJ tokens for USDT.
                                     </p>
                                     <Link 
-                                        href="https://app.helix.xyz/" 
+                                        href="https://testnet.helixapp.com/swap/" 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
