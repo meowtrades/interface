@@ -162,3 +162,45 @@ export const normalizeChainId = (chainId: string): string => {
   }
   return chainId;
 };
+
+/**
+ * Fetch real wallet balances from Injective blockchain
+ */
+export const fetchWalletBalances = async (address: string): Promise<{
+  inj: number;
+  usdt: number;
+}> => {
+  try {
+    const indexer = new IndexerGrpcAccountPortfolioApi(
+      getNetworkEndpoints(Network.Testnet).indexer
+    );
+
+    const { bankBalancesList } = await indexer.fetchAccountPortfolioBalances(address);
+    
+    // Find INJ balance (native token)
+    const injBalance = bankBalancesList.find(
+      (balance) => balance.denom === "inj"
+    )?.amount || "0";
+    
+    // Find USDT balance
+    const usdtBalance = bankBalancesList.find(
+      (balance) => balance.denom === USDT_DENOM
+    )?.amount || "0";
+
+    // Convert from smallest units to human-readable
+    const injHuman = new BigNumber(injBalance).shiftedBy(-18).toNumber(); // INJ has 18 decimals
+    const usdtHuman = new BigNumber(usdtBalance).shiftedBy(-6).toNumber(); // USDT has 6 decimals
+
+    return {
+      inj: injHuman,
+      usdt: usdtHuman,
+    };
+  } catch (error) {
+    console.error("Failed to fetch wallet balances:", error);
+    // Return zero balances on error instead of throwing
+    return {
+      inj: 0,
+      usdt: 0,
+    };
+  }
+};

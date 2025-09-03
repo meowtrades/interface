@@ -14,7 +14,9 @@ import { MsgBroadcaster } from "@injectivelabs/wallet-core";
 import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { checkMinimumUSDTBalance } from "../utils";
+import { ensureMetaMaskInjectiveTestnet } from "./evm";
 import { MANAGEMENT_FEE } from "../constants";
+import { toast } from "sonner";
 
 if (typeof window !== "undefined") {
   window.Buffer = Buffer;
@@ -24,10 +26,7 @@ declare global {
   interface Window {
     keplr: unknown;
     ethereum?: {
-      request: (args: {
-        method: string;
-        params?: unknown[];
-      }) => Promise<unknown>;
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
       isMetaMask?: boolean;
     };
     leap?: {
@@ -193,6 +192,9 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
     console.log("MetaMask is installed");
   }
 
+  // Ensure network is Injective EVM Testnet in MetaMask
+  await ensureMetaMaskInjectiveTestnet();
+
   const walletStrategy = new WalletStrategy({
     chainId: ChainId.Testnet,
     wallet: Wallet.Metamask,
@@ -208,6 +210,14 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
 
   // Convert Ethereum address to Injective address first
   const injectiveAddress = getInjectiveAddress(granter);
+
+  // Prevent granter and grantee from being the same
+  if (injectiveAddress === grantee) {
+    const errorMsg = "Granter and grantee addresses must be different. Please use a different account to grant permissions.";
+    toast.error(errorMsg);
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
 
   const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE;
 
