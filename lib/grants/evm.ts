@@ -39,9 +39,9 @@ export const ensureMetaMaskInjectiveTestnet = async () => {
       method: "wallet_switchEthereumChain",
       params: [{ chainId: chainIdHex }],
     });
-  } catch (switchError: any) {
+  } catch (switchError: unknown) {
     // 4902: Unrecognized chain, try to add
-    if (switchError?.code === 4902) {
+    if (typeof switchError === 'object' && switchError !== null && 'code' in switchError && switchError.code === 4902) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
@@ -69,11 +69,3 @@ export const ensureMetaMaskInjectiveTestnet = async () => {
     }
   }
 };
-
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-    };
-  }
-}

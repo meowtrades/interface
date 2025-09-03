@@ -80,7 +80,7 @@ const StrategiesContent = () => {
         setConnectedWallet(null);
       }
     }
-  }, []);
+  }, [setSelectedChain]);
 
   // Fetch balances when wallet or chain changes
   useEffect(() => {

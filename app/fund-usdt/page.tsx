@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, ExternalLink, Coins, Swap, Wallet } from "lucide-react";
+import { ArrowRight, ExternalLink, Coins, Wallet } from "lucide-react";
 import Link from "next/link";
 
 const FundUsdtPage = () => {
