@@ -185,6 +185,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                     </span>
                     {/* <Info size={16} className="opacity-70" /> */}
                   </Link>
+                  
+
                 </div>
                 {/* <button className="p-2.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground relative">
                                     <Bell size={20} />

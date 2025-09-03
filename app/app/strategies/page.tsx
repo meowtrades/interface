@@ -30,6 +30,8 @@ import {
   Activity,
   Search,
   BarChart3,
+  Coins,
+  ArrowLeftRight,
 } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
@@ -56,7 +58,10 @@ const StrategiesContent = () => {
     null
   );
 
+
   const stopDcaPlanMutation = useStopDcaPlan();
+
+
 
   const {
     data: activeMockStrategiesAnalytics,
@@ -140,36 +145,56 @@ const StrategiesContent = () => {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Trading Strategies
-        </h1>
-        <p className="text-muted-foreground">
-          Explore and launch one-click trading strategies.
-        </p>
-      </div>
+              <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Trading Strategies
+          </h1>
+          <p className="text-muted-foreground">
+            Explore and launch one-click trading strategies.
+          </p>
+        </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-3 items-center">
-        <Select
-          onValueChange={handleChainChange}
-          value={selectedChain || undefined}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Select chain" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Blockchains</SelectLabel>
-              {chains.map((chain) => (
-                <SelectItem key={chain.id} value={chain.id}>
-                  {chain.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+
+
+        {/* Fund Buttons */}
+        <div className="mb-6 flex flex-wrap gap-4">
+          <Link href="https://faucet.injective.network/" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100">
+              <Coins size={16} className="mr-2" />
+              Fund INJ
+            </Button>
+          </Link>
+          <Link href="/fund-usdt">
+            <Button variant="outline" className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100">
+              <ArrowLeftRight size={16} className="mr-2" />
+              Fund USDT
+            </Button>
+          </Link>
+        </div>
+
+      
+
+                {/* Filters */}
+        <div className="mb-6 flex flex-wrap gap-3 items-center">
+          <Select
+            onValueChange={handleChainChange}
+            value={selectedChain || undefined}
+            disabled={isLoading}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Select chain" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Blockchains</SelectLabel>
+                {chains.map((chain) => (
+                  <SelectItem key={chain.id} value={chain.id}>
+                    {chain.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
         <Select
           onValueChange={handleTokenChange}
