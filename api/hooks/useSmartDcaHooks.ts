@@ -27,17 +27,25 @@ export const useCreateInvestmentPlan = () => {
         chain: normalizeChainId(planData.chain),
       };
 
+      // Prevent live GRID from using test frequencies which backend might reject
+      const isTestFrequency = normalizedPlanData.frequency === "test_minute" || normalizedPlanData.frequency === "test_10_seconds";
+      const payload = {
+        ...normalizedPlanData,
+        // If test frequency, force paper environment; otherwise keep provided
+        env: isTestFrequency ? "paper" : normalizedPlanData.env,
+      } as CreateDcaPlanDto;
+
       let response;
 
-      switch (normalizedPlanData.strategyId) {
+      switch (payload.strategyId) {
         case "SDCA":
-          response = await api.plans.create(normalizedPlanData);
+          response = await api.plans.create(payload);
           break;
         case "GRID":
-          response = await api.plans.grid.create(normalizedPlanData);
+          response = await api.plans.grid.create(payload);
           break;
         default:
-          throw new Error(`Unsupported strategy type: ${normalizedPlanData.strategyId}`);
+          throw new Error(`Unsupported strategy type: ${payload.strategyId}`);
       }
 
       if (!response.data) {
@@ -58,6 +66,11 @@ export const useCreateInvestmentPlan = () => {
           queryKey: ["activeStrategiesAnalytics", "real"],
         });
       }
+
+      // Also refresh portfolio overview so totals update
+      await queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "overview"],
+      });
 
       toast.success("DCA plan created successfully");
     },
@@ -88,6 +101,10 @@ export const useStopDcaPlan = () => {
       });
       await queryClient.invalidateQueries({
         queryKey: ["activeStrategiesAnalytics", "mock"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["user", "analytics", "overview"],
       });
 
       toast.success("Plan stopped successfully");

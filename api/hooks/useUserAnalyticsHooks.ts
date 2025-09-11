@@ -56,8 +56,12 @@ export const useUserOverview = () => {
     queryKey: USER_ANALYTICS_KEYS.overview(),
     queryFn: async () => {
       const response = await api.analytics.getUserOverview();
-      return response.data;
+      // Ensure we return the payload, not the envelope
+      return (response.data as any)?.data ?? response.data;
     },
+    // Poll periodically so dashboard updates without manual refresh
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
   });
 };
 

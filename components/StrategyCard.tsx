@@ -105,6 +105,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       walletAddress = await getLeapWalletAddress();
     }
 
+    const isTestFreq = data.frequency === "test_minute" || data.frequency === "test_10_seconds";
     await dcaMutation.mutateAsync({
       amount: amountPerDay,
       userWalletAddress: walletAddress,
@@ -118,6 +119,8 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       strategyId: data.strategyId,
       tokenSymbol: data.tokenId,
       slippage: data.slippage, // Default to -1 for auto slippage
+      // If test frequency selected, force paper env to avoid backend rejection for live
+      env: isTestFreq ? "paper" : undefined,
     });
   };
 

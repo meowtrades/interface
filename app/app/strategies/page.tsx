@@ -120,7 +120,8 @@ const StrategiesContent = () => {
       } = await api.analytics.getActiveMockStrategies();
       return data;
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 15000,
   });
 
   const {
@@ -134,7 +135,8 @@ const StrategiesContent = () => {
       } = await api.analytics.getActiveLiveStrategies();
       return data;
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 15000,
   });
 
   const { data: trendingStrategyId } = useQuery({
