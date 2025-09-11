@@ -110,7 +110,7 @@ export const TransactionList = () => {
               <Skeleton className="h-16 w-full mb-2" />
             </div>
           ) : error ? (
-            error.status === 404 ? (
+            error.response?.status === 404 ? (
               <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200 m-4">
                 <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
                   <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
