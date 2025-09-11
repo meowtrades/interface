@@ -73,13 +73,20 @@ export const StrategyChart = () => {
       if (!strategyId) throw new Error("Strategy ID is required");
       const priceData = await api.strategies.getChartData(strategyId as string);
 
+      // If backend signals processing or returns no data, show waiting state
       if (priceData.status === 202) {
         return {
           waiting: true,
         };
       }
 
-      const data = priceData.data.data.map((i) => ({
+      const series = priceData.data?.data;
+
+      if (!series || series.length === 0) {
+        return { waiting: true };
+      }
+
+      const data = series.map((i) => ({
         date: new Date(i.timestamp * 1000).toLocaleDateString("en-IN", {
           year: "numeric",
           month: "short",
