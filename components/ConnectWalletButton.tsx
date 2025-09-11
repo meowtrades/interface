@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Wallet, LogOut } from "lucide-react";
+import { Wallet, LogOut, Coins, ArrowLeftRight} from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { walletConfigs } from "@/lib/grants/wallet-config";
@@ -19,6 +19,7 @@ import { useWallet } from "@/lib/context/WalletContext";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 import { api } from "@/api/client";
 import { fetchWalletBalances } from "@/lib/utils";
+import Link from "next/link";
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "secondary" | "outline";
@@ -50,12 +51,16 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("connectedWallet");
       if (saved) {
-        const walletData = JSON.parse(saved);
-        setConnectedWallet(walletData);
-        setWalletChain(walletData.chain);
-        setTimeout(() => {
-          setStrategyChain(walletData.chain);
-        }, 100);
+        try {
+          const walletData = JSON.parse(saved);
+          setConnectedWallet(walletData);
+          setWalletChain(walletData?.chain ?? "injective");
+          setTimeout(() => {
+            setStrategyChain(walletData?.chain ?? "injective");
+          }, 100);
+        } catch {
+          // ignore corrupted entry
+        }
       }
     }
   }, [setWalletChain, setStrategyChain]);
@@ -176,6 +181,12 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     return typeof window !== "undefined" && wallet.windowKey in window;
   });
 
+  const isZero = (bal: number | string | null | undefined) => {
+    if (bal === null || bal === undefined) return true;
+    const num = typeof bal === "string" ? parseFloat(bal) : bal;
+    return isNaN(num) || num <= 0.00001;
+  };
+
   if (connectedWallet) {
     const handleCopyAddress = async () => {
       try {
@@ -188,17 +199,35 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     return (
       <>
         <div className="flex items-center gap-2">
-          {/* Balances */}
+          {/* Balances or Fund Buttons */}
           <div className="flex items-center gap-2">
             {injBalance !== null && (
-              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                {isFetchingBalances ? "INJ: ..." : `${injBalance.toFixed(3)} INJ`}
-              </span>
+              isZero(injBalance) ? (
+                <a href="https://faucet.injective.network/" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="sm" className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 px-2 py-1">
+                  <Coins size={16} className="mr-2" />
+                    Fund INJ
+                  </Button>
+                </a>
+              ) : (
+                <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                  {isFetchingBalances ? "INJ: ..." : `${injBalance.toFixed(3)} INJ`}
+                </span>
+              )
             )}
             {usdtBalance !== null && (
-              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                {isFetchingBalances ? "USDT: ..." : `${usdtBalance.toFixed(2)} USDT`}
-              </span>
+              isZero(usdtBalance) ? (
+                <Link href="/fund-usdt">
+                  <Button variant="outline" size="sm" className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-2 py-1">
+                  <ArrowLeftRight size={16} className="mr-2" />
+                    Fund USDT
+                  </Button>
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                  {isFetchingBalances ? "USDT: ..." : `${usdtBalance.toFixed(2)} USDT`}
+                </span>
+              )
             )}
           </div>
           <Button

@@ -16,6 +16,7 @@ import {
   User,
   Grid,
   Trophy,
+  Zap,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
@@ -72,7 +73,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   const getPageTitle = () => {
     if (pathname.includes("dashboard")) return "Dashboard";
-    if (pathname.includes("strategies")) return "Trading Strategies";
+    if (pathname.includes("strategies")) return "Live on Testnet";
     if (pathname.includes("paper-trades")) return "Paper Trades";
     if (pathname.includes("grid-visualization")) return "Grid Visualization";
     if (pathname.includes("leaderboard")) return "Leaderboard";
@@ -159,8 +160,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
               {/* Page Title */}
               <div className="hidden md:block">
-                <h1 className="text-title font-semibold text-foreground">
+                <h1 className="text-title font-semibold text-foreground flex items-center gap-3">
                   {getPageTitle()}
+                  {pathname.includes("strategies") && (
+                    <div className="relative">
+                      <Zap 
+                        size={24} 
+                        className="text-yellow-500 animate-pulse drop-shadow-lg" 
+                      />
+                      <div className="absolute inset-0 bg-yellow-400/20 rounded-full blur-sm animate-ping"></div>
+                    </div>
+                  )}
                 </h1>
                 {/* <p className="text-body font-medium text-muted-foreground">
                   {getSubtitle()}
@@ -185,6 +195,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                     </span>
                     {/* <Info size={16} className="opacity-70" /> */}
                   </Link>
+                  
+
                 </div>
                 {/* <button className="p-2.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground relative">
                                     <Bell size={20} />

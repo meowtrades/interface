@@ -111,7 +111,7 @@ const StartStrategyDialog = ({
   supportedChains,
   onStartStrategy,
 }: StartStrategyDialogProps) => {
-  const [tokenId, setTokenId] = useState(defaultToken);
+  const [tokenId, setTokenId] = useState("inj");
   const [amount, setAmount] = useState(getDefaultAmount(strategy));
   const [frequency, setFrequency] = useState(Frequency.DAILY);
   const [recipientAddress, setRecipientAddress] = useState<string>();
@@ -125,7 +125,7 @@ const StartStrategyDialog = ({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { selectedChain, getSupportedTokensForChain } = useStrategies();
+  const { selectedChain } = useStrategies();
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -294,22 +294,22 @@ const StartStrategyDialog = ({
     params.set("tab", "active");
     router.push(`${pathname}?${params.toString()}`);
   };
-  const supportedTokens = getSupportedTokensForChain(chain);
-
-  // Filter: when on injective-evm, only show tokens that support injective-evm; when on injective, only show tokens that support injective
-  let filteredTokens = supportedTokens;
-  if (chain === "injective-evm") {
-    filteredTokens = supportedTokens.filter((token: Token) => token.chains.includes("injective-evm"));
-  } else if (chain === "injective") {
-    filteredTokens = supportedTokens.filter((token: Token) => token.chains.includes("injective"));
-  }
+  // Force tokens to INJ-only selection
+  const filteredTokens: Token[] = [
+    { id: "inj", symbol: "INJ", name: "Injective", icon: "/icons/injective.svg", chains: ["injective", "injective-evm"], decimals: 18 }
+  ];
 
   // Get wallet chain from localStorage or context
   let walletChain: string | null = null;
   if (typeof window !== "undefined") {
     const savedWallet = localStorage.getItem("connectedWallet");
     if (savedWallet) {
-      walletChain = JSON.parse(savedWallet).chain;
+      try {
+        const parsed = JSON.parse(savedWallet);
+        walletChain = parsed?.chain ?? null;
+      } catch {
+        // ignore corrupted localStorage entry
+      }
     }
   }
 

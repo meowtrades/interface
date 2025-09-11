@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
@@ -55,8 +55,59 @@ const StrategiesContent = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
     null
   );
+  const [injBalance, setInjBalance] = useState<number | null>(null);
+  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+
+  // Get connected wallet from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("connectedWallet");
+      if (saved) {
+        try {
+          const walletData = JSON.parse(saved);
+          setWalletAddress(walletData.address ?? null);
+          setConnectedWallet(walletData.name ?? null);
+        
+          // Auto-select chain based on wallet type
+          if (walletData.name === "MetaMask") {
+            setSelectedChain("injective-evm");
+          } else if (walletData.name === "Keplr" || walletData.name === "Leap") {
+            setSelectedChain("injective");
+          }
+        } catch {
+          setWalletAddress(null);
+          setConnectedWallet(null);
+        }
+      } else {
+        setWalletAddress(null);
+        setConnectedWallet(null);
+      }
+    }
+  }, [setSelectedChain]);
+
+  // Fetch balances when wallet or chain changes
+  useEffect(() => {
+    if (!walletAddress || !selectedChain) {
+      setInjBalance(null);
+      setUsdtBalance(null);
+      return;
+    }
+    // INJ
+    api.balances.getTokenBalance(selectedChain, "inj").then((res) => {
+      setInjBalance(Number(res.data.balance));
+    }).catch(() => setInjBalance(0));
+    // USDT
+    api.balances.getTokenBalance(selectedChain, "usdt").then((res) => {
+      setUsdtBalance(Number(res.data.balance));
+    }).catch(() => setUsdtBalance(0));
+  }, [walletAddress, selectedChain]);
+
 
   const stopDcaPlanMutation = useStopDcaPlan();
+
+
 
   const {
     data: activeMockStrategiesAnalytics,
@@ -95,15 +146,21 @@ const StrategiesContent = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Supported tokens for selected chain
+  // Supported tokens for selected chain (but enforce INJ-only across strategies views)
   const supportedTokens = selectedChain
     ? getSupportedTokensForChain(selectedChain)
     : [];
 
+  // Always show only INJ for strategy token selection
+  const displayTokens = supportedTokens.filter((t) => t.id === "inj");
+
   // Available strategies
   const availableStrategies =
-    selectedChain && selectedToken
-      ? getStrategiesForChainAndToken(selectedChain, selectedToken)
+    selectedChain
+      ? getStrategiesForChainAndToken(selectedChain, "inj").map((s) => ({
+          ...s,
+          supportedTokens: ["inj"],
+        }))
       : [];
 
   const handleViewDetails = (strategyId: string) => {
@@ -130,6 +187,13 @@ const StrategiesContent = () => {
     router.push("/app/strategies?tab=available");
   };
 
+  // Helper to check if balance is zero or missing
+  const isZero = (bal: number | string | null | undefined) => {
+    if (bal === null || bal === undefined) return true;
+    const num = typeof bal === "string" ? parseFloat(bal) : bal;
+    return isNaN(num) || num <= 0.00001;
+  };
+
   if (error) {
     return (
       <div className="p-4 bg-red-50 text-red-600 rounded-md">
@@ -138,59 +202,63 @@ const StrategiesContent = () => {
     );
   }
 
+  console.log('INJ Balance:', injBalance, 'USDT Balance:', usdtBalance);
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Trading Strategies
-        </h1>
-        <p className="text-muted-foreground">
-          Explore and launch one-click trading strategies.
-        </p>
-      </div>
+              <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Trading Strategies
+          </h1>
+          <p className="text-muted-foreground">
+            Explore and launch one-click trading strategies.
+          </p>
+        </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-3 items-center">
-        <Select
-          onValueChange={handleChainChange}
-          value={selectedChain || undefined}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Select chain" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Blockchains</SelectLabel>
-              {chains.map((chain) => (
-                <SelectItem key={chain.id} value={chain.id}>
-                  {chain.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                {/* Filters */}
+        <div className="mb-6 flex flex-wrap gap-3 items-center">
+          <div className="flex flex-col gap-2">
+            <Select
+              onValueChange={handleChainChange}
+              value={selectedChain || undefined}
+              disabled={true} // Always disabled - chain is locked based on wallet
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Select chain" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Blockchains</SelectLabel>
+                  {chains.map((chain) => (
+                    <SelectItem key={chain.id} value={chain.id}>
+                      {chain.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Select
-          onValueChange={handleTokenChange}
-          value={selectedToken || undefined}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Select token" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Tokens</SelectLabel>
-              {supportedTokens.map((token) => (
-                <SelectItem key={token.id} value={token.id}>
-                  {token.symbol}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+          <Select
+            onValueChange={handleTokenChange}
+            value={"inj"}
+            disabled={isLoading}
+          >
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select token" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Tokens</SelectLabel>
+                {displayTokens.map((token) => (
+                  <SelectItem key={token.id} value={token.id}>
+                    {token.symbol}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
       <Tabs value={tab} className="mb-8 w-full">
         <div className="max-w-full">
@@ -230,7 +298,7 @@ const StrategiesContent = () => {
                   key={strategy.id}
                   trending={strategy.id === trendingStrategyId}
                   strategy={strategy}
-                  selectedToken={selectedToken || "btc"}
+                  selectedToken={"inj"}
                   onViewDetails={handleViewDetails}
                 />
               ))}
@@ -473,7 +541,7 @@ const StrategiesContent = () => {
           strategy={selectedStrategy}
           open={simulationDialogOpen}
           onClose={handleSimulationClose}
-          defaultToken={selectedToken || "btc"}
+          defaultToken={"inj"}
         />
       )}
     </div>

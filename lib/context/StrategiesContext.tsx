@@ -16,15 +16,16 @@ import {
   fetchStrategies,
   fetchChains,
   fetchTokens,
-  fetchUserStrategies,
 } from "../api/strategies";
+import { api } from "@/api/client";
+import type { ActiveStrategyAnalytics } from "@/api/types";
 
 type StrategiesContextType = {
   strategies: Strategy[];
   chains: Chain[];
   tokens: Token[];
   // userStrategies: UserStrategy[];
-  userStrategies: UserStrategyNew[];
+  userStrategies: ActiveStrategyAnalytics[];
   isLoading: boolean;
   error: string | null;
   selectedChain: string | null;
@@ -40,19 +41,7 @@ type StrategiesContextType = {
   refreshData: () => Promise<void>;
 };
 
-export type UserStrategyNew = {
-  _id: string;
-  totalInvested: number;
-  strategyId: string;
-  chainId: string;
-  tokenId: string;
-  invested: number;
-  initialAmount: number;
-  frequency: string;
-  amount: number;
-  createdAt: string;
-  active: boolean;
-};
+// Deprecated type removed. Use ActiveStrategyAnalytics instead.
 
 const StrategiesContext = createContext<StrategiesContextType | undefined>(
   undefined
@@ -64,7 +53,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [chains, setChains] = useState<Chain[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
-  const [userStrategies, setUserStrategies] = useState<UserStrategyNew[]>([]);
+  const [userStrategies, setUserStrategies] = useState<ActiveStrategyAnalytics[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
@@ -75,26 +64,37 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       // In a real app, these would be API calls
-      const [strategiesData, chainsData, tokensData, userStrategiesData] =
+      const [strategiesData, chainsData, tokensData, mockRes, liveRes] =
         await Promise.all([
           fetchStrategies(),
           fetchChains(),
           fetchTokens(),
-          fetchUserStrategies(),
+          api.analytics.getActiveMockStrategies(),
+          api.analytics.getActiveLiveStrategies(),
         ]);
 
       setStrategies(strategiesData);
       setChains(chainsData);
       setTokens(tokensData);
-      setUserStrategies(userStrategiesData);
+      const mockStrategies: ActiveStrategyAnalytics[] = mockRes.data.data || [];
+      const liveStrategies: ActiveStrategyAnalytics[] = liveRes.data.data || [];
+      setUserStrategies([...mockStrategies, ...liveStrategies]);
 
       // Set default selections if not already set
       if (!selectedChain && chainsData.length > 0) {
         // Check if there's a wallet connection in localStorage
         const savedWallet = typeof window !== "undefined" ? localStorage.getItem("connectedWallet") : null;
         if (savedWallet) {
-          const walletData = JSON.parse(savedWallet);
-          setSelectedChain(walletData.chain);
+          try {
+            const walletData = JSON.parse(savedWallet);
+            if (walletData?.chain) {
+              setSelectedChain(walletData.chain);
+            } else {
+              setSelectedChain(chainsData[0].id);
+            }
+          } catch {
+            setSelectedChain(chainsData[0].id);
+          }
         } else {
           setSelectedChain(chainsData[0].id);
         }

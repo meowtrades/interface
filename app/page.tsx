@@ -215,6 +215,8 @@ const Index = () => {
               Easily invest in multiple crypto strategies. No experience needed.
               Just choose one that fits you and let automation do the rest.
             </p>
+            
+
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link href="/app/dashboard">
