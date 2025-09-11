@@ -1,7 +1,7 @@
 /** @format */
 
 // Fill these values as needed for your environment
-export const API_URL: string = "http://localhost:8000/api";
+export const API_URL: string = "https://server.meowtrades.com/api";
 export const INJECTIVE_EVM_TESTNET_CHAIN_ID = "0x59f"; // e.g. '0x1234'
 export const INJECTIVE_EVM_TESTNET_CHAIN_NAME = "Injective EVM Testnet";
 export const INJECTIVE_EVM_TESTNET_RPC_URLS = "https://k8s.testnet.json-rpc.injective.network/";
