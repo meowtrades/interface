@@ -97,7 +97,7 @@ const StrategySimulationDialog = ({
   strategy,
   open,
   onClose,
-  defaultToken = "btc",
+  defaultToken = "inj",
 }: StrategySimulationDialogProps) => {
   // State for strategy dialog
   const [startDialogOpen, setStartDialogOpen] = useState(false);
@@ -480,7 +480,7 @@ const StrategySimulationDialog = ({
         strategy={strategy}
         open={startDialogOpen}
         onClose={() => setStartDialogOpen(false)}
-        defaultToken={defaultToken}
+        defaultToken={"inj"}
         onStartStrategy={handleStartStrategy}
       />
     </>

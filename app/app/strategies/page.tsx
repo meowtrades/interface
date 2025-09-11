@@ -141,15 +141,21 @@ const StrategiesContent = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Supported tokens for selected chain
+  // Supported tokens for selected chain (but enforce INJ-only across strategies views)
   const supportedTokens = selectedChain
     ? getSupportedTokensForChain(selectedChain)
     : [];
 
+  // Always show only INJ for strategy token selection
+  const displayTokens = supportedTokens.filter((t) => t.id === "inj");
+
   // Available strategies
   const availableStrategies =
-    selectedChain && selectedToken
-      ? getStrategiesForChainAndToken(selectedChain, selectedToken)
+    selectedChain
+      ? getStrategiesForChainAndToken(selectedChain, "inj").map((s) => ({
+          ...s,
+          supportedTokens: ["inj"],
+        }))
       : [];
 
   const handleViewDetails = (strategyId: string) => {
@@ -230,7 +236,7 @@ const StrategiesContent = () => {
 
           <Select
             onValueChange={handleTokenChange}
-            value={selectedToken || undefined}
+            value={"inj"}
             disabled={isLoading}
           >
             <SelectTrigger className="w-[120px]">
@@ -239,7 +245,7 @@ const StrategiesContent = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Tokens</SelectLabel>
-                {supportedTokens.map((token) => (
+                {displayTokens.map((token) => (
                   <SelectItem key={token.id} value={token.id}>
                     {token.symbol}
                   </SelectItem>
@@ -287,7 +293,7 @@ const StrategiesContent = () => {
                   key={strategy.id}
                   trending={strategy.id === trendingStrategyId}
                   strategy={strategy}
-                  selectedToken={selectedToken || "btc"}
+                  selectedToken={"inj"}
                   onViewDetails={handleViewDetails}
                 />
               ))}
@@ -530,7 +536,7 @@ const StrategiesContent = () => {
           strategy={selectedStrategy}
           open={simulationDialogOpen}
           onClose={handleSimulationClose}
-          defaultToken={selectedToken || "btc"}
+          defaultToken={"inj"}
         />
       )}
     </div>
