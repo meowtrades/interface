@@ -51,12 +51,16 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("connectedWallet");
       if (saved) {
-        const walletData = JSON.parse(saved);
-        setConnectedWallet(walletData);
-        setWalletChain(walletData.chain);
-        setTimeout(() => {
-          setStrategyChain(walletData.chain);
-        }, 100);
+        try {
+          const walletData = JSON.parse(saved);
+          setConnectedWallet(walletData);
+          setWalletChain(walletData?.chain ?? "injective");
+          setTimeout(() => {
+            setStrategyChain(walletData?.chain ?? "injective");
+          }, 100);
+        } catch {
+          // ignore corrupted entry
+        }
       }
     }
   }, [setWalletChain, setStrategyChain]);

@@ -304,7 +304,12 @@ const StartStrategyDialog = ({
   if (typeof window !== "undefined") {
     const savedWallet = localStorage.getItem("connectedWallet");
     if (savedWallet) {
-      walletChain = JSON.parse(savedWallet).chain;
+      try {
+        const parsed = JSON.parse(savedWallet);
+        walletChain = parsed?.chain ?? null;
+      } catch {
+        // ignore corrupted localStorage entry
+      }
     }
   }
 

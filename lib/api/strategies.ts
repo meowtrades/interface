@@ -2,7 +2,7 @@
 
 import { axiosInstance } from "@/api";
 import { Chain, Strategy, Token, UserStrategy } from "../types";
-import { UserStrategyNew } from "../context/StrategiesContext";
+import type { ActiveStrategyAnalytics } from "@/api/types";
 
 // Mock data for development
 // In a real app, these would be API calls to the backend
@@ -167,84 +167,156 @@ const strategies: Strategy[] = [
   // }
 ];
 
-const userStrategiesNew: UserStrategyNew[] = [
+const userStrategiesNew: ActiveStrategyAnalytics[] = [
   {
     _id: "user-strategy-1",
+    chain: "injective",
+    currentValue: 500,
+    token: { symbol: "inj", name: "Injective", currentPrice: 1 },
+    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
     totalInvested: 500,
-    strategyId: "SDCA",
-    chainId: "injective",
-    tokenId: "inj",
     invested: 450,
+    profit: 50,
+    profitPercentage: 10,
     initialAmount: 100,
     frequency: "daily",
     amount: 50,
     createdAt: "2023-11-15T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
   {
     _id: "user-strategy-2",
+    chain: "injective",
+    currentValue: 300,
+    token: { symbol: "btc", name: "Bitcoin", currentPrice: 1 },
+    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
     totalInvested: 300,
-    strategyId: "GRID",
-    chainId: "injective",
-    tokenId: "btc",
     invested: 275,
+    profit: 25,
+    profitPercentage: 8.33,
     initialAmount: 50,
     frequency: "weekly",
     amount: 25,
     createdAt: "2023-11-20T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
   {
     _id: "user-strategy-3",
+    chain: "injective",
+    currentValue: 200,
+    token: { symbol: "eth", name: "Ethereum", currentPrice: 1 },
+    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
     totalInvested: 200,
-    strategyId: "SDCA",
-    chainId: "injective",
-    tokenId: "eth",
     invested: 180,
+    profit: 20,
+    profitPercentage: 10,
     initialAmount: 40,
     frequency: "daily",
     amount: 20,
     createdAt: "2023-11-25T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
   {
     _id: "user-strategy-4",
+    chain: "injective",
+    currentValue: 150,
+    token: { symbol: "usdc", name: "USD Coin", currentPrice: 1 },
+    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
     totalInvested: 150,
-    strategyId: "GRID",
-    chainId: "injective",
-    tokenId: "usdc",
     invested: 140,
+    profit: 10,
+    profitPercentage: 6.67,
     initialAmount: 30,
     frequency: "weekly",
     amount: 10,
     createdAt: "2023-11-28T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
   {
     _id: "user-strategy-5",
+    chain: "injective",
+    currentValue: 120,
+    token: { symbol: "apt", name: "Aptos", currentPrice: 1 },
+    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
     totalInvested: 120,
-    strategyId: "SDCA",
-    chainId: "injective",
-    tokenId: "apt",
     invested: 110,
+    profit: 10,
+    profitPercentage: 8.33,
     initialAmount: 20,
     frequency: "daily",
     amount: 10,
     createdAt: "2023-12-01T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
   {
     _id: "user-strategy-6",
+    chain: "injective",
+    currentValue: 100,
+    token: { symbol: "sonic", name: "Sonic", currentPrice: 1 },
+    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
     totalInvested: 100,
-    strategyId: "GRID",
-    chainId: "injective",
-    tokenId: "sonic",
     invested: 90,
+    profit: 10,
+    profitPercentage: 10,
     initialAmount: 15,
     frequency: "weekly",
     amount: 5,
     createdAt: "2023-12-03T00:00:00Z",
     active: true,
+    analytics: {
+      tokensHeld: 0,
+      averageBuyPrice: 0,
+      currentTokenPrice: 0,
+      portfolioValue: 0,
+      profit: 0,
+      profitPercentage: 0,
+      totalTransactions: 0,
+    },
   },
 ];
 
@@ -346,7 +418,7 @@ export const fetchStrategies = async (): Promise<Strategy[]> => {
   return strategies;
 };
 
-export const fetchUserStrategies = async (): Promise<UserStrategyNew[]> => {
+export const fetchUserStrategies = async (): Promise<ActiveStrategyAnalytics[]> => {
   const response = await axiosInstance.get("/user/analytics/strategies");
   return response.data.data;
 };

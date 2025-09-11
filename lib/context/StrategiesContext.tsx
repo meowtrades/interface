@@ -41,8 +41,7 @@ type StrategiesContextType = {
   refreshData: () => Promise<void>;
 };
 
-// Deprecated: kept for reference. Use ActiveStrategyAnalytics instead.
-export type UserStrategyNew = any;
+// Deprecated type removed. Use ActiveStrategyAnalytics instead.
 
 const StrategiesContext = createContext<StrategiesContextType | undefined>(
   undefined
@@ -86,8 +85,16 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
         // Check if there's a wallet connection in localStorage
         const savedWallet = typeof window !== "undefined" ? localStorage.getItem("connectedWallet") : null;
         if (savedWallet) {
-          const walletData = JSON.parse(savedWallet);
-          setSelectedChain(walletData.chain);
+          try {
+            const walletData = JSON.parse(savedWallet);
+            if (walletData?.chain) {
+              setSelectedChain(walletData.chain);
+            } else {
+              setSelectedChain(chainsData[0].id);
+            }
+          } catch {
+            setSelectedChain(chainsData[0].id);
+          }
         } else {
           setSelectedChain(chainsData[0].id);
         }

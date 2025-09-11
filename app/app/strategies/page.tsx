@@ -65,15 +65,20 @@ const StrategiesContent = () => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("connectedWallet");
       if (saved) {
-        const walletData = JSON.parse(saved);
-        setWalletAddress(walletData.address);
-        setConnectedWallet(walletData.name);
+        try {
+          const walletData = JSON.parse(saved);
+          setWalletAddress(walletData.address ?? null);
+          setConnectedWallet(walletData.name ?? null);
         
-        // Auto-select chain based on wallet type
-        if (walletData.name === "MetaMask") {
-          setSelectedChain("injective-evm");
-        } else if (walletData.name === "Keplr" || walletData.name === "Leap") {
-          setSelectedChain("injective");
+          // Auto-select chain based on wallet type
+          if (walletData.name === "MetaMask") {
+            setSelectedChain("injective-evm");
+          } else if (walletData.name === "Keplr" || walletData.name === "Leap") {
+            setSelectedChain("injective");
+          }
+        } catch {
+          setWalletAddress(null);
+          setConnectedWallet(null);
         }
       } else {
         setWalletAddress(null);
