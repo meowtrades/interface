@@ -262,8 +262,6 @@ export const api = {
     updateAddress: (address: string) =>
       axiosInstance.patch(`/user/address`, { address }),
     getUserTransactions: () => axiosInstance.get(`/user/transactions`),
-    checkAdminStatus: () =>
-      axiosInstance.get<{ isAdmin: boolean }>(`/user/is-admin`),
   },
   xp: {
     getUserXp: () => axiosInstance.get(`/xp`),
