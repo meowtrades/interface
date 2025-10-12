@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "../ui/input";
 import { Frequency } from "@/lib/types";
 import { toast } from "sonner";
-import { getLeapWalletAddress } from "@/lib/grants/wallet";
 import { queryClient, useCreateInvestmentPlan } from "@/api";
 import { useQueries } from "@tanstack/react-query";
 import {
@@ -55,10 +54,9 @@ const PaperTradeInputForm = () => {
   });
 
   //Check for Grid Strategy
-  const isGridStrategy = strategies?.find(
-    (s) => s.id === selectedStrategy
-  )?.name
-    ?.toLowerCase()
+  const isGridStrategy = strategies
+    ?.find((s) => s.id === selectedStrategy)
+    ?.name?.toLowerCase()
     .includes("grid");
 
   const handleStartMockTrade = async () => {
@@ -76,23 +74,24 @@ const PaperTradeInputForm = () => {
         return;
       }
 
-      const walletAddress = await getLeapWalletAddress();
+      // Use mock address for paper trades - no wallet interaction needed
+      const mockWalletAddress = "inj1mockaddress000000000000000000000000000";
 
       const newPlan = await createDcaPlanMutation.mutateAsync({
         amount: Number(amount),
-        userWalletAddress: walletAddress,
+        userWalletAddress: mockWalletAddress,
         frequency: isGridStrategy ? Frequency.WEEKLY : frequency,
         tokenSymbol: selectedBuyToken,
         strategyId: selectedStrategy,
-        recipientAddress: walletAddress,
+        recipientAddress: mockWalletAddress,
         chain: "mock",
         riskLevel: isGridStrategy
           ? "medium_risk"
           : riskLevel === 1
-          ? "no_risk"
-          : riskLevel === 2
-          ? "medium_risk"
-          : "high_risk",
+            ? "no_risk"
+            : riskLevel === 2
+              ? "medium_risk"
+              : "high_risk",
         slippage: 0.5,
         env: "paper",
       });
@@ -156,7 +155,7 @@ const PaperTradeInputForm = () => {
     }
   }, [tokens, selectedBuyToken]);
 
-  console.log('tokens:', tokens);
+  console.log("tokens:", tokens);
 
   return (
     <Card className="w-full lg:w-full shadow-3d-soft hover:shadow-3d-hover-soft transition-all duration-300">
@@ -321,8 +320,8 @@ const PaperTradeInputForm = () => {
           {createDcaPlanMutation.isPending
             ? "Starting Paper Trade..."
             : isStrategiesLoading || isTokensLoading
-            ? "Loading options..."
-            : "Start Paper Trade"}
+              ? "Loading options..."
+              : "Start Paper Trade"}
         </Button>
       </CardFooter>
     </Card>

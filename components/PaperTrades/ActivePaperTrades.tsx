@@ -28,16 +28,20 @@ import { DialogTrigger } from "@/components/ui/dialog";
 const ActivePaperTrades = () => {
   const stopDcaPlanMutation = useStopDcaPlan();
   const queryClient = useQueryClient();
-  
+  const [stoppingTradeId, setStoppingTradeId] = React.useState<string | null>(
+    null
+  );
+
   const handleStopMockTrade = async (tradeId: string) => {
+    setStoppingTradeId(tradeId);
     try {
       await stopDcaPlanMutation.mutateAsync(tradeId);
       toast.success("Paper Trade Stopped!", {
         description:
-        "Your paper trade has been stopped successfully. View the final results in your trade history.",
+          "Your paper trade has been stopped successfully. View the final results in your trade history.",
         duration: 5000,
       });
-      
+
       // Invalidate all related queries for real-time updates
       await Promise.all([
         queryClient.invalidateQueries({
@@ -55,12 +59,14 @@ const ActivePaperTrades = () => {
       console.error("Failed to stop paper trade:", error);
       toast.error("Failed to Stop Paper Trade", {
         description:
-        "Please try again or contact support if the issue persists.",
+          "Please try again or contact support if the issue persists.",
         duration: 5000,
       });
+    } finally {
+      setStoppingTradeId(null);
     }
   };
-  
+
   // Get mock strategies by filtering for a chain: "mock"
   const {
     data: activeMockStrategiesWithAnalytics,
@@ -76,14 +82,14 @@ const ActivePaperTrades = () => {
     refetchOnWindowFocus: false,
     staleTime: 0, // Always consider data stale for fresh updates
   });
-  
+
   return (
     <Tabs defaultValue="active" className="mb-2">
       <TabsContent value="active" className="pt-6">
         {!isLoadingActiveMockStrategiesAnalytics &&
         (!activeMockStrategiesWithAnalytics ||
           activeMockStrategiesWithAnalytics.length === 0) ? (
-            <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
+          <Card className="border-2 border-dashed border-border bg-card hover:shadow-card-hover transition-shadow duration-200">
             <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
               <div className="h-16 w-16 rounded-full bg-secondary text-primary flex items-center justify-center mb-6">
                 <TrendingUp size={24} />
@@ -149,7 +155,9 @@ const ActivePaperTrades = () => {
                             }
                           </div>
                           <div>
-                            <CardTitle className="text-md">{trade.strategyTemplate.name}</CardTitle>
+                            <CardTitle className="text-md">
+                              {trade.strategyTemplate.name}
+                            </CardTitle>
                             <CardDescription>
                               {trade.token.symbol} • Started {startedAt}
                             </CardDescription>
@@ -210,8 +218,9 @@ const ActivePaperTrades = () => {
                         onClick={() => handleStopMockTrade(trade._id)}
                         variant="destructive"
                         className="w-full"
+                        disabled={stoppingTradeId === trade._id}
                       >
-                        Stop
+                        {stoppingTradeId === trade._id ? "Stopping..." : "Stop"}
                       </Button>
                     </CardFooter>
                   </Card>
