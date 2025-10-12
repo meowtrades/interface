@@ -40,7 +40,7 @@ import WalletPicker from "./WalletPicker";
 import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
-import { formatFrequency } from "@/lib/utils";
+import { formatFrequency, fetchWalletBalances } from "@/lib/utils";
 import { useStrategies } from "@/lib/context/StrategiesContext";
 
 // Color map for strategy types
@@ -121,6 +121,8 @@ const StartStrategyDialog = ({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isRecipientAddressValid, setIsRecipientAddressValid] = useState(false);
   const [useMyAddress, setUseMyAddress] = useState(true); // Default checked
+  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
+  const [isFetchingBalance, setIsFetchingBalance] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -168,6 +170,35 @@ const StartStrategyDialog = ({
       setChain(selectedChain);
     }
   }, [selectedChain]);
+
+  // Fetch USDT balance when wallet is connected
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (typeof window === "undefined") return;
+
+      const connectedWallet = localStorage.getItem("connectedWallet");
+      if (!connectedWallet || !open) {
+        setUsdtBalance(null);
+        return;
+      }
+
+      try {
+        const walletData = JSON.parse(connectedWallet);
+        if (!walletData.address) return;
+
+        setIsFetchingBalance(true);
+        const balances = await fetchWalletBalances(walletData.address);
+        setUsdtBalance(balances.usdt);
+      } catch (error) {
+        console.error("Failed to fetch USDT balance:", error);
+        setUsdtBalance(null);
+      } finally {
+        setIsFetchingBalance(false);
+      }
+    };
+
+    fetchBalance();
+  }, [open]);
 
   // Get color scheme based on strategy type
   const colorScheme = ColorMap[strategy.type] || {
@@ -296,7 +327,14 @@ const StartStrategyDialog = ({
   };
   // Force tokens to INJ-only selection
   const filteredTokens: Token[] = [
-    { id: "inj", symbol: "INJ", name: "Injective", icon: "/icons/injective.svg", chains: ["injective", "injective-evm"], decimals: 18 }
+    {
+      id: "inj",
+      symbol: "INJ",
+      name: "Injective",
+      icon: "/icons/injective.svg",
+      chains: ["injective", "injective-evm"],
+      decimals: 18,
+    },
   ];
 
   // Get wallet chain from localStorage or context
@@ -420,12 +458,21 @@ const StartStrategyDialog = ({
               <div className="space-y-4">
                 {" "}
                 <div>
-                  <Label
-                    htmlFor="investment"
-                    className="text-sm font-semibold text-contrast-high"
-                  >
-                    Investment Amount (USD)
-                  </Label>
+                  <div className="flex justify-between items-center">
+                    <Label
+                      htmlFor="investment"
+                      className="text-sm font-semibold text-contrast-high"
+                    >
+                      Investment Amount (USDT)
+                    </Label>
+                    {usdtBalance !== null && (
+                      <span className="text-xs text-contrast-medium">
+                        {isFetchingBalance
+                          ? "Loading..."
+                          : `Balance: ${usdtBalance.toFixed(2)} USDT`}
+                      </span>
+                    )}
+                  </div>
                   <Input
                     id="investment"
                     type="number"
@@ -439,11 +486,12 @@ const StartStrategyDialog = ({
                     <p className="text-xs text-contrast-medium mt-2">
                       Minimum investment: $
                       {strategy.minInvestment[strategy.supportedChains[0]] ||
-                        10}
+                        10}{" "}
+                      USDT
                     </p>
                   )}
                   <p className="text-xs text-blue-600 mt-1 font-medium">
-                    Balance required on each execution: $
+                    USDT required on each execution: $
                     {(parseFloat(amount || "0") * (1 + MANAGEMENT_FEE)).toFixed(
                       2
                     )}{" "}
@@ -695,7 +743,9 @@ const StartStrategyDialog = ({
                     onValueChange={(values: number[]) => setSlippage(values[0])}
                     className="py-2"
                   />
-                  <span className="text-xs text-contrast-medium mt-2 font-medium">(max: 10%)</span>
+                  <span className="text-xs text-contrast-medium mt-2 font-medium">
+                    (max: 10%)
+                  </span>
                   <p className="text-xs text-contrast-medium mt-2 font-medium">
                     {slippage === -1 &&
                       "Auto slippage will be applied based on risk level."}
@@ -725,7 +775,9 @@ const StartStrategyDialog = ({
                   !useMyAddress &&
                   !isRecipientAddressValid
                 }
-                callback={(walletName) => handleSubmit((walletName as string) || undefined)}
+                callback={(walletName) =>
+                  handleSubmit((walletName as string) || undefined)
+                }
                 enteredBalance={parseFloat(amount)}
                 chain={chain}
                 useMyAddress={strategy.id === "SDCA" ? useMyAddress : false}

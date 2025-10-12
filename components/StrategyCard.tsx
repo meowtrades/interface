@@ -21,7 +21,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
+import {
+  getKeplrAddress,
+  getLeapWalletAddress,
+  getMetaMaskWalletAddress,
+} from "@/lib/grants/wallet";
 import Link from "next/link";
 
 const IconMap: Record<string, React.ReactNode> = {
@@ -105,7 +109,6 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       walletAddress = await getLeapWalletAddress();
     }
 
-    const isTestFreq = data.frequency === "test_minute" || data.frequency === "test_10_seconds";
     await dcaMutation.mutateAsync({
       amount: amountPerDay,
       userWalletAddress: walletAddress,
@@ -119,8 +122,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       strategyId: data.strategyId,
       tokenSymbol: data.tokenId,
       slippage: data.slippage, // Default to -1 for auto slippage
-      // If test frequency selected, force paper env to avoid backend rejection for live
-      env: isTestFreq ? "paper" : undefined,
+      env: undefined, // Let backend determine env or use default
     });
   };
 
@@ -233,7 +235,12 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
             </Button>
           </a>
         ) : (
-          <Link href="https://github.com/meowtrades/strategies-core/tree/main" target="_blank" rel="noopener noreferrer" className="w-full">
+          <Link
+            href="https://github.com/meowtrades/strategies-core/tree/main"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full"
+          >
             <Button variant="outline" className="w-full">
               Learn how this works <ArrowRight size={14} />
             </Button>

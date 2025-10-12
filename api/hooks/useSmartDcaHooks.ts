@@ -27,12 +27,9 @@ export const useCreateInvestmentPlan = () => {
         chain: normalizeChainId(planData.chain),
       };
 
-      // Prevent live GRID from using test frequencies which backend might reject
-      const isTestFrequency = normalizedPlanData.frequency === "test_minute" || normalizedPlanData.frequency === "test_10_seconds";
       const payload = {
         ...normalizedPlanData,
-        // If test frequency, force paper environment; otherwise keep provided
-        env: isTestFrequency ? "paper" : normalizedPlanData.env,
+        env: normalizedPlanData.env, // Keep env as provided, don't force paper mode
       } as CreateDcaPlanDto;
 
       let response;
