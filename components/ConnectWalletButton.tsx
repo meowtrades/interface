@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,15 +10,14 @@ import {
   DialogHeader,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Wallet, LogOut, Coins, ArrowLeftRight} from "lucide-react";
+import { Wallet, LogOut, Coins, ArrowLeftRight } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { walletConfigs } from "@/lib/grants/wallet-config";
-import { getKeplrAddress, getLeapWalletAddress, getMetaMaskWalletAddress } from "@/lib/grants/wallet";
-import { useWallet } from "@/lib/context/WalletContext";
-import { useStrategies } from "@/lib/context/StrategiesContext";
-import { api } from "@/api/client";
-import { fetchWalletBalances } from "@/lib/utils";
+import {
+  useInjectiveWallet,
+  type WalletType,
+} from "@/lib/context/InjectiveWalletContext";
 import Link from "next/link";
 
 interface ConnectWalletButtonProps {
@@ -33,202 +32,94 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   className = "",
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectedWallet, setConnectedWallet] = useState<{
-    name: string;
-    address: string;
-    chain: string;
-  } | null>(null);
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
-  const [injBalance, setInjBalance] = useState<number | null>(null);
-  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
-  const [isFetchingBalances, setIsFetchingBalances] = useState(false);
-  const { setSelectedChain: setWalletChain } = useWallet();
-  const { setSelectedChain: setStrategyChain } = useStrategies();
 
-  // Load wallet connection state from localStorage on component mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("connectedWallet");
-      if (saved) {
-        try {
-          const walletData = JSON.parse(saved);
-          setConnectedWallet(walletData);
-          setWalletChain(walletData?.chain ?? "injective");
-          setTimeout(() => {
-            setStrategyChain(walletData?.chain ?? "injective");
-          }, 100);
-        } catch {
-          // ignore corrupted entry
-        }
-      }
-    }
-  }, [setWalletChain, setStrategyChain]);
+  const {
+    isConnected,
+    isConnecting,
+    walletState,
+    balances,
+    isFetchingBalances,
+    connectWallet,
+    disconnectWallet,
+  } = useInjectiveWallet();
 
-  // Sync with StrategiesContext whenever connectedWallet changes
-  useEffect(() => {
-    if (connectedWallet) {
-      const timer = setTimeout(() => {
-        setStrategyChain(connectedWallet.chain);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [connectedWallet, setStrategyChain]);
-
-  // Save wallet connection state to localStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (connectedWallet) {
-        localStorage.setItem("connectedWallet", JSON.stringify(connectedWallet));
-      } else {
-        localStorage.removeItem("connectedWallet");
-      }
-    }
-  }, [connectedWallet]);
-
-  // Fetch balances when wallet is connected/changes
-  useEffect(() => {
-    const fetchBalances = async () => {
-      if (!connectedWallet) {
-        setInjBalance(null);
-        setUsdtBalance(null);
-        return;
-      }
-      try {
-        setIsFetchingBalances(true);
-        
-        // Update user address in backend (optional, continue even if this fails)
-        try {
-          await api.user.updateAddress(connectedWallet.address);
-        } catch (err) {
-          console.warn("Failed to update user address in backend:", err);
-        }
-        
-        // Fetch real balances from Injective blockchain
-        const balances = await fetchWalletBalances(connectedWallet.address);
-        setInjBalance(balances.inj);
-        setUsdtBalance(balances.usdt);
-        
-      } catch (err) {
-        console.error("Failed to fetch balances", err);
-        // Set zero balances on error
-        setInjBalance(0);
-        setUsdtBalance(0);
-      } finally {
-        setIsFetchingBalances(false);
-      }
-    };
-    fetchBalances();
-  }, [connectedWallet]);
-
-  const handleWalletConnect = async (walletName: string) => {
-    try {
-      setIsConnecting(true);
-      let address: string;
-      let chain: string;
-
-      switch (walletName) {
-        case "Keplr":
-        case "Leap":
-          chain = "injective";
-          setWalletChain(chain);
-          setStrategyChain(chain);
-          address = walletName === "Keplr"
-            ? await getKeplrAddress()
-            : await getLeapWalletAddress();
-          break;
-
-        case "MetaMask":
-          chain = "injective-evm";
-          setWalletChain(chain);
-          setStrategyChain(chain);
-          address = await getMetaMaskWalletAddress();
-          break;
-
-        default:
-          throw new Error(`Unsupported wallet: ${walletName}`);
-      }
-
-      setConnectedWallet({ name: walletName, address, chain });
-      setIsDialogOpen(false);
-
-      // Multiple attempts to ensure strategy chain is set correctly
-      setTimeout(() => {
-        setStrategyChain(chain);
-      }, 200);
-      setTimeout(() => {
-        setStrategyChain(chain);
-      }, 500);
-      setTimeout(() => {
-        setStrategyChain(chain);
-      }, 1000);
-
-      toast.success(`Connected to ${walletName} on ${chain}`);
-    } catch (error) {
-      console.error("Wallet connection error:", error);
-      toast.error(`Failed to connect to ${walletName}`);
-    } finally {
-      setIsConnecting(false);
-    }
+  const handleWalletConnect = async (walletType: WalletType) => {
+    await connectWallet(walletType);
+    setIsDialogOpen(false);
   };
 
   const handleDisconnect = () => {
-    setConnectedWallet(null);
-    toast.success("Wallet disconnected");
+    disconnectWallet();
+    setIsAddressDialogOpen(false);
   };
 
   const availableWallets = walletConfigs.filter((wallet) => {
     return typeof window !== "undefined" && wallet.windowKey in window;
   });
 
-  const isZero = (bal: number | string | null | undefined) => {
+  const isZero = (bal: number | null | undefined) => {
     if (bal === null || bal === undefined) return true;
-    const num = typeof bal === "string" ? parseFloat(bal) : bal;
-    return isNaN(num) || num <= 0.00001;
+    return bal <= 0.00001;
   };
 
-  if (connectedWallet) {
+  if (isConnected && walletState) {
     const handleCopyAddress = async () => {
       try {
-        await navigator.clipboard.writeText(connectedWallet.address);
+        await navigator.clipboard.writeText(walletState.address);
         toast.success("Address copied to clipboard");
       } catch {
         toast.error("Failed to copy address");
       }
     };
+
     return (
       <>
         <div className="flex items-center gap-2">
           {/* Balances or Fund Buttons */}
           <div className="flex items-center gap-2">
-            {injBalance !== null && (
-              isZero(injBalance) ? (
-                <a href="https://faucet.injective.network/" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm" className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 px-2 py-1">
-                  <Coins size={16} className="mr-2" />
+            {balances?.inj !== undefined &&
+              (isZero(balances.inj) ? (
+                <a
+                  href="https://faucet.injective.network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 px-2 py-1"
+                  >
+                    <Coins size={16} className="mr-2" />
                     Fund INJ
                   </Button>
                 </a>
               ) : (
                 <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                  {isFetchingBalances ? "INJ: ..." : `${injBalance.toFixed(3)} INJ`}
+                  {isFetchingBalances
+                    ? "INJ: ..."
+                    : `${balances.inj.toFixed(3)} INJ`}
                 </span>
-              )
-            )}
-            {usdtBalance !== null && (
-              isZero(usdtBalance) ? (
+              ))}
+            {balances?.usdt !== undefined &&
+              (isZero(balances.usdt) ? (
                 <Link href="/fund-usdt">
-                  <Button variant="outline" size="sm" className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-2 py-1">
-                  <ArrowLeftRight size={16} className="mr-2" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-2 py-1"
+                  >
+                    <ArrowLeftRight size={16} className="mr-2" />
                     Fund USDT
                   </Button>
                 </Link>
               ) : (
                 <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                  {isFetchingBalances ? "USDT: ..." : `${usdtBalance.toFixed(2)} USDT`}
+                  {isFetchingBalances
+                    ? "USDT: ..."
+                    : `${balances.usdt.toFixed(2)} USDT`}
                 </span>
-              )
-            )}
+              ))}
           </div>
           <Button
             variant="outline"
@@ -237,22 +128,30 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
             onClick={() => setIsAddressDialogOpen(true)}
           >
             <Wallet size={16} />
-            {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
+            {walletState.address.slice(0, 6)}...{walletState.address.slice(-4)}
           </Button>
         </div>
-        <Dialog open={isAddressDialogOpen} onOpenChange={setIsAddressDialogOpen}>
+        <Dialog
+          open={isAddressDialogOpen}
+          onOpenChange={setIsAddressDialogOpen}
+        >
           <DialogContent className="w-80">
             <DialogHeader>
               <DialogTitle>Wallet Actions</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4 items-center">
               <div className="flex flex-col items-center gap-1">
-                <span className="font-mono text-sm break-all text-center">{connectedWallet.address}</span>
+                <span className="text-xs text-gray-500">
+                  Connected with {walletState.walletType}
+                </span>
+                <span className="font-mono text-sm break-all text-center">
+                  {walletState.address}
+                </span>
                 <Button variant="ghost" size="sm" onClick={handleCopyAddress}>
                   Copy Address
                 </Button>
               </div>
-              <Button variant="destructive" onClick={() => { setIsAddressDialogOpen(false); handleDisconnect(); }}>
+              <Button variant="destructive" onClick={handleDisconnect}>
                 <LogOut size={16} className="mr-2" /> Disconnect
               </Button>
             </div>
@@ -265,7 +164,11 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} size={size} className={`flex items-center gap-2 ${className}`}>
+        <Button
+          variant={variant}
+          size={size}
+          className={`flex items-center gap-2 ${className}`}
+        >
           <Wallet size={16} />
           Connect Wallet
         </Button>
@@ -274,7 +177,8 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
         <DialogHeader>
           <DialogTitle>Connect Your Wallet</DialogTitle>
           <DialogDescription>
-            Choose a wallet to connect. Keplr and Leap will connect to Injective, MetaMask will connect to Injective EVM.
+            Choose a wallet to connect. Keplr and Leap will connect to
+            Injective, MetaMask will connect to Injective EVM.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -284,7 +188,7 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
                 key={wallet.name}
                 className={`flex items-center gap-3 w-full justify-between h-16 rounded transition-all duration-200 ${wallet.colorTheme}`}
                 disabled={isConnecting}
-                onClick={() => handleWalletConnect(wallet.name)}
+                onClick={() => handleWalletConnect(wallet.name as WalletType)}
               >
                 <div className="flex items-center gap-3 text-lg">
                   <Image

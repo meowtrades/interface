@@ -12,11 +12,7 @@ import React, {
   useState,
 } from "react";
 import { Chain, Strategy, Token } from "../types";
-import {
-  fetchStrategies,
-  fetchChains,
-  fetchTokens,
-} from "../api/strategies";
+import { fetchStrategies, fetchChains, fetchTokens } from "../api/strategies";
 import { api } from "@/api/client";
 import type { ActiveStrategyAnalytics } from "@/api/types";
 
@@ -53,7 +49,9 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [chains, setChains] = useState<Chain[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
-  const [userStrategies, setUserStrategies] = useState<ActiveStrategyAnalytics[]>([]);
+  const [userStrategies, setUserStrategies] = useState<
+    ActiveStrategyAnalytics[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
@@ -82,22 +80,7 @@ export const StrategiesProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Set default selections if not already set
       if (!selectedChain && chainsData.length > 0) {
-        // Check if there's a wallet connection in localStorage
-        const savedWallet = typeof window !== "undefined" ? localStorage.getItem("connectedWallet") : null;
-        if (savedWallet) {
-          try {
-            const walletData = JSON.parse(savedWallet);
-            if (walletData?.chain) {
-              setSelectedChain(walletData.chain);
-            } else {
-              setSelectedChain(chainsData[0].id);
-            }
-          } catch {
-            setSelectedChain(chainsData[0].id);
-          }
-        } else {
-          setSelectedChain(chainsData[0].id);
-        }
+        setSelectedChain(chainsData[0].id);
       }
       if (!selectedToken && tokensData.length > 0) {
         setSelectedToken(tokensData[0].id);

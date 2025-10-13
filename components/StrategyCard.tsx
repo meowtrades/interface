@@ -88,7 +88,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
     recipientAddress?: string;
     riskLevel?: RiskLevel;
     chain: string;
-    selectedWallet?: string; // wallet chosen in WalletPicker
+    selectedWallet?: string; // wallet chosen in WalletGrantPicker
   }) => {
     if (!user?.user?.id) {
       throw new Error("User not authenticated");

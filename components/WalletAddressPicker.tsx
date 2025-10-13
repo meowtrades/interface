@@ -1,5 +1,7 @@
 /** @format */
 
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -12,21 +14,16 @@ import { toast } from "sonner";
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import {
-  getKeplrAddress,
-  getLeapWalletAddress,
-  getMetaMaskWalletAddress,
-} from "@/lib/grants/wallet";
-import {
-  walletConfigs,
-  getWalletsForChain,
-  BaseWalletConfig,
-} from "@/lib/grants/wallet-config";
+  useInjectiveWallet,
+  type WalletType,
+} from "@/lib/context/InjectiveWalletContext";
+import { walletConfigs, getWalletsForChain } from "@/lib/grants/wallet-config";
 import Image from "next/image";
 
 interface WalletAddressPickerProps {
   onAddressSelected: (address: string) => void;
   children: React.ReactNode;
-  chain?: string; // Add chain prop
+  chain?: string;
 }
 
 const WalletAddressPicker = ({
@@ -38,64 +35,47 @@ const WalletAddressPicker = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingWallet, setLoadingWallet] = useState<string | null>(null);
 
-  // Extended wallet options with address retrieval functions
-  type WalletAddressOption = BaseWalletConfig & {
-    getAddress: () => Promise<string>;
-  };
-
-  const allWalletOptions: WalletAddressOption[] = walletConfigs.map(
-    (config) => {
-      let getAddress: () => Promise<string>;
-
-      switch (config.name) {
-        case "Keplr":
-          getAddress = getKeplrAddress;
-          break;
-        case "Leap":
-          getAddress = getLeapWalletAddress;
-          break;
-        case "MetaMask":
-          getAddress = getMetaMaskWalletAddress;
-          break;
-        default:
-          throw new Error(`Unknown wallet: ${config.name}`);
-      }
-
-      return { ...config, getAddress };
-    }
-  );
+  const { isConnected, walletState, connectWallet } = useInjectiveWallet();
 
   // Filter wallet options based on chain
-  const getWalletOptionsForChain = () => {
-    const availableWallets = getWalletsForChain(chain);
-    return allWalletOptions.filter((wallet) =>
-      availableWallets.some((available) => available.name === wallet.name)
-    );
-  };
+  const walletsForChain = getWalletsForChain(chain);
+  const availableWallets = walletsForChain.filter((wallet) => {
+    return typeof window !== "undefined" && wallet.windowKey in window;
+  });
 
-  const walletOptions = getWalletOptionsForChain();
-
-  const handleWalletSelect = async (wallet: (typeof walletOptions)[0]) => {
+  const handleWalletSelect = async (walletType: WalletType) => {
     try {
       setIsLoading(true);
-      setLoadingWallet(wallet.name);
+      setLoadingWallet(walletType);
 
-      const address = await wallet.getAddress();
-      onAddressSelected(address);
-      setIsDialogOpen(false);
-      toast.success(`Address selected from ${wallet.name}`);
+      // If already connected to the same wallet, use existing address
+      if (isConnected && walletState?.walletType === walletType) {
+        onAddressSelected(walletState.address);
+        setIsDialogOpen(false);
+        toast.success(`Address selected from ${walletType}`);
+        return;
+      }
+
+      // Otherwise, connect to the wallet
+      await connectWallet(walletType);
+
+      // After connection, the walletState will be updated
+      // We need to wait a tick for the state to update
+      setTimeout(() => {
+        if (walletState?.address) {
+          onAddressSelected(walletState.address);
+          setIsDialogOpen(false);
+          toast.success(`Address selected from ${walletType}`);
+        }
+      }, 100);
     } catch (error) {
       console.error("Error getting wallet address:", error);
-      toast.error(`Failed to get address from ${wallet.name}`);
+      toast.error(`Failed to get address from ${walletType}`);
     } finally {
       setIsLoading(false);
       setLoadingWallet(null);
     }
   };
-
-  const availableWallets = walletOptions.filter((wallet) => {
-    return typeof window !== "undefined" && wallet.windowKey in window;
-  });
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -111,7 +91,7 @@ const WalletAddressPicker = ({
                 key={wallet.name}
                 className={`flex items-center gap-2 w-full justify-between h-16 rounded ${wallet.colorTheme}`}
                 disabled={isLoading}
-                onClick={() => handleWalletSelect(wallet)}
+                onClick={() => handleWalletSelect(wallet.name as WalletType)}
               >
                 <div className="flex items-center gap-3 text-lg">
                   <Image

@@ -36,12 +36,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
-import WalletPicker from "./WalletPicker";
+import WalletGrantPicker from "./WalletGrantPicker";
 import WalletAddressPicker from "./WalletAddressPicker";
 import { MANAGEMENT_FEE } from "@/lib/constants";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
-import { formatFrequency, fetchWalletBalances } from "@/lib/utils";
+import { formatFrequency } from "@/lib/utils";
 import { useStrategies } from "@/lib/context/StrategiesContext";
+import { useInjectiveWallet } from "@/lib/context/InjectiveWalletContext";
 
 // Color map for strategy types
 const ColorMap: Record<string, { bg: string; text: string }> = {
@@ -121,13 +122,12 @@ const StartStrategyDialog = ({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isRecipientAddressValid, setIsRecipientAddressValid] = useState(false);
   const [useMyAddress, setUseMyAddress] = useState(true); // Default checked
-  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
-  const [isFetchingBalance, setIsFetchingBalance] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const { selectedChain } = useStrategies();
+  const { walletState, balances, isFetchingBalances } = useInjectiveWallet();
 
   // Reset form when strategy changes
   useEffect(() => {
@@ -159,46 +159,14 @@ const StartStrategyDialog = ({
     }
   }, [useMyAddress, chain]);
 
-  // On dialog open, set chain to wallet chain if connected (from localStorage or context).
-  // Chain selector should be locked to wallet's chain if connected.
-  // Token selector should show tokens for the current chain.
+  // On dialog open, set chain to wallet chain if connected
   useEffect(() => {
-    const connectedChain = localStorage.getItem("connectedChain");
-    if (connectedChain) {
-      setChain(connectedChain);
+    if (walletState?.chain) {
+      setChain(walletState.chain);
     } else if (selectedChain) {
       setChain(selectedChain);
     }
-  }, [selectedChain]);
-
-  // Fetch USDT balance when wallet is connected
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (typeof window === "undefined") return;
-
-      const connectedWallet = localStorage.getItem("connectedWallet");
-      if (!connectedWallet || !open) {
-        setUsdtBalance(null);
-        return;
-      }
-
-      try {
-        const walletData = JSON.parse(connectedWallet);
-        if (!walletData.address) return;
-
-        setIsFetchingBalance(true);
-        const balances = await fetchWalletBalances(walletData.address);
-        setUsdtBalance(balances.usdt);
-      } catch (error) {
-        console.error("Failed to fetch USDT balance:", error);
-        setUsdtBalance(null);
-      } finally {
-        setIsFetchingBalance(false);
-      }
-    };
-
-    fetchBalance();
-  }, [open]);
+  }, [walletState, selectedChain]);
 
   // Get color scheme based on strategy type
   const colorScheme = ColorMap[strategy.type] || {
@@ -337,15 +305,6 @@ const StartStrategyDialog = ({
     },
   ];
 
-  // Get wallet chain from localStorage or context
-  let walletChain: string | null = null;
-  if (typeof window !== "undefined") {
-    const savedWallet = localStorage.getItem("connectedWallet");
-    if (savedWallet) {
-      walletChain = JSON.parse(savedWallet).chain;
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50">
@@ -465,11 +424,11 @@ const StartStrategyDialog = ({
                     >
                       Investment Amount (USDT)
                     </Label>
-                    {usdtBalance !== null && (
+                    {balances?.usdt !== undefined && (
                       <span className="text-xs text-contrast-medium">
-                        {isFetchingBalance
+                        {isFetchingBalances
                           ? "Loading..."
-                          : `Balance: ${usdtBalance.toFixed(2)} USDT`}
+                          : `Balance: ${balances.usdt.toFixed(2)} USDT`}
                       </span>
                     )}
                   </div>
@@ -539,9 +498,9 @@ const StartStrategyDialog = ({
                       Chain
                     </Label>
                     <Select
-                      value={walletChain || chain}
+                      value={walletState?.chain || chain}
                       onValueChange={(value: string) => setChain(value)}
-                      disabled={!!walletChain}
+                      disabled={!!walletState?.chain}
                     >
                       <SelectTrigger
                         id="chain"
@@ -769,7 +728,7 @@ const StartStrategyDialog = ({
               >
                 Cancel
               </Button>
-              <WalletPicker
+              <WalletGrantPicker
                 disabled={
                   strategy.id === "SDCA" &&
                   !useMyAddress &&

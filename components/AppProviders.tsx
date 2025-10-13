@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/sonner";
+import { InjectiveWalletProvider } from "@/lib/context/InjectiveWalletContext";
 
 // Create a QueryClient instance for React Query
 const queryClient = new QueryClient();
@@ -17,15 +18,15 @@ interface AppProvidersProps {
 
 /**
  * AppProviders component that wraps global providers
- * This now only includes providers that should be available everywhere
- * StrategiesProvider is now scoped to authenticated routes in AppLayout
+ * This now includes InjectiveWalletProvider for unified wallet management
+ * StrategiesProvider is scoped to authenticated routes in AppLayout
  */
 const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        {children}
-      </TooltipProvider>
+      <InjectiveWalletProvider enableAutoReconnect={true}>
+        <TooltipProvider>{children}</TooltipProvider>
+      </InjectiveWalletProvider>
       <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

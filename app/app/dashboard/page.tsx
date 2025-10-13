@@ -7,7 +7,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import AppLayout from "@/components/AppLayout";
 import StrategyPopup from "@/components/StrategyPopup";
 import { useStrategies } from "@/lib/context/StrategiesContext";
-import { useWallet } from "@/lib/context/WalletContext";
 import { api } from "@/api";
 import PortfolioOverview from "@/components/Dashboard/PortfolioOverview";
 import ActivePlans from "@/components/Dashboard/ActivePlans";
@@ -17,10 +16,9 @@ import RecentActivities from "@/components/Dashboard/RecentActivities";
 const DashboardContent = () => {
   const queryClient = useQueryClient();
   const { error: strategiesError } = useStrategies();
-  const { error: walletsError } = useWallet();
   const [showStrategyPopup, setShowStrategyPopup] = useState(false);
 
-  const error = strategiesError || walletsError;
+  const error = strategiesError;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
