@@ -31,9 +31,11 @@ import {
   Activity,
   Search,
   BarChart3,
+  AlertCircle,
 } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const StrategiesContent = () => {
   const {
@@ -165,6 +167,15 @@ const StrategiesContent = () => {
           Explore and launch one-click trading strategies.
         </p>
       </div>
+
+      {/* Testnet Notice */}
+      <Alert className="mb-6 border-blue-200 bg-blue-50">
+        <AlertCircle className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
+          Currently live on <strong>Injective Testnet</strong>. Due to varying
+          liquidity on testnet, numbers and performance metrics may fluctuate.
+        </AlertDescription>
+      </Alert>
 
       {/* Filters */}
       <div className="mb-6 flex flex-wrap gap-3 items-center">
