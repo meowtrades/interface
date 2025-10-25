@@ -74,7 +74,7 @@ const tokens: Token[] = [
 const strategies: Strategy[] = [
   {
     id: "SDCA",
-    name: "Smart DCA Strategy",
+    name: "Smart DCA Agent",
     description: "Dollar-cost averaging enhanced by market timing algorithms",
     type: "dca",
     icon: "RefreshCw",
@@ -106,7 +106,7 @@ const strategies: Strategy[] = [
   },
   {
     id: "GRID",
-    name: "Grid Trading Strategy",
+    name: "Grid Trading Agent",
     description: "Automated buy-low, sell-high across a price range",
     type: "grid",
     icon: "Grid",
@@ -173,7 +173,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 500,
     token: { symbol: "inj", name: "Injective", currentPrice: 1 },
-    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
+    strategyTemplate: {
+      id: "SDCA",
+      name: "Smart DCA Strategy",
+      type: "dca",
+      description: "",
+    },
     totalInvested: 500,
     invested: 450,
     profit: 50,
@@ -198,7 +203,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 300,
     token: { symbol: "btc", name: "Bitcoin", currentPrice: 1 },
-    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
+    strategyTemplate: {
+      id: "GRID",
+      name: "Grid Trading Strategy",
+      type: "grid",
+      description: "",
+    },
     totalInvested: 300,
     invested: 275,
     profit: 25,
@@ -223,7 +233,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 200,
     token: { symbol: "eth", name: "Ethereum", currentPrice: 1 },
-    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
+    strategyTemplate: {
+      id: "SDCA",
+      name: "Smart DCA Strategy",
+      type: "dca",
+      description: "",
+    },
     totalInvested: 200,
     invested: 180,
     profit: 20,
@@ -248,7 +263,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 150,
     token: { symbol: "usdc", name: "USD Coin", currentPrice: 1 },
-    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
+    strategyTemplate: {
+      id: "GRID",
+      name: "Grid Trading Strategy",
+      type: "grid",
+      description: "",
+    },
     totalInvested: 150,
     invested: 140,
     profit: 10,
@@ -273,7 +293,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 120,
     token: { symbol: "apt", name: "Aptos", currentPrice: 1 },
-    strategyTemplate: { id: "SDCA", name: "Smart DCA Strategy", type: "dca", description: "" },
+    strategyTemplate: {
+      id: "SDCA",
+      name: "Smart DCA Strategy",
+      type: "dca",
+      description: "",
+    },
     totalInvested: 120,
     invested: 110,
     profit: 10,
@@ -298,7 +323,12 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     chain: "injective",
     currentValue: 100,
     token: { symbol: "sonic", name: "Sonic", currentPrice: 1 },
-    strategyTemplate: { id: "GRID", name: "Grid Trading Strategy", type: "grid", description: "" },
+    strategyTemplate: {
+      id: "GRID",
+      name: "Grid Trading Strategy",
+      type: "grid",
+      description: "",
+    },
     totalInvested: 100,
     invested: 90,
     profit: 10,
@@ -418,7 +448,9 @@ export const fetchStrategies = async (): Promise<Strategy[]> => {
   return strategies;
 };
 
-export const fetchUserStrategies = async (): Promise<ActiveStrategyAnalytics[]> => {
+export const fetchUserStrategies = async (): Promise<
+  ActiveStrategyAnalytics[]
+> => {
   const response = await axiosInstance.get("/user/analytics/strategies");
   return response.data.data;
 };

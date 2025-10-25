@@ -161,10 +161,10 @@ const StrategiesContent = () => {
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Trading Strategies
+          Trading Agents
         </h1>
         <p className="text-muted-foreground">
-          Explore and launch one-click trading strategies.
+          Explore and launch one-click trading Agents.
         </p>
       </div>
 

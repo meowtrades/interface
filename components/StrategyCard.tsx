@@ -166,7 +166,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
       <CardContent>
         <div className="mb-4">
           <div className="text-sm font-medium text-slate-700 mb-2">
-            Strategy Features
+            Agent Features
           </div>
           <ul className="space-y-2 text-sm">
             {strategy.features.map((feature, index) => (
@@ -202,7 +202,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => setStartDialogOpen(true)}
         >
-          One Click Start
+          Deploy
         </Button>
         {/* <Button
           variant="outline"

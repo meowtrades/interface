@@ -240,13 +240,6 @@ export const InjectiveWalletProvider: React.FC<{
         // Fetch balances
         await fetchBalances(injectiveAddress);
 
-        // Update backend
-        try {
-          await api.user.updateAddress(injectiveAddress);
-        } catch (error) {
-          console.warn("Failed to update address in backend:", error);
-        }
-
         toast.success(`Connected to ${walletType}`, {
           description: `Chain: ${chain}`,
         });
