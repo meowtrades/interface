@@ -55,14 +55,14 @@ const Index = () => {
 
   const strategyCards = [
     {
-      name: "Smart DCA",
+      name: "Smart DCA Agent",
       description:
         "Dollar-cost averaging with feline precision. Strategically invest when markets dip, like a cat stalking its prey.",
       timeframe: "1 Year",
       icon: <Activity className="w-9 h-9 text-blue-600" />,
     },
     {
-      name: "Automated Grid Trading",
+      name: "Automated Grid Trading Agent",
       description:
         "Automated trading across price ranges. Pounce on opportunities with calculated moves, just like a cat hunting.",
       timeframe: "1 Year",
@@ -100,7 +100,7 @@ const Index = () => {
   const steps = [
     {
       number: 1,
-      title: "Browse Strategies",
+      title: "Browse Agents",
       description:
         "Explore multiple automated trading strategies and their historical performance.",
     },
@@ -207,7 +207,7 @@ const Index = () => {
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 tracking-tight">
               <span className="text-white">Meowtrades</span>
               <span className="block mt-1 text-white/95">
-                One-Click Automated Trading Strategies
+                One-Click Automated Trading Agents
               </span>
             </h1>
 
@@ -215,8 +215,6 @@ const Index = () => {
               Easily invest in multiple crypto strategies. No experience needed.
               Just choose one that fits you and let automation do the rest.
             </p>
-            
-
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link href="/app/dashboard">
@@ -457,11 +455,11 @@ const Index = () => {
         <div className="container mx-auto text-center relative z-10 animate-on-scroll">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-4xl font-bold mb-6 text-white">
-              Ready to Access Multiple Trading Strategies?
+              Ready to Access Multiple Trading Agents?
             </h2>
             <p className="max-w-2xl mx-auto mb-8 text-white/90 text-base leading-normal">
-              Get one-click access to a collection of automated trading
-              strategies, each optimized for different market conditions.
+              Get one-click access to a collection of automated trading agents,
+              each optimized for different market conditions.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/app/paper-trades">
