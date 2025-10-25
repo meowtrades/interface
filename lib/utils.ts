@@ -25,10 +25,6 @@ export function formatFrequency(freq: string | Frequency) {
       return "Weekly";
     case Frequency.MONTHLY:
       return "Monthly";
-    case Frequency.TEST_10_SECONDS:
-      return "Every 10 seconds";
-    case Frequency.TEST_MINUTE:
-      return "Every minute";
     default:
       return "Unknown frequency";
   }
@@ -122,9 +118,8 @@ export const checkMinimumUSDTBalance = async (
 
   console.log("Fetching subaccount balance...");
   // Check if the user has sufficient balance (must also include management fees)
-  const { bankBalancesList } = await indexer.fetchAccountPortfolioBalances(
-    granter
-  );
+  const { bankBalancesList } =
+    await indexer.fetchAccountPortfolioBalances(granter);
 
   console.log("bankBalancesList", bankBalancesList);
 
@@ -166,7 +161,9 @@ export const normalizeChainId = (chainId: string): string => {
 /**
  * Fetch real wallet balances from Injective blockchain
  */
-export const fetchWalletBalances = async (address: string): Promise<{
+export const fetchWalletBalances = async (
+  address: string
+): Promise<{
   inj: number;
   usdt: number;
 }> => {
@@ -175,17 +172,18 @@ export const fetchWalletBalances = async (address: string): Promise<{
       getNetworkEndpoints(Network.Testnet).indexer
     );
 
-    const { bankBalancesList } = await indexer.fetchAccountPortfolioBalances(address);
-    
+    const { bankBalancesList } =
+      await indexer.fetchAccountPortfolioBalances(address);
+
     // Find INJ balance (native token)
-    const injBalance = bankBalancesList.find(
-      (balance) => balance.denom === "inj"
-    )?.amount || "0";
-    
+    const injBalance =
+      bankBalancesList.find((balance) => balance.denom === "inj")?.amount ||
+      "0";
+
     // Find USDT balance
-    const usdtBalance = bankBalancesList.find(
-      (balance) => balance.denom === USDT_DENOM
-    )?.amount || "0";
+    const usdtBalance =
+      bankBalancesList.find((balance) => balance.denom === USDT_DENOM)
+        ?.amount || "0";
 
     // Convert from smallest units to human-readable
     const injHuman = new BigNumber(injBalance).shiftedBy(-18).toNumber(); // INJ has 18 decimals

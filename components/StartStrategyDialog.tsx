@@ -64,8 +64,6 @@ const frequencyOptions = [
   { value: Frequency.DAILY, label: "Daily" },
   { value: Frequency.WEEKLY, label: "Weekly" },
   { value: Frequency.MONTHLY, label: "Monthly" },
-  { value: Frequency.TEST_MINUTE, label: "Minute" },
-  { value: Frequency.TEST_10_SECONDS, label: "10 Seconds" },
 ];
 
 // Get default investment amount based on strategy type

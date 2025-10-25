@@ -70,8 +70,6 @@ export enum Frequency {
   DAILY = "daily",
   WEEKLY = "weekly",
   MONTHLY = "monthly",
-  TEST_MINUTE = "test_minute",
-  TEST_10_SECONDS = "test_10_seconds",
 }
 
 export enum RiskLevel {
@@ -85,17 +83,6 @@ export const FREQUENCY_RANGE_MAP: Record<
   Frequency,
   { label: string; value: string }[]
 > = {
-  [Frequency.TEST_10_SECONDS]: [
-    { label: "5m", value: "5m" },
-    { label: "15m", value: "15m" },
-    { label: "30m", value: "30m" },
-  ],
-  [Frequency.TEST_MINUTE]: [
-    { label: "1h", value: "1h" },
-    { label: "3h", value: "3h" },
-    { label: "6h", value: "6h" },
-    { label: "12h", value: "12h" },
-  ],
   [Frequency.DAILY]: [
     { label: "7D", value: "7d" },
     { label: "14D", value: "14d" },
