@@ -201,13 +201,13 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center animate-on-scroll">
             <div className="inline-block mb-4 py-2 px-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
               <p className="text-white/90 font-semibold text-sm uppercase tracking-wide">
-                AI TRADING STRATEGIES
+                24/7 Trading Agents
               </p>
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 tracking-tight">
               <span className="text-white">Meowtrades</span>
               <span className="block mt-1 text-white/95">
-                One-Click Automated Trading Agents
+                AI-powered non-custodial algorithmic agents
               </span>
             </h1>
 
@@ -246,7 +246,7 @@ const Index = () => {
                   {strategyCards.map((strategy, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-2xl p-8 shadow-3d-soft hover:shadow-3d-hover-soft hover-lift transition-all duration-300"
+                      className="bg-white rounded-2xl p-8 shadow-3d-soft hover:shadow-3d-hover-soft hover-lift transition-all duration-300 flex flex-col h-full"
                     >
                       <div className="flex items-center gap-4 mb-6">
                         {strategy.icon}
@@ -254,10 +254,10 @@ const Index = () => {
                           {strategy.name}
                         </h3>
                       </div>
-                      <p className="text-gray-600 mb-8 text-sm leading-relaxed">
+                      <p className="text-gray-600 mb-8 text-sm leading-relaxed flex-grow">
                         {strategy.description}
                       </p>
-                      <Link href="/app/paper-trades" className="w-full">
+                      <Link href="/app/paper-trades" className="w-full mt-auto">
                         <Button
                           size="sm"
                           className="w-full group gradient-bg-primary hover:opacity-90 text-white shadow-sm hover:shadow-md text-sm py-3"
