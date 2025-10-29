@@ -32,6 +32,7 @@ export default function RootLayout({
       >
         <AppProviders>
           {children}
+          <Analytics />
         </AppProviders>
       </body>
     </html>
