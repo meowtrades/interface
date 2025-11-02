@@ -42,7 +42,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center gap-4">
           <Link href={getAppLink()}>
             <Button
               size="sm"
@@ -66,7 +66,7 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 mx-6 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-white/20 animate-fade-in overflow-hidden">
-          <div className="p-6">
+          <div className="p-6 space-y-3">
             <Link href={getAppLink()} onClick={() => setIsOpen(false)}>
               <Button
                 className="w-full group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl py-3 shadow-lg transition-all duration-300 font-medium"

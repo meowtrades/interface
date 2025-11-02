@@ -17,6 +17,7 @@ import {
   Grid,
   Trophy,
   Zap,
+  Droplets,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
@@ -58,16 +59,21 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       label: "Paper Trades",
       path: "/app/paper-trades",
     },
-    // {
-    //   icon: <Grid size={20} />,
-    //   label: "Grid Visualization",
-    //   path: "/app/grid-visualization",
-    // },
     {
       icon: <Trophy size={20} />,
       label: "Leaderboard",
       path: "/app/leaderboard",
     },
+    {
+      icon: <Droplets size={20} />,
+      label: "Faucet",
+      path: "/faucet",
+    },
+    // {
+    //   icon: <Grid size={20} />,
+    //   label: "Grid Visualization",
+    //   path: "/app/grid-visualization",
+    // },
   ];
 
   const getPageTitle = () => {
