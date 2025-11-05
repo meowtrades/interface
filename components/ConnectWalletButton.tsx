@@ -78,23 +78,21 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
         <div className="flex items-center gap-2">
           {/* Balances or Fund Buttons */}
           <div className="flex items-center gap-2">
-            {balances?.inj !== undefined &&
-              (isZero(balances.inj) ? (
-                <a
-                  href="https://faucet.injective.network/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+            {((balances?.usdt !== undefined && isZero(balances.usdt)) ||
+              (balances?.inj !== undefined && isZero(balances.inj))) && (
+              <Link href="/faucet">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-2 py-1"
                 >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 px-2 py-1"
-                  >
-                    <Coins size={16} className="mr-2" />
-                    Fund INJ
-                  </Button>
-                </a>
-              ) : (
+                  <ArrowLeftRight size={16} className="mr-2" />
+                  Faucet
+                </Button>
+              </Link>
+            )}
+            {balances?.inj !== undefined &&
+              (isZero(balances.inj) ? null : (
                 <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
                   {isFetchingBalances
                     ? "INJ: ..."
@@ -102,18 +100,7 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
                 </span>
               ))}
             {balances?.usdt !== undefined &&
-              (isZero(balances.usdt) ? (
-                <Link href="/fund-usdt">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 px-2 py-1"
-                  >
-                    <ArrowLeftRight size={16} className="mr-2" />
-                    Fund USDT
-                  </Button>
-                </Link>
-              ) : (
+              (isZero(balances.usdt) ? null : (
                 <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
                   {isFetchingBalances
                     ? "USDT: ..."
