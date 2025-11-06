@@ -6,8 +6,9 @@ import { Frequency, FREQUENCY_RANGE_MAP } from "./types";
 import { Transaction } from "@/api/types/dtos";
 import { IndexerGrpcAccountPortfolioApi } from "@injectivelabs/sdk-ts";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
-import { USDT_DENOM } from "./constants";
+import { USDT_DENOM_TESTNET, USDT_DENOM_MAINNET } from "./constants";
 import { BigNumber } from "@injectivelabs/utils";
+import { INJECTIVE_NETWORK } from "@/configs/env";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -112,8 +113,12 @@ export const checkMinimumUSDTBalance = async (
   granter: string,
   requiredBalance: number
 ) => {
+  const isMainnet = INJECTIVE_NETWORK === "mainnet";
+  const network = isMainnet ? Network.Mainnet : Network.Testnet;
+  const usdtDenom = isMainnet ? USDT_DENOM_MAINNET : USDT_DENOM_TESTNET;
+
   const indexer = new IndexerGrpcAccountPortfolioApi(
-    getNetworkEndpoints(Network.Testnet).indexer
+    getNetworkEndpoints(network).indexer
   );
 
   console.log("Fetching subaccount balance...");
@@ -124,7 +129,7 @@ export const checkMinimumUSDTBalance = async (
   console.log("bankBalancesList", bankBalancesList);
 
   const usdtBalance = bankBalancesList.find(
-    (balance) => balance.denom === USDT_DENOM
+    (balance) => balance.denom === usdtDenom
   )?.amount;
 
   if (!usdtBalance) {
@@ -168,22 +173,34 @@ export const fetchWalletBalances = async (
   usdt: number;
 }> => {
   try {
+    const isMainnet = INJECTIVE_NETWORK === "mainnet";
+    const network = isMainnet ? Network.Mainnet : Network.Testnet;
+    const usdtDenom = isMainnet ? USDT_DENOM_MAINNET : USDT_DENOM_TESTNET;
+
     const indexer = new IndexerGrpcAccountPortfolioApi(
-      getNetworkEndpoints(Network.Testnet).indexer
+      getNetworkEndpoints(network).indexer
     );
 
     const { bankBalancesList } =
       await indexer.fetchAccountPortfolioBalances(address);
+
+    console.log(`Fetching balances for ${isMainnet ? "MAINNET" : "TESTNET"}`);
+    console.log(`Using USDT denom: ${usdtDenom}`);
+    console.log(`Found ${bankBalancesList.length} balances`);
 
     // Find INJ balance (native token)
     const injBalance =
       bankBalancesList.find((balance) => balance.denom === "inj")?.amount ||
       "0";
 
-    // Find USDT balance
+    // Find USDT balance using correct denom for network
     const usdtBalance =
-      bankBalancesList.find((balance) => balance.denom === USDT_DENOM)
-        ?.amount || "0";
+      bankBalancesList.find((balance) => balance.denom === usdtDenom)?.amount ||
+      "0";
+
+    console.log(`INJ balance: ${injBalance}`);
+    console.log(`USDT balance: ${usdtBalance}`);
+    console.log(`Bank balances list: ${JSON.stringify(bankBalancesList)}`);
 
     // Convert from smallest units to human-readable
     const injHuman = new BigNumber(injBalance).shiftedBy(-18).toNumber(); // INJ has 18 decimals

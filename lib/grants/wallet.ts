@@ -5,14 +5,18 @@ import { Wallet } from "@injectivelabs/wallet-base";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { getInjectiveAddress } from "@injectivelabs/sdk-ts";
 import { ensureMetaMaskInjectiveTestnet } from "./evm";
+import { INJECTIVE_NETWORK } from "@/configs/env";
 
 export const getKeplrAddress = async () => {
   if (typeof window !== "undefined" && window.keplr) {
     console.log("Keplr is installed");
   }
 
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Keplr,
     strategies: {},
   });
@@ -27,8 +31,11 @@ export const getLeapWalletAddress = async () => {
     console.log("Leap is installed");
   }
 
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Leap,
     strategies: {},
   });
@@ -45,15 +52,19 @@ export const getMetaMaskWalletAddress = async () => {
     console.log("MetaMask is installed");
   }
 
-  // Ensure the user is on Injective EVM Testnet (add if missing, then switch)
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+  const ethereumChainId = isMainnet ? EthereumChainId.Mainnet : EthereumChainId.TestnetEvm;
+
+  // Ensure the user is on correct Injective EVM network (add if missing, then switch)
   await ensureMetaMaskInjectiveTestnet();
 
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Metamask,
     strategies: {},
     ethereumOptions: {
-      ethereumChainId: EthereumChainId.TestnetEvm,
+      ethereumChainId,
     },
   });
 
