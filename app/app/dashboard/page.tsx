@@ -58,15 +58,6 @@ const DashboardContent = () => {
             },
             staleTime: 5 * 60 * 1000,
           }),
-          // Trending strategy id used on strategies page
-          queryClient.prefetchQuery({
-            queryKey: ["trendingStrategyId"],
-            queryFn: async () => {
-              const response = await api.available.getTrendingStrategy();
-              return response.data.strategy.id;
-            },
-            staleTime: 5 * 60 * 1000,
-          }),
           // Leaderboard page data
           queryClient.prefetchQuery({
             queryKey: ["leaderboard"],

@@ -100,15 +100,6 @@ const StrategiesContent = () => {
     refetchInterval: 15000,
   });
 
-  const { data: trendingStrategyId } = useQuery({
-    queryKey: ["trendingStrategyId"],
-    queryFn: async () => {
-      const response = await api.available.getTrendingStrategy();
-      return response.data.strategy.id;
-    },
-    refetchOnWindowFocus: false,
-  });
-
   // Supported tokens for selected chain (but enforce INJ-only across strategies views)
   const supportedTokens = selectedChain
     ? getSupportedTokensForChain(selectedChain)
@@ -251,7 +242,6 @@ const StrategiesContent = () => {
               {availableStrategies.map((strategy) => (
                 <StrategyCard
                   key={strategy.id}
-                  trending={strategy.id === trendingStrategyId}
                   strategy={strategy}
                   selectedToken={"inj"}
                   onViewDetails={handleViewDetails}

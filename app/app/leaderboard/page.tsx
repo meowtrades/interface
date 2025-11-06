@@ -1,11 +1,15 @@
 "use client";
 
 import React from "react";
-import { Trophy } from "lucide-react";
+import Link from "next/link";
+import { Trophy, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api/client";
 import AppLayout from "@/components/AppLayout";
-import LeaderboardTable, { LeaderboardUser } from "@/components/LeaderboardTable";
+import LeaderboardTable, {
+  LeaderboardUser,
+} from "@/components/LeaderboardTable";
+import { Button } from "@/components/ui/button";
 
 const Leaderboard = () => {
   const { data: leaderboard, isLoading } = useQuery<LeaderboardUser[]>({
@@ -147,9 +151,19 @@ const Leaderboard = () => {
                 <h1>Leaderboard</h1>
               </div>
             </div>
-            <p className="text-lg" style={{ color: "#6B7280" }}>
-              Compete with other traders and earn PawScore for your strategy executions
+            <p className="text-lg mb-6" style={{ color: "#6B7280" }}>
+              Compete with other traders and earn PawScore for your strategy
+              executions
             </p>
+            <Link href="/paws-program">
+              <Button
+                variant="outline"
+                className="group border-2 border-blue-500 text-blue-600 hover:bg-blue-50 rounded-xl px-6 py-2 shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <Info className="w-4 h-4 mr-2" />
+                Learn How to Earn Paws
+              </Button>
+            </Link>
           </div>
 
           {/* Top 3 Players Podium */}

@@ -216,16 +216,6 @@ export const api = {
           logo?: string;
         }[];
       }>(`/available/tokens`),
-    getTrendingStrategy: () =>
-      axiosInstance.get<{
-        strategy: {
-          id: string;
-          name: string;
-          trendingScore: number;
-          activeUsers: number;
-          avgReturn: string;
-        };
-      }>(`/available/strategies/trending`),
     getTokenPrice: (tokenId: string) =>
       axiosInstance.get<{
         tokenId: string;

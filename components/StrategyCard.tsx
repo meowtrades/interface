@@ -45,14 +45,12 @@ const ColorMap: Record<string, { bg: string; text: string }> = {
 interface StrategyCardProps {
   strategy: Strategy;
   selectedToken: string;
-  trending: boolean;
   onViewDetails: (strategyId: string) => void;
 }
 
 const StrategyCard: React.FC<StrategyCardProps> = ({
   strategy,
   selectedToken,
-  trending,
   onViewDetails,
 }) => {
   // Get color scheme based on strategy type
@@ -141,19 +139,6 @@ const StrategyCard: React.FC<StrategyCardProps> = ({
               </div>
               <CardTitle className="flex items-center justify-between gap-2 w-full">
                 <span>{strategy.name}</span>
-                {trending && (
-                  <Tooltip>
-                    <TooltipTrigger className="cursor-pointer" asChild>
-                      <div className="text-xs text-crypto-green font-medium bg-green-100 px-2 py-1 rounded-full">
-                        Trending <TrendingUp size={14} className="inline" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      Investing in trending strategies can yield higher returns
-                      and pawscore.
-                    </TooltipContent>
-                  </Tooltip>
-                )}
               </CardTitle>
             </div>
             <CardDescription className="mt-2">
