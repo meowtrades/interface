@@ -18,6 +18,8 @@ import {
   Trophy,
   Zap,
   Droplets,
+  Users,
+  Lock,
 } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import { StrategiesProvider } from "@/lib/context/StrategiesContext";
@@ -48,21 +50,31 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       icon: <LayoutDashboard size={20} />,
       label: "Dashboard",
       path: "/app/dashboard",
+      locked: false,
     },
     {
       icon: <LineChart size={20} />,
       label: "Live Strategies",
       path: "/app/strategies",
+      locked: false,
     },
     {
       icon: <CircleDollarSign size={20} />,
       label: "Paper Trades",
       path: "/app/paper-trades",
+      locked: false,
     },
     {
       icon: <Trophy size={20} />,
       label: "Leaderboard",
       path: "/app/leaderboard",
+      locked: false,
+    },
+    {
+      icon: <Users size={20} />,
+      label: "Referrals",
+      path: "#",
+      locked: true,
     },
     {
       icon: <Droplets size={20} />,
@@ -120,18 +132,33 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <ul className="space-y-2">
               {navItems.map((item, index) => (
                 <li key={index}>
-                  <Link
-                    href={item.path}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-body font-medium",
-                      pathname === item.path
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </Link>
+                  {item.locked ? (
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-body font-medium cursor-not-allowed opacity-50 relative group"
+                      )}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                      <Lock size={14} className="ml-auto" />
+                      <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                        Coming Soon
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      href={item.path}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-body font-medium",
+                        pathname === item.path
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      )}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -239,19 +266,34 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 <ul className="space-y-2">
                   {navItems.map((item, index) => (
                     <li key={index}>
-                      <Link
-                        href={item.path}
-                        className={cn(
-                          "flex items-center gap-4 px-4 py-3 rounded-lg transition-colors text-body font-medium",
-                          pathname === item.path
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                        )}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </Link>
+                      {item.locked ? (
+                        <div
+                          className={cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-lg text-body font-medium cursor-not-allowed opacity-50"
+                          )}
+                        >
+                          {item.icon}
+                          <span>{item.label}</span>
+                          <Lock size={14} className="ml-auto" />
+                          <span className="text-xs text-muted-foreground ml-2">
+                            Coming Soon
+                          </span>
+                        </div>
+                      ) : (
+                        <Link
+                          href={item.path}
+                          className={cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-lg transition-colors text-body font-medium",
+                            pathname === item.path
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          )}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {item.icon}
+                          <span>{item.label}</span>
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
