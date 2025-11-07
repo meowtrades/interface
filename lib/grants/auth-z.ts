@@ -15,7 +15,6 @@ import { ChainId, EthereumChainId } from "@injectivelabs/ts-types";
 import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { checkMinimumUSDTBalance } from "../utils";
 import { ensureMetaMaskInjectiveTestnet } from "./evm";
-import { MANAGEMENT_FEE } from "../constants";
 import { toast } from "sonner";
 
 if (typeof window !== "undefined") {
@@ -59,9 +58,7 @@ export const getKeplrGrant = async (enteredBalance: number) => {
 
   const [granter] = await walletStrategy.getAddresses();
 
-  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE;
-
-  await checkMinimumUSDTBalance(granter, requiredBalance);
+  await checkMinimumUSDTBalance(granter, enteredBalance);
 
   console.log("Granter Address:", granter);
   const nowInSeconds = Math.floor(Date.now() / 1000);
@@ -131,9 +128,7 @@ export const getLeapGrant = async (enteredBalance: number) => {
 
   const [granter] = await walletStrategy.getAddresses();
 
-  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE; // Default to 0.01 if not provided
-
-  await checkMinimumUSDTBalance(granter, requiredBalance);
+  await checkMinimumUSDTBalance(granter, enteredBalance);
 
   console.log("Granter Address:", granter);
   const nowInSeconds = Math.floor(Date.now() / 1000);
@@ -219,10 +214,8 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
     throw new Error(errorMsg);
   }
 
-  const requiredBalance = enteredBalance + enteredBalance * MANAGEMENT_FEE;
-
   // Use the converted Injective address for balance checking
-  await checkMinimumUSDTBalance(injectiveAddress, requiredBalance);
+  await checkMinimumUSDTBalance(injectiveAddress, enteredBalance);
 
   console.log("Granter Address:", granter);
   const nowInSeconds = Math.floor(Date.now() / 1000);

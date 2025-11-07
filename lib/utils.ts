@@ -117,7 +117,7 @@ export const checkMinimumUSDTBalance = async (
   );
 
   console.log("Fetching subaccount balance...");
-  // Check if the user has sufficient balance (must also include management fees)
+  // Check if the user has sufficient balance
   const { bankBalancesList } =
     await indexer.fetchAccountPortfolioBalances(granter);
 

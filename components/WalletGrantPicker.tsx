@@ -11,7 +11,6 @@ import {
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
-import { MANAGEMENT_FEE } from "@/lib/constants";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import {
@@ -97,13 +96,10 @@ const WalletGrantPicker = ({
           duration: 6000,
         });
       } else if (msg?.includes("Insufficient USDT balance")) {
-        const totalRequired = (enteredBalance || 0) * (1 + MANAGEMENT_FEE);
         toast.error("Insufficient Balance", {
-          description: `You need $${totalRequired.toFixed(
+          description: `You need $${(enteredBalance || 0).toFixed(
             2
-          )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
-            1
-          )}% management fee) to start this strategy. Please add funds to your wallet.`,
+          )} USDT to start this strategy. Please add funds to your wallet.`,
           duration: 6000,
         });
       } else if (
@@ -149,13 +145,10 @@ const WalletGrantPicker = ({
           });
           return;
         } else if (msg?.includes("Insufficient USDT balance")) {
-          const totalRequired = (enteredBalance || 0) * (1 + MANAGEMENT_FEE);
           toast.error("Insufficient Balance", {
-            description: `You need $${totalRequired.toFixed(
+            description: `You need $${(enteredBalance || 0).toFixed(
               2
-            )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
-              1
-            )}% management fee) to start this strategy. Please add funds to your wallet.`,
+            )} USDT to start this strategy. Please add funds to your wallet.`,
             duration: 6000,
           });
           return;
