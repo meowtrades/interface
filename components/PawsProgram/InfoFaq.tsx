@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "Are there any trading fees?",
     answer:
-      "No, we currently offer 0% platform fees for all trades. You can focus on your trading strategies without worrying about transaction costs.",
+      "No, there are no platform fees. You can focus on your trading strategies without worrying about any costs from us.",
   },
   {
     question: "Can I transfer my Paws to another account?",

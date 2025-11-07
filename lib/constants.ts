@@ -10,5 +10,3 @@ export const USDT_DENOM_MAINNET =
 
 // Legacy export for backward compatibility (defaults to testnet)
 export const USDT_DENOM = USDT_DENOM_TESTNET;
-
-export const MANAGEMENT_FEE = 0.003;

@@ -38,7 +38,6 @@ import { toast } from "sonner";
 import { FrequencyOption } from "@/api";
 import WalletGrantPicker from "./WalletGrantPicker";
 import WalletAddressPicker from "./WalletAddressPicker";
-import { MANAGEMENT_FEE } from "@/lib/constants";
 import { validateInjecitveWalletAddress } from "@/lib/validate-address";
 import { formatFrequency } from "@/lib/utils";
 import { useStrategies } from "@/lib/context/StrategiesContext";
@@ -267,13 +266,10 @@ const StartStrategyDialog = ({
 
         // Check if it's an insufficient balance error
         if (error.message.includes("Insufficient USDT balance")) {
-          const totalRequired = amountNum * (1 + MANAGEMENT_FEE);
           toast.error("Insufficient Balance", {
-            description: `You need $${totalRequired.toFixed(
+            description: `You need $${amountNum.toFixed(
               2
-            )} USDT (including ${(MANAGEMENT_FEE * 100).toFixed(
-              1
-            )}% management fee) to start this strategy. Please add funds to your wallet.`,
+            )} USDT to start this strategy. Please add funds to your wallet.`,
             duration: 6000,
           });
           return;
@@ -449,10 +445,7 @@ const StartStrategyDialog = ({
                   )}
                   <p className="text-xs text-blue-600 mt-1 font-medium">
                     USDT required on each execution: $
-                    {(parseFloat(amount || "0") * (1 + MANAGEMENT_FEE)).toFixed(
-                      2
-                    )}{" "}
-                    (includes {(MANAGEMENT_FEE * 100).toFixed(1)}% platform fee)
+                    {parseFloat(amount || "0").toFixed(2)}
                   </p>
                 </div>
                 <div className={"flex gap-4"}>
