@@ -1,12 +1,65 @@
 /** @format */
 
-import { Grid, RefreshCw, TrendingUp } from "lucide-react";
+import { Grid, RefreshCw, TrendingUp, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { formatFrequency } from "@/lib/utils";
 import { UserStrategy } from "./types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { api } from "@/api";
+
+// Calculate next execution time based on frequency and last execution
+const getNextExecutionTime = (
+  createdAt: string,
+  lastExecutionTime: string | null,
+  frequency: string
+): string => {
+  const baseTime = lastExecutionTime
+    ? new Date(lastExecutionTime)
+    : new Date(createdAt);
+
+  let nextTime = new Date(baseTime);
+
+  switch (frequency.toLowerCase()) {
+    case "daily":
+      nextTime.setDate(nextTime.getDate() + 1);
+      break;
+    case "weekly":
+      nextTime.setDate(nextTime.getDate() + 7);
+      break;
+    case "monthly":
+      nextTime.setMonth(nextTime.getMonth() + 1);
+      break;
+    case "hourly":
+      nextTime.setHours(nextTime.getHours() + 1);
+      break;
+    case "minute":
+      nextTime.setMinutes(nextTime.getMinutes() + 1);
+      break;
+    default:
+      nextTime.setDate(nextTime.getDate() + 1);
+  }
+
+  const now = new Date();
+  if (nextTime < now) {
+    return "Pending execution";
+  }
+
+  const diff = nextTime.getTime() - now.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (hours > 24) {
+    const days = Math.floor(hours / 24);
+    return `In ${days} day${days > 1 ? "s" : ""}`;
+  } else if (hours > 0) {
+    return `In ${hours} hour${hours > 1 ? "s" : ""} ${minutes > 0 ? `${minutes}m` : ""}`;
+  } else if (minutes > 0) {
+    return `In ${minutes} minute${minutes > 1 ? "s" : ""}`;
+  } else {
+    return "Soon";
+  }
+};
 
 export const StrategyDetails = () => {
   const { id: rawStrategyId } = useParams();
@@ -82,6 +135,22 @@ export const StrategyDetails = () => {
             })}
           </span>
         </div>
+
+        {userStrategy.status === "active" && (
+          <div>
+            <h4 className="text-sm text-slate-500 mb-2">Next Execution</h4>
+            <div className="flex items-center gap-2">
+              <Clock size={16} className="text-blue-600" />
+              <span className="font-medium text-blue-600">
+                {getNextExecutionTime(
+                  userStrategy.createdAt,
+                  userStrategy.lastExecutionTime || null,
+                  userStrategy.frequency
+                )}
+              </span>
+            </div>
+          </div>
+        )}
 
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Strategy Settings</h4>
