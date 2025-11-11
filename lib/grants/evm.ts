@@ -1,6 +1,7 @@
 /** @format */
 
 import {
+  INJECTIVE_NETWORK,
   INJECTIVE_EVM_TESTNET_CHAIN_ID,
   INJECTIVE_EVM_TESTNET_CHAIN_NAME,
   INJECTIVE_EVM_TESTNET_RPC_URLS,
@@ -8,28 +9,45 @@ import {
   INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL,
   INJECTIVE_EVM_TESTNET_CURRENCY_NAME,
   INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS,
+  INJECTIVE_EVM_MAINNET_CHAIN_ID,
+  INJECTIVE_EVM_MAINNET_CHAIN_NAME,
+  INJECTIVE_EVM_MAINNET_RPC_URLS,
+  INJECTIVE_EVM_MAINNET_EXPLORERS,
+  INJECTIVE_EVM_MAINNET_CURRENCY_SYMBOL,
+  INJECTIVE_EVM_MAINNET_CURRENCY_NAME,
+  INJECTIVE_EVM_MAINNET_CURRENCY_DECIMALS,
 } from "@/configs/env";
 
-// Helper to ensure MetaMask is on Injective EVM Testnet. If not present, it will attempt to add it.
+// Helper to get the correct network configuration based on env
+const getNetworkConfig = () => {
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  
+  return {
+    chainIdHex: isMainnet ? INJECTIVE_EVM_MAINNET_CHAIN_ID : INJECTIVE_EVM_TESTNET_CHAIN_ID,
+    chainName: isMainnet ? INJECTIVE_EVM_MAINNET_CHAIN_NAME : INJECTIVE_EVM_TESTNET_CHAIN_NAME,
+    rpcUrls: (isMainnet ? INJECTIVE_EVM_MAINNET_RPC_URLS : INJECTIVE_EVM_TESTNET_RPC_URLS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    blockExplorerUrls: (isMainnet ? INJECTIVE_EVM_MAINNET_EXPLORERS : INJECTIVE_EVM_TESTNET_EXPLORERS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    nativeCurrencySymbol: isMainnet ? INJECTIVE_EVM_MAINNET_CURRENCY_SYMBOL : INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL,
+    nativeCurrencyName: isMainnet ? INJECTIVE_EVM_MAINNET_CURRENCY_NAME : INJECTIVE_EVM_TESTNET_CURRENCY_NAME,
+    nativeCurrencyDecimals: Number(isMainnet ? INJECTIVE_EVM_MAINNET_CURRENCY_DECIMALS : INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS || 18),
+  };
+};
+
+// Helper to ensure MetaMask is on the correct Injective EVM network (testnet or mainnet based on env)
 export const ensureMetaMaskInjectiveTestnet = async () => {
   if (typeof window === "undefined" || !window.ethereum) return;
 
-  const chainIdHex = INJECTIVE_EVM_TESTNET_CHAIN_ID as string; // e.g. '0x...'
-  const chainName = INJECTIVE_EVM_TESTNET_CHAIN_NAME as string; // e.g. 'Injective EVM Testnet'
-  const rpcUrls = (INJECTIVE_EVM_TESTNET_RPC_URLS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const blockExplorerUrls = (INJECTIVE_EVM_TESTNET_EXPLORERS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const nativeCurrencySymbol = INJECTIVE_EVM_TESTNET_CURRENCY_SYMBOL || "INJ";
-  const nativeCurrencyName = INJECTIVE_EVM_TESTNET_CURRENCY_NAME || "Injective";
-  const nativeCurrencyDecimals = Number(INJECTIVE_EVM_TESTNET_CURRENCY_DECIMALS || 18);
+  const config = getNetworkConfig();
+  const { chainIdHex, chainName, rpcUrls, blockExplorerUrls, nativeCurrencySymbol, nativeCurrencyName, nativeCurrencyDecimals } = config;
 
   if (!chainIdHex || !rpcUrls.length) {
-    console.warn("Injective EVM Testnet env not set. Skipping network switch.");
+    console.warn("Injective EVM network env not set. Skipping network switch.");
     return;
   }
 
@@ -47,7 +65,7 @@ export const ensureMetaMaskInjectiveTestnet = async () => {
         params: [
           {
             chainId: chainIdHex,
-            chainName: chainName || "Injective EVM Testnet",
+            chainName: chainName || "Injective EVM",
             rpcUrls,
             nativeCurrency: {
               name: nativeCurrencyName,

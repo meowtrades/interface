@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ensureMetaMaskInjectiveTestnet } from "@/lib/grants/evm";
 import { fetchWalletBalances } from "@/lib/utils";
 import { api } from "@/api/client";
+import { INJECTIVE_NETWORK } from "@/configs/env";
 
 // Wallet types supported
 export type WalletType = "Keplr" | "Leap" | "MetaMask";
@@ -30,6 +31,7 @@ export interface WalletState {
   walletType: WalletType;
   address: string; // Injective format address
   chain: ChainType;
+  network: 'mainnet' | 'testnet'; // Network type
   ethereumAddress?: string; // Only for MetaMask
 }
 
@@ -117,18 +119,22 @@ export const InjectiveWalletProvider: React.FC<{
     const wallet = getWalletEnum(walletType);
     const chain = getChainForWallet(walletType);
 
+    // Determine network based on environment
+    const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+    const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+
     // For MetaMask, ensure correct network
     if (walletType === "MetaMask") {
       await ensureMetaMaskInjectiveTestnet();
     }
 
     const strategy = new WalletStrategy({
-      chainId: ChainId.Testnet,
+      chainId,
       wallet,
       strategies: {},
       ...(walletType === "MetaMask" && {
         ethereumOptions: {
-          ethereumChainId: EthereumChainId.Injective,
+          ethereumChainId: isMainnet ? EthereumChainId.Mainnet : EthereumChainId.Injective,
         },
       }),
     });
@@ -223,6 +229,7 @@ export const InjectiveWalletProvider: React.FC<{
           walletType,
           address: injectiveAddress,
           chain,
+          network: INJECTIVE_NETWORK as 'mainnet' | 'testnet',
           ethereumAddress,
         };
 

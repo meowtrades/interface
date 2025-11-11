@@ -78,7 +78,7 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
         <div className="flex items-center gap-2">
           {/* Balances or Fund Buttons */}
           <div className="flex items-center gap-2">
-            {((balances?.usdt !== undefined && isZero(balances.usdt)) ||
+            {/* {((balances?.usdt !== undefined && isZero(balances.usdt)) ||
               (balances?.inj !== undefined && isZero(balances.inj))) && (
               <Link href="/faucet">
                 <Button
@@ -90,23 +90,21 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
                   Faucet
                 </Button>
               </Link>
+            )} */}
+            {balances?.inj !== undefined && (
+              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                {isFetchingBalances
+                  ? "INJ: ..."
+                  : `${balances.inj.toFixed(3)} INJ`}
+              </span>
             )}
-            {balances?.inj !== undefined &&
-              (isZero(balances.inj) ? null : (
-                <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                  {isFetchingBalances
-                    ? "INJ: ..."
-                    : `${balances.inj.toFixed(3)} INJ`}
-                </span>
-              ))}
-            {balances?.usdt !== undefined &&
-              (isZero(balances.usdt) ? null : (
-                <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
-                  {isFetchingBalances
-                    ? "USDT: ..."
-                    : `${balances.usdt.toFixed(2)} USDT`}
-                </span>
-              ))}
+            {balances?.usdt !== undefined && (
+              <span className="flex items-center gap-1 text-sm font-mono bg-secondary rounded px-2 py-1">
+                {isFetchingBalances
+                  ? "USDT: ..."
+                  : `${balances.usdt.toFixed(2)} USDT`}
+              </span>
+            )}
           </div>
           <Button
             variant="outline"

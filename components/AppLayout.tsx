@@ -76,11 +76,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       path: "#",
       locked: true,
     },
-    {
-      icon: <Droplets size={20} />,
-      label: "Faucet",
-      path: "/faucet",
-    },
+    // {
+    //   icon: <Droplets size={20} />,
+    //   label: "Faucet",
+    //   path: "/faucet",
+    // },
     // {
     //   icon: <Grid size={20} />,
     //   label: "Grid Visualization",

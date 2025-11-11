@@ -16,6 +16,7 @@ import { WalletStrategy } from "@injectivelabs/wallet-strategy";
 import { checkMinimumUSDTBalance } from "../utils";
 import { ensureMetaMaskInjectiveTestnet } from "./evm";
 import { toast } from "sonner";
+import { INJECTIVE_NETWORK } from "@/configs/env";
 
 if (typeof window !== "undefined") {
   window.Buffer = Buffer;
@@ -48,8 +49,12 @@ export const getKeplrGrant = async (enteredBalance: number) => {
     console.log("Keplr is installed");
   }
 
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const network = isMainnet ? Network.Mainnet : Network.Testnet;
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Keplr,
     strategies: {},
   });
@@ -83,10 +88,9 @@ export const getKeplrGrant = async (enteredBalance: number) => {
   const broadcaster = new MsgBroadcaster({
     walletStrategy,
     simulateTx: true,
-    network: Network.Testnet,
-    chainId: ChainId.Testnet,
-    // ethereumChainId: EthereumChainId.TestnetEvm,
-    endpoints: getNetworkEndpoints(Network.Testnet),
+    network,
+    chainId,
+    endpoints: getNetworkEndpoints(network),
   });
 
   try {
@@ -118,8 +122,12 @@ export const getLeapGrant = async (enteredBalance: number) => {
     console.log("Leap is installed");
   }
 
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const network = isMainnet ? Network.Mainnet : Network.Testnet;
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Leap,
     strategies: {},
   });
@@ -153,9 +161,8 @@ export const getLeapGrant = async (enteredBalance: number) => {
   const broadcaster = new MsgBroadcaster({
     walletStrategy,
     simulateTx: true,
-    network: Network.Testnet,
-    // ethereumChainId: EthereumChainId.TestnetEvm,
-    endpoints: getNetworkEndpoints(Network.Testnet),
+    network,
+    endpoints: getNetworkEndpoints(network),
   });
 
   try {
@@ -187,15 +194,20 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
     console.log("MetaMask is installed");
   }
 
-  // Ensure network is Injective EVM Testnet in MetaMask
+  const isMainnet = INJECTIVE_NETWORK === 'mainnet';
+  const network = isMainnet ? Network.Mainnet : Network.Testnet;
+  const chainId = isMainnet ? ChainId.Mainnet : ChainId.Testnet;
+  const ethereumChainId = isMainnet ? EthereumChainId.Mainnet : EthereumChainId.Injective;
+
+  // Ensure network is correct Injective EVM network in MetaMask
   await ensureMetaMaskInjectiveTestnet();
 
   const walletStrategy = new WalletStrategy({
-    chainId: ChainId.Testnet,
+    chainId,
     wallet: Wallet.Metamask,
     strategies: {},
     ethereumOptions: {
-      ethereumChainId: EthereumChainId.Injective,
+      ethereumChainId,
     },
   });
 
@@ -242,10 +254,10 @@ export const getMetaMaskGrant = async (enteredBalance: number) => {
   const broadcaster = new MsgBroadcaster({
     walletStrategy,
     simulateTx: true,
-    network: Network.Testnet,
-    endpoints: getNetworkEndpoints(Network.Testnet),
-    chainId: ChainId.Testnet,
-    ethereumChainId: EthereumChainId.Injective,
+    network,
+    endpoints: getNetworkEndpoints(network),
+    chainId,
+    ethereumChainId,
   });
 
   try {
