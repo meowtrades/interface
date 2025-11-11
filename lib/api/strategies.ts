@@ -187,7 +187,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "daily",
     amount: 50,
     createdAt: "2023-11-15T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,
@@ -217,7 +219,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "weekly",
     amount: 25,
     createdAt: "2023-11-20T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,
@@ -247,7 +251,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "daily",
     amount: 20,
     createdAt: "2023-11-25T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,
@@ -277,7 +283,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "weekly",
     amount: 10,
     createdAt: "2023-11-28T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,
@@ -307,7 +315,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "daily",
     amount: 10,
     createdAt: "2023-12-01T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,
@@ -337,7 +347,9 @@ const userStrategiesNew: ActiveStrategyAnalytics[] = [
     frequency: "weekly",
     amount: 5,
     createdAt: "2023-12-03T00:00:00Z",
+    lastExecutionTime: null,
     active: true,
+    status: "active",
     analytics: {
       tokensHeld: 0,
       averageBuyPrice: 0,

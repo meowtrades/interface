@@ -18,7 +18,7 @@ const getNextExecutionTime = (
     ? new Date(lastExecutionTime)
     : new Date(createdAt);
 
-  let nextTime = new Date(baseTime);
+  const nextTime = new Date(baseTime);
 
   switch (frequency.toLowerCase()) {
     case "daily":
@@ -122,7 +122,12 @@ export const StrategyDetails = () => {
 
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Network</h4>
-          <span className="font-medium">{userStrategy.chain}</span>
+          <span className="font-medium">
+            {userStrategy.chain === "injective-evm"
+              ? "Injective EVM"
+              : userStrategy.chain.charAt(0).toUpperCase() +
+                userStrategy.chain.slice(1)}
+          </span>
         </div>
 
         <div>
@@ -136,21 +141,22 @@ export const StrategyDetails = () => {
           </span>
         </div>
 
-        {userStrategy.status === "active" && (
-          <div>
-            <h4 className="text-sm text-slate-500 mb-2">Next Execution</h4>
-            <div className="flex items-center gap-2">
-              <Clock size={16} className="text-blue-600" />
-              <span className="font-medium text-blue-600">
-                {getNextExecutionTime(
-                  userStrategy.createdAt,
-                  userStrategy.lastExecutionTime || null,
-                  userStrategy.frequency
-                )}
-              </span>
+        {userStrategy.status === "active" &&
+          userStrategy.strategyTemplate?.id === "SDCA" && (
+            <div>
+              <h4 className="text-sm text-slate-500 mb-2">Next Execution</h4>
+              <div className="flex items-center gap-2">
+                <Clock size={16} className="text-blue-600" />
+                <span className="font-medium text-blue-600">
+                  {getNextExecutionTime(
+                    userStrategy.createdAt,
+                    userStrategy.lastExecutionTime || null,
+                    userStrategy.frequency
+                  )}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div>
           <h4 className="text-sm text-slate-500 mb-2">Strategy Settings</h4>

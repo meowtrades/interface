@@ -32,10 +32,64 @@ import {
   Search,
   BarChart3,
   AlertCircle,
+  Clock,
 } from "lucide-react";
 import { api, useStopDcaPlan } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Calculate next execution time based on frequency and last execution
+const getNextExecutionTime = (
+  createdAt: string,
+  lastExecutionTime: string | null,
+  frequency: string
+): string => {
+  const baseTime = lastExecutionTime
+    ? new Date(lastExecutionTime)
+    : new Date(createdAt);
+
+  const nextTime = new Date(baseTime);
+
+  switch (frequency.toLowerCase()) {
+    case "daily":
+      nextTime.setDate(nextTime.getDate() + 1);
+      break;
+    case "weekly":
+      nextTime.setDate(nextTime.getDate() + 7);
+      break;
+    case "monthly":
+      nextTime.setMonth(nextTime.getMonth() + 1);
+      break;
+    case "hourly":
+      nextTime.setHours(nextTime.getHours() + 1);
+      break;
+    case "minute":
+      nextTime.setMinutes(nextTime.getMinutes() + 1);
+      break;
+    default:
+      nextTime.setDate(nextTime.getDate() + 1);
+  }
+
+  const now = new Date();
+  if (nextTime < now) {
+    return "Pending";
+  }
+
+  const diff = nextTime.getTime() - now.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (hours > 24) {
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else if (minutes > 0) {
+    return `${minutes}m`;
+  } else {
+    return "Soon";
+  }
+};
 
 const StrategiesContent = () => {
   const {
@@ -302,7 +356,11 @@ const StrategiesContent = () => {
                           {userStrategy.strategyTemplate.name}
                         </h3>
                         <p className="text-sm text-slate-500">
-                          {userStrategy.chain} • {userStrategy.token.symbol}
+                          {userStrategy.chain === "injective-evm"
+                            ? "Injective EVM"
+                            : userStrategy.chain.charAt(0).toUpperCase() +
+                              userStrategy.chain.slice(1)}{" "}
+                          • {userStrategy.token.symbol}
                         </p>
                       </div>
                     </div>
@@ -317,6 +375,22 @@ const StrategiesContent = () => {
                       {userStrategy.profitPercentage}%
                     </div>
                   </div>
+
+                  {/* Next Execution Time - Only for DCA strategies */}
+                  {userStrategy.status === "active" &&
+                    userStrategy.strategyTemplate.id === "SDCA" && (
+                      <div className="mb-4 flex items-center gap-2 text-sm">
+                        <Clock size={14} className="text-blue-600" />
+                        <span className="text-slate-600">Next execution:</span>
+                        <span className="font-medium text-blue-600">
+                          {getNextExecutionTime(
+                            userStrategy.createdAt,
+                            userStrategy.lastExecutionTime || null,
+                            userStrategy.frequency
+                          )}
+                        </span>
+                      </div>
+                    )}
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="bg-slate-50 p-3 rounded">
@@ -422,6 +496,22 @@ const StrategiesContent = () => {
                       {userStrategy.profitPercentage}%
                     </div>
                   </div>
+
+                  {/* Next Execution Time - Only for DCA strategies */}
+                  {userStrategy.status === "active" &&
+                    userStrategy.strategyTemplate.id === "SDCA" && (
+                      <div className="mb-4 flex items-center gap-2 text-sm">
+                        <Clock size={14} className="text-blue-600" />
+                        <span className="text-slate-600">Next execution:</span>
+                        <span className="font-medium text-blue-600">
+                          {getNextExecutionTime(
+                            userStrategy.createdAt,
+                            userStrategy.lastExecutionTime || null,
+                            userStrategy.frequency
+                          )}
+                        </span>
+                      </div>
+                    )}
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="bg-slate-50 p-3 rounded">

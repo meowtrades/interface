@@ -101,7 +101,9 @@ export type ActiveStrategyAnalytics = {
   frequency: string;
   amount: number;
   createdAt: string;
+  lastExecutionTime?: string | null;
   active: boolean;
+  status: "active" | "paused" | "stopped";
   analytics: {
     tokensHeld: number;
     averageBuyPrice: number;

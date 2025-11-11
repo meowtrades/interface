@@ -156,10 +156,7 @@ export const checkMinimumUSDTBalance = async (
  * Maps UI-specific chain IDs to backend-recognized chain IDs
  */
 export const normalizeChainId = (chainId: string): string => {
-  // Map injective-evm to injective since backend only recognizes injective
-  if (chainId === "injective-evm") {
-    return "injective";
-  }
+  // Backend now supports injective-evm, so no conversion needed
   return chainId;
 };
 
