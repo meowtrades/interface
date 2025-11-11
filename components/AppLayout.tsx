@@ -90,7 +90,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   const getPageTitle = () => {
     if (pathname.includes("dashboard")) return "Dashboard";
-    if (pathname.includes("strategies")) return "Live on Testnet";
+    if (pathname.includes("strategies")) return "Live on Mainnet";
     if (pathname.includes("paper-trades")) return "Paper Trades";
     if (pathname.includes("grid-visualization")) return "Grid Visualization";
     if (pathname.includes("leaderboard")) return "Leaderboard";
