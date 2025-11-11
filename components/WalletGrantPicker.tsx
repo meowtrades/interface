@@ -127,7 +127,9 @@ const WalletGrantPicker = ({
 
       // If useMyAddress is true, provide the address
       if (useMyAddress && onWalletAddressReceived && walletState) {
-        onWalletAddressReceived(walletState.address);
+        // For EVM wallets, provide the ethereum address, otherwise injective address
+        const addressToUse = walletState.ethereumAddress || walletState.address;
+        onWalletAddressReceived(addressToUse);
       }
 
       // Grant phase

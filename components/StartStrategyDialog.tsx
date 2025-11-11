@@ -639,10 +639,21 @@ const StartStrategyDialog = ({
 
                       {/* Show wallet address when using my address */}
                       {useMyAddress && recipientAddress && (
-                        <div className="p-2 bg-green-50 border border-green-200 rounded-md">
-                          <p className="text-sm text-green-700 font-medium">
-                            Using wallet address: {recipientAddress}
-                          </p>
+                        <div className="p-2 bg-green-50 border border-green-200 rounded-md space-y-1">
+                          {walletState?.ethereumAddress ? (
+                            <>
+                              <p className="text-sm text-green-700 font-medium">
+                                Using EVM address: {walletState.ethereumAddress}
+                              </p>
+                              <p className="text-xs text-green-600">
+                                Injective address: {walletState.address}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-sm text-green-700 font-medium">
+                              Using wallet address: {recipientAddress}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
