@@ -69,15 +69,15 @@ const frequencyOptions = [
 const getDefaultAmount = (strategy: Strategy): string => {
   switch (strategy.type) {
     case "dca":
-      return "10";
+      return "2";
     case "grid":
-      return "100";
+      return "2";
     case "momentum":
       return "50";
     case "custom":
       return "25";
     default:
-      return "100";
+      return "2";
   }
 };
 
@@ -215,6 +215,13 @@ const StartStrategyDialog = ({
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
       toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Validate minimum investment
+    const minInvestment = strategy.minInvestment?.[chain] || 2;
+    if (amountNum < minInvestment) {
+      toast.error(`Minimum investment is $${minInvestment} USDT`);
       return;
     }
 
@@ -431,15 +438,15 @@ const StartStrategyDialog = ({
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    min="10"
-                    step="10"
+                    min="2"
+                    step="1"
                     className="mt-1 border-2 bg-white text-contrast-high font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   />
                   {strategy.minInvestment && (
                     <p className="text-xs text-contrast-medium mt-2">
                       Minimum investment: $
                       {strategy.minInvestment[strategy.supportedChains[0]] ||
-                        10}{" "}
+                        2}{" "}
                       USDT
                     </p>
                   )}

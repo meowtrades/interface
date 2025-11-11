@@ -113,7 +113,13 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
             onClick={() => setIsAddressDialogOpen(true)}
           >
             <Wallet size={16} />
-            {walletState.address.slice(0, 6)}...{walletState.address.slice(-4)}
+            {(walletState.ethereumAddress 
+              ? walletState.ethereumAddress 
+              : walletState.address
+            ).slice(0, 6)}...{(walletState.ethereumAddress 
+              ? walletState.ethereumAddress 
+              : walletState.address
+            ).slice(-4)}
           </Button>
         </div>
         <Dialog
@@ -125,16 +131,47 @@ const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
               <DialogTitle>Wallet Actions</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4 items-center">
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-center gap-2 w-full">
                 <span className="text-xs text-gray-500">
                   Connected with {walletState.walletType}
                 </span>
-                <span className="font-mono text-sm break-all text-center">
-                  {walletState.address}
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleCopyAddress}>
-                  Copy Address
-                </Button>
+                
+                {/* Show EVM address first if MetaMask */}
+                {walletState.ethereumAddress && (
+                  <div className="flex flex-col items-center gap-1 w-full">
+                    <span className="text-xs text-gray-400">EVM Address</span>
+                    <span className="font-mono text-sm break-all text-center px-2">
+                      {walletState.ethereumAddress}
+                    </span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(walletState.ethereumAddress!);
+                          toast.success("EVM address copied to clipboard");
+                        } catch {
+                          toast.error("Failed to copy address");
+                        }
+                      }}
+                    >
+                      Copy EVM Address
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Injective address */}
+                <div className="flex flex-col items-center gap-1 w-full">
+                  {walletState.ethereumAddress && (
+                    <span className="text-xs text-gray-400">Injective Address</span>
+                  )}
+                  <span className="font-mono text-sm break-all text-center px-2">
+                    {walletState.address}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={handleCopyAddress}>
+                    Copy {walletState.ethereumAddress ? "Injective" : ""} Address
+                  </Button>
+                </div>
               </div>
               <Button variant="destructive" onClick={handleDisconnect}>
                 <LogOut size={16} className="mr-2" /> Disconnect

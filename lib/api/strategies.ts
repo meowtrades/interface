@@ -100,7 +100,7 @@ const strategies: Strategy[] = [
       },
     },
     minInvestment: {
-      injective: 10,
+      injective: 2,
     },
     riskLevel: "low",
   },
@@ -126,8 +126,8 @@ const strategies: Strategy[] = [
       },
     },
     minInvestment: {
-      injective: 20,
-      "injective-evm": 20,
+      injective: 2,
+      "injective-evm": 2,
     },
     riskLevel: "medium",
   },

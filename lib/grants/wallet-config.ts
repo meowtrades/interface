@@ -10,6 +10,13 @@ export type BaseWalletConfig = {
 // Base wallet configurations shared across the application
 export const walletConfigs: BaseWalletConfig[] = [
   {
+    name: "MetaMask",
+    windowKey: "ethereum",
+    description: "MetaMask wallet for Ethereum ecosystem",
+    icon: "/wallets/metamask.svg",
+    colorTheme: "bg-gradient-to-br from-[#f6851b] to-[#e2761b] text-white hover:from-[#e2761b] hover:to-[#d16919]",
+  },
+  {
     name: "Keplr",
     windowKey: "keplr",
     description: "Keplr wallet for Cosmos ecosystem",
@@ -22,13 +29,6 @@ export const walletConfigs: BaseWalletConfig[] = [
     description: "Leap wallet for Cosmos ecosystem",
     icon: "/wallets/leap.svg",
     colorTheme: "bg-gradient-to-br from-[#00D4AA] to-[#00B894] text-white hover:from-[#00B894] hover:to-[#009F7F]",
-  },
-  {
-    name: "MetaMask",
-    windowKey: "ethereum",
-    description: "MetaMask wallet for Ethereum ecosystem",
-    icon: "/wallets/metamask.svg",
-    colorTheme: "bg-gradient-to-br from-[#f6851b] to-[#e2761b] text-white hover:from-[#e2761b] hover:to-[#d16919]",
   },
 ];
 
